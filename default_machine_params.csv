@@ -1,0 +1,14 @@
+Name,Value,Label
+GT_FREQ_GHZ,1.9,GT Freq (GHz)
+XECU_COUNT,1,XeCU count
+XECORE_PER_XECU,16,XeCore per XeCU
+EU_PER_XECORE,8,EU per XeCore
+L2_BANKS_PER_XECU,16,L2 banks per XeCU
+BANK_CAPACITY_MB,1.5,bank capacity (MB)
+DPAS_DEPTH,8,DPAS depth
+COMPUTE_EFFICIENCY_PCT,1,compute Efficiency %
+L1_READ_MAX_B_EU_CLK,32,L1 read max (B/EU/clk)
+L1_WRITE_MAX_B_EU_CLK,16,L1 write max (B/EU/clk)
+GTI_READ_MAX_BW_B_CLK,256,GTI Read max BW (B/clk)
+GTI_WRITE_MAX_BW_B_CLK,256,GTI Write max BW(B/clk)
+MAX_POSSIBLE_HBM_BW_GB_S,307,max possible HBM BW (GB/s)

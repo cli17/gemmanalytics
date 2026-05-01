@@ -1,0 +1,19 @@
+Name,Value,Label
+INPUT_A_DATA_FORMAT,fp8,fp8
+INPUT_B_DATA_FORMAT,fp4,fp4
+OUTPUT_D_DATA_FORMAT,fp8,fp8
+M,4096,M
+K,4096,K
+N,4096,N
+OUTPUT_BYTES_PER_ELEMENT_FP32,4,"output bytes per element , fp32"
+MACHINE_OCCUPANCY_PCT,1,Machine occupancy %
+M_PER_THREAD,64,M per thread
+K_PER_THREAD,128,K per thread
+N_PER_THREAD,32,N per thread
+TG_WIDTH_IN_UNITS_OF_THREAD,8,TG width in units of thread
+TG_HEIGHT_IN_UNITS_OF_THREAD,4,TG height in units of thread
+XECORE_CLUSTER_WIDTH_IN_UNITS_OF_TG_KEEP_THE_CLUSTER_SIZE_AS_4,1,XeCore cluster width in units of TG. Keep the cluster size as 4.
+XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_TG_KEEP_THE_CLUSTER_SIZE_AS_4,1,XeCore cluster height in units of TG. Keep the cluster size as 4.
+XECU_TILE_WIDTH_IN_UNITS_OF_TG,4,XeCU tile width in units of TG
+XECU_TILE_HEIGHT_IN_UNITS_OF_TG,4,XeCU tile height in units of TG
+GPU_TILE_WIDTH_IN_XECU_UNIT,1,GPU tile width in XeCU unit
