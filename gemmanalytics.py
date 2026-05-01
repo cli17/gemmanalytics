@@ -697,8 +697,17 @@ def default_latex_symbol(name: str) -> str:
     return r'\mathrm{' + name.replace('_', '-') + r'}'
 
 
+SPECIAL_LATEX_SYMBOL_OVERRIDES = {
+    # Keep helper constants readable in equations without underscore subscript parsing.
+    'DATA_FORMAT_TO_BYTES': r'\mathrm{DataFormatToBytes}',
+}
+
+
 def latex_symbol_for(name: str) -> str:
     """Return custom LaTeX symbol if provided, else safe default."""
+    special = SPECIAL_LATEX_SYMBOL_OVERRIDES.get(name, '')
+    if special:
+        return special
     custom = LATEX_SYMBOL_OVERRIDES.get(name, '')
     return custom if custom else default_latex_symbol(name)
 
