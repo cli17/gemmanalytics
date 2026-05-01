@@ -693,8 +693,8 @@ LATEX_SYMBOL_OVERRIDES = {
 
 
 def default_latex_symbol(name: str) -> str:
-    """Return safe default LaTeX for a variable name."""
-    return r'\mathrm{' + name.replace('_', r'\_') + r'}'
+    """Return safe default LaTeX for a variable name (uses hyphens to avoid KaTeX subscript issues)."""
+    return r'\mathrm{' + name.replace('_', '-') + r'}'
 
 
 def latex_symbol_for(name: str) -> str:

@@ -6,15 +6,15 @@ Output order: execution
 
 ### row 22 - INPUT_A_BYTES_PER_ELEMENT
 
-$$ \mathrm{Bytes_{/element}A} = \mathrm{DATA\_FORMAT\_TO\_BYTES}[\mathrm{FmtA}] $$
+$$ \mathrm{Bytes_{/element}A} = \mathrm{DATA-FORMAT-TO-BYTES}[\mathrm{FmtA}] $$
 
 ### row 23 - INPUT_B_BYTES_PER_ELEMENT
 
-$$ \mathrm{Bytes_{/element}B} = \mathrm{DATA\_FORMAT\_TO\_BYTES}[\mathrm{FmtB}] $$
+$$ \mathrm{Bytes_{/element}B} = \mathrm{DATA-FORMAT-TO-BYTES}[\mathrm{FmtB}] $$
 
 ### row 25 - OUTPUT_BYTES_PER_ELEMENT_AFTER_DOWN_CONVERSION
 
-$$ \mathrm{Bytes_{/element}D\downarrow} = \mathrm{DATA\_FORMAT\_TO\_BYTES}[\mathrm{FmtD}] $$
+$$ \mathrm{Bytes_{/element}D\downarrow} = \mathrm{DATA-FORMAT-TO-BYTES}[\mathrm{FmtD}] $$
 
 ### row 33 - EU_COUNT
 
