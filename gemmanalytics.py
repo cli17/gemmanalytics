@@ -3,6 +3,7 @@ SOURCE_XLSX = 'C:\\Users\\cli17\\source\\repos\\GEMM analytical model\\example.x
 SOURCE_SHEET = 'summary wo L2 fwd (baseline)'
 
 import argparse
+import ast
 import csv
 import sys
 import re
@@ -582,11 +583,11 @@ LATEX_SYMBOL_OVERRIDES = {
     # ---- Machine pre-defined ----
     'GT_FREQ_GHZ': r'\mathrm{f_{GT, GHz}}',
     'XECU_COUNT': r'\mathrm{|XeCU|}',
-    'XECORE_PER_XECU': r'\mathrm{|XeCore_{/XeCU}|}',
-    'EU_PER_XECORE': r'\mathrm{|EU_{/XeCore}|}',
-    'L2_BANKS_PER_XECU': r'\mathrm{|L2Banks_{/XeCU}|}',
+    'XECORE_PER_XECU': r'\mathrm{|XeCore|_{/XeCU}}',
+    'EU_PER_XECORE': r'\mathrm{|EU|_{/XeCore}}',
+    'L2_BANKS_PER_XECU': r'\mathrm{|L2Banks|_{/XeCU}}',
     'BANK_CAPACITY_MB': r'\mathrm{L2BankSize_{MB}}',
-    'DPAS_DEPTH': r'\mathrm{D_{systolic}}',
+    'DPAS_DEPTH': r'\mathrm{D_{DPAS}}',
     'COMPUTE_EFFICIENCY_PCT': r'\mathrm{\eta_{systolic}}',
     'L1_READ_MAX_B_EU_CLK': r'\mathrm{L1RdBW_{B/clk/EU}^{max}}',
     'L1_WRITE_MAX_B_EU_CLK': r'\mathrm{L1WrBW_{B/clk/EU}^{max}}',
@@ -595,9 +596,9 @@ LATEX_SYMBOL_OVERRIDES = {
     'MAX_POSSIBLE_HBM_BW_GB_S': r'\mathrm{MemBW_{GB/s}^{max}}',
 
     # ---- Workload format keys + pre-defined ----
-    'INPUT_A_DATA_FORMAT': r'\mathrm{FmtA}',
-    'INPUT_B_DATA_FORMAT': r'\mathrm{FmtB}',
-    'OUTPUT_D_DATA_FORMAT': r'\mathrm{FmtD}',
+    'INPUT_A_DATA_FORMAT': r'\mathrm{Fmt^{(A)}}',
+    'INPUT_B_DATA_FORMAT': r'\mathrm{Fmt^{(B)}}',
+    'OUTPUT_D_DATA_FORMAT': r'\mathrm{Fmt^{(D)}}',
     'M': r'\mathrm{M_dim}',
     'K': r'\mathrm{K_dim}',
     'N': r'\mathrm{N_dim}',
@@ -616,17 +617,17 @@ LATEX_SYMBOL_OVERRIDES = {
 
     # ---- Workload derived ----
     'WAVES': r'\mathrm{N_waves}',
-    'TG_TILES_IN_N': r'\mathrm{|Tiles_{N}^{(TG)}|}',
-    'TG_TILES_IN_M': r'\mathrm{|Tiles_{M}^{(TG)}|}',
-    'TG_CLUSTER_TILES_IN_N': r'\mathrm{|Tiles_{N}^{(TG\ Cluster)}|}',
-    'TG_CLUSTER_TILES_IN_M': r'\mathrm{|Tiles_{M}^{(TG\ Cluster)}|}',
-    'XECU_TILES_IN_N': r'\mathrm{|Tiles_{N}^{(XeCU)}|}',
-    'XECU_TILES_IN_M': r'\mathrm{|Tiles_{M}^{(XeCU)}|}',
-    'GPU_TILES_IN_N': r'\mathrm{|Tiles_{N}^{(GPU)}|}',
-    'GPU_TILES_IN_M': r'\mathrm{|Tiles_{M}^{(GPU)}|}',
-    'INPUT_A_BYTES_PER_ELEMENT': r'\mathrm{Bytes_{/element}A}',
-    'INPUT_B_BYTES_PER_ELEMENT': r'\mathrm{Bytes_{/element}B}',
-    'OUTPUT_BYTES_PER_ELEMENT_AFTER_DOWN_CONVERSION': r'\mathrm{Bytes_{/element}D\downarrow}',
+    'TG_TILES_IN_N': r'\mathrm{|Tiles|_{N}^{(TG)}}',
+    'TG_TILES_IN_M': r'\mathrm{|Tiles|_{M}^{(TG)}}',
+    'TG_CLUSTER_TILES_IN_N': r'\mathrm{|Tiles|_{N}^{(TG\ Cluster)}}',
+    'TG_CLUSTER_TILES_IN_M': r'\mathrm{|Tiles|_{M}^{(TG\ Cluster)}}',
+    'XECU_TILES_IN_N': r'\mathrm{|Tiles|_{N}^{(XeCU)}}',
+    'XECU_TILES_IN_M': r'\mathrm{|Tiles|_{M}^{(XeCU)}}',
+    'GPU_TILES_IN_N': r'\mathrm{|Tiles|_{N}^{(GPU)}}',
+    'GPU_TILES_IN_M': r'\mathrm{|Tiles|_{M}^{(GPU)}}',
+    'INPUT_A_BYTES_PER_ELEMENT': r'\mathrm{Bytes_{/element}^{(A)}}',
+    'INPUT_B_BYTES_PER_ELEMENT': r'\mathrm{Bytes_{/element}^{(B)}}',
+    'OUTPUT_BYTES_PER_ELEMENT_AFTER_DOWN_CONVERSION': r'\mathrm{Bytes_{/element}^{(D\downarrow)}}',
     'THREAD_WIDTH_IN_UNITS_OF_ELEMENTS': r'\mathrm{W_{elements}^{(Thread)}}',
     'THREAD_HEIGHT_IN_UNITS_OF_ELEMENTS': r'\mathrm{H_{elements}^{(Thread)}}',
     'TG_WIDTH_IN_UNITS_OF_ELEMENT_REALIZED_BY_MULTIPLE_MMA_ITERATIONS': r'\mathrm{W_{elements}^{(ThreadGroup, realized\ by\ multiple\ MMA\ iterations)}}',
@@ -642,8 +643,8 @@ LATEX_SYMBOL_OVERRIDES = {
     'MAT_B_INPUT_SIZE_B': r'\mathrm{Size_{B}^{(B)}}',
     'MAT_C_INPUT_D_OUTPUT_SIZE_B': r'\mathrm{Size_{B}^{(C,D)}}',
     'MAT_D_INTERMEDIATE_SIZE_B': r'\mathrm{Size_{B}^{(D\downarrow)}}',
-    'WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE': r'\mathrm{|WorkingSet_{20K clks of thread divergence}^{(K in L2)}|}',
-    'TOTAL_REQUIRED_L2_SIZE_FOR_IDEAL_HIT_RATE_B_FOR_A_SINGLE_INSTANCE_AND_SINGLE_WAVE': r'\mathrm{TOTAL\_REQUIRED\_L2\_SIZE\_FOR\_IDEAL\_HIT\_RATE\_B\_FOR\_A\_SINGLE\_INSTANCE\_AND\_SINGLE\_WAVE}}',
+    'WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE': r'\mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}',
+    'TOTAL_REQUIRED_L2_SIZE_FOR_IDEAL_HIT_RATE_B_FOR_A_SINGLE_INSTANCE_AND_SINGLE_WAVE': r'\mathrm{TotalRequiredL2Size_{MatB 100% hit}^{1 instance, 1 wave}}',
 
     # ---- Machine / machine+workload derived ----
     'EU_COUNT': r'\mathrm{|EU|}',
@@ -713,28 +714,107 @@ def latex_symbol_for(name: str) -> str:
 
 
 def _formula_to_latex_expr(expr: str) -> str:
-    """Convert a Python-style formula string into a simple LaTeX expression."""
-    # Keep a predictable transform that users can tweak by editing PYTHON_FORMULAS.
-    latex = expr
-    latex = latex.replace('*', r' \times ')
-    # Protect function names first so token replacement doesn't alter them.
-    latex = re.sub(r'\bMIN\(', r'__FUNC_MIN__(', latex)
-    latex = re.sub(r'\bMAX\(', r'__FUNC_MAX__(', latex)
-    latex = re.sub(r'\bCEILING\(', r'__FUNC_CEILING__(', latex)
-    latex = re.sub(r'\bFLOOR\(', r'__FUNC_FLOOR__(', latex)
-    latex = re.sub(r'\bIF\(', r'__FUNC_IF__(', latex)
+    """Convert a Python-style formula string into a LaTeX expression with vertical fractions."""
 
-    # Replace all variable-like tokens with mapped LaTeX symbols.
-    token_pat = re.compile(r'\b[A-Z][A-Z0-9_]*\b')
-    latex = token_pat.sub(lambda m: latex_symbol_for(m.group(0)), latex)
+    cmp_ops = {
+        ast.Lt: '<',
+        ast.LtE: r'\le',
+        ast.Gt: '>',
+        ast.GtE: r'\ge',
+        ast.Eq: '=',
+        ast.NotEq: r'\ne',
+    }
 
-    # Restore function rendering.
-    latex = latex.replace('__FUNC_MIN__(', r'\min(')
-    latex = latex.replace('__FUNC_MAX__(', r'\max(')
-    latex = latex.replace('__FUNC_CEILING__(', r'\operatorname{CEILING}(')
-    latex = latex.replace('__FUNC_FLOOR__(', r'\operatorname{FLOOR}(')
-    latex = latex.replace('__FUNC_IF__(', r'\operatorname{IF}(')
-    return latex
+    bool_ops = {
+        ast.And: r'\land',
+        ast.Or: r'\lor',
+    }
+
+    func_names = {
+        'MIN': r'\min',
+        'MAX': r'\max',
+        'CEILING': r'\operatorname{CEILING}',
+        'FLOOR': r'\operatorname{FLOOR}',
+        'IF': r'\operatorname{IF}',
+    }
+
+    def _wrap(text: str) -> str:
+        return r'\left(' + text + r'\right)'
+
+    def _render(node: ast.AST, parent_prec: int = 0) -> str:
+        # Precedence: compare/bool=1, add/sub=2, mul/div=3, pow=4, atom/call=5
+        if isinstance(node, ast.Name):
+            return latex_symbol_for(node.id)
+
+        if isinstance(node, ast.Constant):
+            return str(node.value)
+
+        if isinstance(node, ast.Subscript):
+            base = _render(node.value, 5)
+            index = _render(node.slice, 0)
+            return f'{base}[{index}]'
+
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+            fn = func_names.get(node.func.id, node.func.id)
+            args = ', '.join(_render(a, 0) for a in node.args)
+            return f'{fn}({args})'
+
+        if isinstance(node, ast.UnaryOp):
+            if isinstance(node.op, ast.USub):
+                return '-' + _render(node.operand, 5)
+            if isinstance(node.op, ast.UAdd):
+                return _render(node.operand, 5)
+
+        if isinstance(node, ast.BinOp):
+            if isinstance(node.op, ast.Add):
+                prec = 2
+                left = _render(node.left, prec)
+                right = _render(node.right, prec)
+                out = f'{left} + {right}'
+                return _wrap(out) if prec < parent_prec else out
+
+            if isinstance(node.op, ast.Sub):
+                prec = 2
+                left = _render(node.left, prec)
+                right = _render(node.right, prec + 1)
+                out = f'{left} - {right}'
+                return _wrap(out) if prec < parent_prec else out
+
+            if isinstance(node.op, ast.Mult):
+                prec = 3
+                left = _render(node.left, prec)
+                right = _render(node.right, prec)
+                out = f'{left} \\times {right}'
+                return _wrap(out) if prec < parent_prec else out
+
+            if isinstance(node.op, ast.Div):
+                prec = 3
+                num = _render(node.left, 0)
+                den = _render(node.right, 0)
+                out = rf'\frac{{{num}}}{{{den}}}'
+                return _wrap(out) if prec < parent_prec else out
+
+            if isinstance(node.op, ast.Pow):
+                prec = 4
+                base = _render(node.left, prec)
+                exp = _render(node.right, 0)
+                out = rf'{base}^{{{exp}}}'
+                return _wrap(out) if prec < parent_prec else out
+
+        if isinstance(node, ast.Compare) and len(node.ops) == 1 and len(node.comparators) == 1:
+            op = cmp_ops.get(type(node.ops[0]), '?')
+            left = _render(node.left, 1)
+            right = _render(node.comparators[0], 1)
+            return f'{left} {op} {right}'
+
+        if isinstance(node, ast.BoolOp):
+            op = bool_ops.get(type(node.op), '?')
+            return f' {op} '.join(_render(v, 1) for v in node.values)
+
+        return _wrap(ast.unparse(node))
+
+    tree = ast.parse(expr, mode='eval')
+    return _render(tree.body, 0)
 
 
 def build_equations_markdown(output_order: str = 'execution') -> str:
