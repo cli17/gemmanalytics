@@ -14,7 +14,7 @@ $$ \mathrm{Bytes_{pElement}^{(matB)}} = \mathrm{DataFormatToBytes}[\mathrm{Fmt^{
 
 ### row 25 - OUTPUT_BYTES_PER_ELEMENT_AFTER_DOWN_CONVERSION
 
-$$ \mathrm{Bytes_{pElement}^{(D\downarrow)}} = \mathrm{DataFormatToBytes}[\mathrm{Fmt^{(matD)}}] $$
+$$ \mathrm{Bytes_{pElement}^{(D\downarrow)}} = \mathrm{DataFormatToBytes}[\mathrm{Fmt^{(matD\downarrow)}}] $$
 
 ### row 33 - EU_COUNT
 
@@ -22,7 +22,7 @@ $$ \mathrm{|EU|} = \mathrm{|XeCore|_{pXeCU}} \times \mathrm{|EU|_{pXeCore}} \tim
 
 ### row 102 - TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE
 
-$$ \mathrm{|L2_Bytes|} = \mathrm{L2BankSize_{MB}} \times \mathrm{|L2Banks|_{pXeCU}} \times 1024 \times 1024 $$
+$$ \mathrm{|L2Bytes|} = \mathrm{L2BankSize_{MB}} \times \mathrm{|L2Banks|_{pXeCU}} \times 1024 \times 1024 $$
 
 ### row 125 - MAX_POSSIBLE_HBM_BW_FREQ_B_CLK
 
@@ -130,7 +130,7 @@ $$ \mathrm{Size_{matB}^{(matC,matD)}} = \mathrm{M_dim} \times \mathrm{N_dim} \ti
 
 ### row 66 - MAT_D_INTERMEDIATE_SIZE_B
 
-$$ \mathrm{Size_{B}^{(matD\downarrow)}} = \mathrm{M_dim} \times \mathrm{N_dim} \times \mathrm{Byte_{pElement}^{(D)}} $$
+$$ \mathrm{Size_{B}^{(matD\downarrow)}} = \mathrm{M_dim} \times \mathrm{N_dim} \times \mathrm{Byte_{pElement}^{(matD)}} $$
 
 ### row 103 - WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE
 
@@ -138,7 +138,7 @@ $$ \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}} = \min(2000
 
 ### row 104 - TOTAL_REQUIRED_L2_SIZE_FOR_IDEAL_HIT_RATE_B_FOR_A_SINGLE_INSTANCE_AND_SINGLE_WAVE
 
-$$ \mathrm{TotalRequiredL2Size_{matB 100% hit}^{1 instance, 1 wave}} = \mathrm{H_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(matA)}} \times \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}} + \mathrm{W_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(matB)}} \times \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}} + \mathrm{W_{element}^{(XeCUTile)}} \times \mathrm{H_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(D\downarrow)}} $$
+$$ \mathrm{TotalRequiredL2Size_{matB\ 100\%\ hit}^{1\ instance,\ 1\ wave}} = \mathrm{H_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(matA)}} \times \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}} + \mathrm{W_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(matB)}} \times \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}} + \mathrm{W_{element}^{(XeCUTile)}} \times \mathrm{H_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(D\downarrow)}} $$
 
 ### row 37 - CLK_SPECIFIED_EFFICIENCY
 
@@ -162,71 +162,71 @@ $$ \mathrm{L1Wr_{B}^{(total)}} = \mathrm{Size_{matB}^{(matC,matD)}} $$
 
 ### row 74 - L2_READ_B_XECORE_CLK
 
-$$ \mathrm{L2RdB_{pClk{\cdot}XeCore}} = \frac{\frac{\mathrm{L2Rd_{B}^{(total)}}}{\mathrm{|XeCU|} \times \mathrm{|XeCore|_{pXeCU}}}}{\mathrm{T_{clk}^{(total)}}} $$
+$$ \mathrm{L2RdB_{p(Clk{\cdot}XeCore)}} = \frac{\frac{\mathrm{L2Rd_{B}^{(total)}}}{\mathrm{|XeCU|} \times \mathrm{|XeCore|_{pXeCU}}}}{\mathrm{T_{clk}^{(total)}}} $$
 
 ### row 75 - L2_WRITE_B_XECORE_CLK
 
-$$ \mathrm{L2WrB_{pClk{\cdot}XeCore}} = \frac{\frac{\mathrm{L2Wr_{B}^{(total)}}}{\mathrm{|XeCU|} \times \mathrm{|XeCore|_{pXeCU}}}}{\mathrm{T_{clk}^{(total)}}} $$
+$$ \mathrm{L2WrB_{p(Clk{\cdot}XeCore)}} = \frac{\frac{\mathrm{L2Wr_{B}^{(total)}}}{\mathrm{|XeCU|} \times \mathrm{|XeCore|_{pXeCU}}}}{\mathrm{T_{clk}^{(total)}}} $$
 
 ### row 76 - L2_READ_WRITE_B_XECORE_CLK
 
-$$ \mathrm{L2RdWrB_{pClk{\cdot}XeCore}} = \mathrm{L2RdB_{pClk{\cdot}XeCore}} + \mathrm{L2WrB_{pClk{\cdot}XeCore}} $$
+$$ \mathrm{L2RdWrB_{p(Clk{\cdot}XeCore)}} = \mathrm{L2RdB_{p(Clk{\cdot}XeCore)}} + \mathrm{L2WrB_{p(Clk{\cdot}XeCore)}} $$
 
 ### row 77 - L1_READ_B_XECORE_CLK
 
-$$ \mathrm{L1RdB_{pClk{\cdot}XeCore}} = \mathrm{L1RdB_{pClk{\cdot}EU}} \times \mathrm{|EU|_{pXeCore}} $$
+$$ \mathrm{L1RdB_{p(Clk{\cdot}XeCore)}} = \mathrm{L1RdB_{p(Clk{\cdot}EU)}} \times \mathrm{|EU|_{pXeCore}} $$
 
 ### row 78 - L1_WRITE_B_XECORECLK
 
-$$ \mathrm{L1WrB_{pClk{\cdot}XeCore}} = \mathrm{L1WrB_{pClk{\cdot}EU}} \times \mathrm{|EU|_{pXeCore}} $$
+$$ \mathrm{L1WrB_{p(Clk{\cdot}XeCore)}} = \mathrm{L1WrB_{p(Clk{\cdot}EU)}} \times \mathrm{|EU|_{pXeCore}} $$
 
 ### row 79 - L1_READ_B_EU_CLK
 
-$$ \mathrm{L1RdB_{pClk{\cdot}EU}} = \frac{\frac{\mathrm{L1Rd_{B}^{(total)}}}{\mathrm{|EU|}}}{\mathrm{T_{clk}^{(total)}}} $$
+$$ \mathrm{L1RdB_{p(Clk{\cdot}EU)}} = \frac{\frac{\mathrm{L1Rd_{B}^{(total)}}}{\mathrm{|EU|}}}{\mathrm{T_{clk}^{(total)}}} $$
 
 ### row 80 - L1_WRITE_B_EU_CLK
 
-$$ \mathrm{L1WrB_{pClk{\cdot}EU}} = \frac{\frac{\mathrm{L1Wr_{B}^{(total)}}}{\mathrm{|EU|}}}{\mathrm{T_{clk}^{(total)}}} $$
+$$ \mathrm{L1WrB_{p(Clk{\cdot}EU)}} = \frac{\frac{\mathrm{L1Wr_{B}^{(total)}}}{\mathrm{|EU|}}}{\mathrm{T_{clk}^{(total)}}} $$
 
 ### row 83 - L2_READ_MAX_B_XECORE_CLK
 
-$$ \mathrm{L2RdB_{pClk{\cdot}XeCore}^{(max)}} = \frac{\mathrm{|XeCore|_{pXeCU}} \times 64}{\mathrm{|XeCore|_{pXeCU}}} $$
+$$ \mathrm{L2RdB_{p(Clk{\cdot}XeCore)}^{(max)}} = \frac{\mathrm{|XeCore|_{pXeCU}} \times 64}{\mathrm{|XeCore|_{pXeCU}}} $$
 
 ### row 84 - L2_WRITE_MAX_B_XECORE_CLK
 
-$$ \mathrm{L2WrB_{pClk{\cdot}XeCore}^{(max)}} = \mathrm{L2RdB_{pClk{\cdot}XeCore}^{(max)}} $$
+$$ \mathrm{L2WrB_{p(Clk{\cdot}XeCore)}^{(max)}} = \mathrm{L2RdB_{p(Clk{\cdot}XeCore)}^{(max)}} $$
 
 ### row 85 - L2_READ_WRITE_MAX_B_XECORE_CLK
 
-$$ \mathrm{L2RdWrB_{pClk{\cdot}XeCore}^{(max)}} = \mathrm{L2WrB_{pClk{\cdot}XeCore}^{(max)}} $$
+$$ \mathrm{L2RdWrB_{p(Clk{\cdot}XeCore)}^{(max)}} = \mathrm{L2WrB_{p(Clk{\cdot}XeCore)}^{(max)}} $$
 
 ### row 90 - L2_READ_B_XECORE_CLK_PCT
 
-$$ \mathrm{\eta_{L2RdB/pClk{\cdot}XeCore}} = \frac{\mathrm{L2RdB_{pClk{\cdot}XeCore}}}{\mathrm{L2RdB_{pClk{\cdot}XeCore}^{(max)}}} $$
+$$ \mathrm{\eta_{L2RdB/p(Clk{\cdot}XeCore)}} = \frac{\mathrm{L2RdB_{p(Clk{\cdot}XeCore)}}}{\mathrm{L2RdB_{p(Clk{\cdot}XeCore)}^{(max)}}} $$
 
 ### row 91 - L2_WRITE_B_XECORE_CLK_PCT
 
-$$ \mathrm{\eta_{L2WrB/pClk{\cdot}XeCore}} = \frac{\mathrm{L2WrB_{pClk{\cdot}XeCore}}}{\mathrm{L2WrB_{pClk{\cdot}XeCore}^{(max)}}} $$
+$$ \mathrm{\eta_{L2WrB/p(Clk{\cdot}XeCore)}} = \frac{\mathrm{L2WrB_{p(Clk{\cdot}XeCore)}}}{\mathrm{L2WrB_{p(Clk{\cdot}XeCore)}^{(max)}}} $$
 
 ### row 92 - L2_READ_WRITE_B_XECORE_CLK_PCT
 
-$$ \mathrm{\eta_{L2RdWrB/pClk{\cdot}XeCore}} = \frac{\mathrm{L2RdWrB_{pClk{\cdot}XeCore}}}{\mathrm{L2RdWrB_{pClk{\cdot}XeCore}^{(max)}}} $$
+$$ \mathrm{\eta_{L2RdWrB/p(Clk{\cdot}XeCore)}} = \frac{\mathrm{L2RdWrB_{p(Clk{\cdot}XeCore)}}}{\mathrm{L2RdWrB_{p(Clk{\cdot}XeCore)}^{(max)}}} $$
 
 ### row 93 - L1_READ_B_EU_CLK_PCT
 
-$$ \mathrm{\eta_{L1RdB/pClk{\cdot}EU}} = \frac{\mathrm{L1RdB_{pClk{\cdot}EU}}}{\mathrm{L1RdBW_{BpClk{\cdot}EU}^{max}}} $$
+$$ \mathrm{\eta_{L1RdB/p(Clk{\cdot}EU)}} = \frac{\mathrm{L1RdB_{p(Clk{\cdot}EU)}}}{\mathrm{L1RdBW_{BpClk{\cdot}EU}^{max}}} $$
 
 ### row 94 - L1_WRITE_B_EU_CLK_PCT
 
-$$ \mathrm{\eta_{L1WrB/pClk{\cdot}EU}} = \frac{\mathrm{L1WrB_{pClk{\cdot}EU}}}{\mathrm{L1WrBW_{BpClk{\cdot}EU}^{max}}} $$
+$$ \mathrm{\eta_{L1WrB/p(Clk{\cdot}EU)}} = \frac{\mathrm{L1WrB_{p(Clk{\cdot}EU)}}}{\mathrm{L1WrBW_{BpClk{\cdot}EU}^{max}}} $$
 
 ### row 106 - L2_HIT_RATE_ASSUMED_RANDOM_ACCESS_WITHIN_THE_WORKING_DATA_SET_PCT
 
-$$ \mathrm{L2HitRate_{random\ WS\ access}} = \min(\frac{\mathrm{|L2_Bytes|}}{\mathrm{TotalRequiredL2Size_{matB 100% hit}^{1 instance, 1 wave}}}, 1) $$
+$$ \mathrm{L2HitRate_{random\ WS\ access}} = \min(\frac{\mathrm{|L2Bytes|}}{\mathrm{TotalRequiredL2Size_{matB\ 100\%\ hit}^{1\ instance,\ 1\ wave}}}, 1) $$
 
 ### row 107 - L2_MISS_RATE_PCT
 
-$$ \mathrm{L2MissRate}} = 1 - \mathrm{L2HitRate_{random\ WS\ access}} $$
+$$ \mathrm{L2MissRate} = 1 - \mathrm{L2HitRate_{random\ WS\ access}} $$
 
 ### row 108 - TOTAL_L2_READ_TRAFFIC_B
 
@@ -234,11 +234,11 @@ $$ \mathrm{L2RdB_{total}} = \mathrm{L2Rd_{B}^{(total)}} $$
 
 ### row 110 - PROBABILITY_OF_MATA_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT
 
-$$ \mathrm{P_{L2Hit, after 1st wave}^{(matA)}} = \operatorname{IF}(\mathrm{Size_{B}^{(matA)}} + \mathrm{Size_{B}^{(matB)}} + \mathrm{Size_{matB}^{(matC,matD)}} \le \mathrm{|L2_Bytes|}, 1.0, \operatorname{IF}(\mathrm{K_dim} > 2 \times \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}, 0.0, 1 - \frac{\mathrm{K_dim} - \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}}{\mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}})) $$
+$$ \mathrm{P_{L2Hit, after 1st wave}^{(matA)}} = \operatorname{IF}(\mathrm{Size_{B}^{(matA)}} + \mathrm{Size_{B}^{(matB)}} + \mathrm{Size_{matB}^{(matC,matD)}} \le \mathrm{|L2Bytes|}, 1.0, \operatorname{IF}(\mathrm{K_dim} > 2 \times \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}, 0.0, 1 - \frac{\mathrm{K_dim} - \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}}{\mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}})) $$
 
 ### row 111 - PROBABILITY_OF_MATB_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT
 
-$$ \mathrm{P_{L2Hit, after 1st wave}^{(matB)}} = \operatorname{IF}(\mathrm{Size_{B}^{(matA)}} + \mathrm{Size_{B}^{(matB)}} + \mathrm{Size_{matB}^{(matC,matD)}} \le \mathrm{|L2_Bytes|}, 1.0, 0.0) $$
+$$ \mathrm{P_{L2Hit, after 1st wave}^{(matB)}} = \operatorname{IF}(\mathrm{Size_{B}^{(matA)}} + \mathrm{Size_{B}^{(matB)}} + \mathrm{Size_{matB}^{(matC,matD)}} \le \mathrm{|L2Bytes|}, 1.0, 0.0) $$
 
 ### row 112 - PROBABILITY_OF_MATA_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT
 
@@ -250,7 +250,7 @@ $$ \mathrm{P_{L2Miss, after 1st wave}^{(matB)}} = 1 - \mathrm{P_{L2Hit, after 1s
 
 ### row 116 - TOTAL_HBM_READ_B_AFTER_A_COMPLETION_OF_A_WAVE_CONSIDER_COLD_CACHE
 
-$$ \mathrm{MemRdB_{cold start}^{(wave)}} = \frac{\mathrm{Size_{B}^{(matA)}} + \mathrm{Size_{B}^{(matA)}} \times \left(\operatorname{CEILING}(\frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matA)}} + \mathrm{Size_{B}^{(matB)}} + \mathrm{Size_{B}^{(matB)}} \times \left(\operatorname{CEILING}(\frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matB)}} + \left(\mathrm{L2RdB_{total}} - \left(\mathrm{Size_{B}^{(matA)}} + \mathrm{Size_{B}^{(matA)}} \times \left(\operatorname{CEILING}(\frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matA)}} + \mathrm{Size_{B}^{(matB)}} + \mathrm{Size_{B}^{(matB)}} \times \left(\operatorname{CEILING}(\frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matB)}}\right)\right) \times \mathrm{L2MissRate}}}{2} $$
+$$ \mathrm{MemRdB_{cold start}^{(wave)}} = \frac{\mathrm{Size_{B}^{(matA)}} + \mathrm{Size_{B}^{(matA)}} \times \left(\operatorname{CEILING}(\frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matA)}} + \mathrm{Size_{B}^{(matB)}} + \mathrm{Size_{B}^{(matB)}} \times \left(\operatorname{CEILING}(\frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matB)}} + \left(\mathrm{L2RdB_{total}} - \left(\mathrm{Size_{B}^{(matA)}} + \mathrm{Size_{B}^{(matA)}} \times \left(\operatorname{CEILING}(\frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matA)}} + \mathrm{Size_{B}^{(matB)}} + \mathrm{Size_{B}^{(matB)}} \times \left(\operatorname{CEILING}(\frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matB)}}\right)\right) \times \mathrm{L2MissRate}}{2} $$
 
 ### row 117 - TOTAL_HBM_WRITE_B
 
