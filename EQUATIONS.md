@@ -138,7 +138,7 @@ $$ \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}} = \min(2000
 
 ### row 104 - TOTAL_REQUIRED_L2_SIZE_FOR_IDEAL_HIT_RATE_B_FOR_A_SINGLE_INSTANCE_AND_SINGLE_WAVE
 
-$$ \mathrm{TotalRequiredL2Size_{matB\ 100\%\ hit}^{1\ instance,\ 1\ wave}} = \mathrm{H_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(matA)}} \times \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}} + \mathrm{W_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(matB)}} \times \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}} + \mathrm{W_{element}^{(XeCUTile)}} \times \mathrm{H_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(D\downarrow)}} $$
+$$ \mathrm{TotalRequiredL2Size_{matB\ always hit}^{1\ instance,\ 1\ wave}} = \mathrm{H_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(matA)}} \times \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}} + \mathrm{W_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(matB)}} \times \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}} + \mathrm{W_{element}^{(XeCUTile)}} \times \mathrm{H_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(D\downarrow)}} $$
 
 ### row 37 - CLK_SPECIFIED_EFFICIENCY
 
@@ -222,7 +222,7 @@ $$ \mathrm{\eta_{L1WrB/p(Clk{\cdot}EU)}} = \frac{\mathrm{L1WrB_{p(Clk{\cdot}EU)}
 
 ### row 106 - L2_HIT_RATE_ASSUMED_RANDOM_ACCESS_WITHIN_THE_WORKING_DATA_SET_PCT
 
-$$ \mathrm{L2HitRate_{random\ WS\ access}} = \min(\frac{\mathrm{|L2Bytes|}}{\mathrm{TotalRequiredL2Size_{matB\ 100\%\ hit}^{1\ instance,\ 1\ wave}}}, 1) $$
+$$ \mathrm{L2HitRate_{random\ WS\ access}} = \min(\frac{\mathrm{|L2Bytes|}}{\mathrm{TotalRequiredL2Size_{matB\ always hit}^{1\ instance,\ 1\ wave}}}, 1) $$
 
 ### row 107 - L2_MISS_RATE_PCT
 

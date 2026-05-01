@@ -644,7 +644,7 @@ LATEX_SYMBOL_OVERRIDES = {
     'MAT_C_INPUT_D_OUTPUT_SIZE_B': r'\mathrm{Size_{matB}^{(matC,matD)}}',
     'MAT_D_INTERMEDIATE_SIZE_B': r'\mathrm{Size_{B}^{(matD\downarrow)}}',
     'WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE': r'\mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}',
-    'TOTAL_REQUIRED_L2_SIZE_FOR_IDEAL_HIT_RATE_B_FOR_A_SINGLE_INSTANCE_AND_SINGLE_WAVE': r'\mathrm{TotalRequiredL2Size_{matB\ 100\%\ hit}^{1\ instance,\ 1\ wave}}',
+    'TOTAL_REQUIRED_L2_SIZE_FOR_IDEAL_HIT_RATE_B_FOR_A_SINGLE_INSTANCE_AND_SINGLE_WAVE': r'\mathrm{TotalRequiredL2Size_{matB\ always hit}^{1\ instance,\ 1\ wave}}',
 
     # ---- Machine / machine+workload derived ----
     'EU_COUNT': r'\mathrm{|EU|}',
