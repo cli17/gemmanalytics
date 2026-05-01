@@ -30,7 +30,7 @@ $$ \mathrm{MemBW_{BpClk}^{max}} = \frac{\mathrm{MemBW_{GBps}^{max}}}{\mathrm{f_{
 
 ### row 36 - MMA_MAC_THROUGHPUT_PER_XECORE
 
-$$ \mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}} = \min(\frac{4}{\frac{\operatorname{FLOOR}(\mathrm{Bytes_{pElement}^{(matA)}} \times 2, 1)}{2}}, \frac{4}{\frac{\operatorname{FLOOR}(\mathrm{Bytes_{pElement}^{(matB)}} \times 2, 1)}{2}}) \times \mathrm{D_{DPAS}} \times 16 \times \mathrm{|EU|_{pXeCore}} $$
+$$ \mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}} = \min(\frac{4}{\frac{\mathrm{FLOOR}(\mathrm{Bytes_{pElement}^{(matA)}} \times 2, 1)}{2}}, \frac{4}{\frac{\mathrm{FLOOR}(\mathrm{Bytes_{pElement}^{(matB)}} \times 2, 1)}{2}}) \times \mathrm{D_{DPAS}} \times 16 \times \mathrm{|EU|_{pXeCore}} $$
 
 ### row 42 - CLKS_PER_DPAS
 
@@ -38,7 +38,7 @@ $$ \mathrm{CLKS_{DPAS}} = \frac{\mathrm{M_{pThread}} \times \mathrm{K_{pThread}}
 
 ### row 13 - WAVES
 
-$$ \mathrm{N_waves} = \operatorname{CEILING}(\mathrm{|Tiles|_{N}^{(GPU)}}, 1) \times \operatorname{CEILING}(\mathrm{|Tiles|_{M}^{(GPU)}}, 1) $$
+$$ \mathrm{N_waves} = \mathrm{CEILING}(\mathrm{|Tiles|_{N}^{(GPU)}}, 1) \times \mathrm{CEILING}(\mathrm{|Tiles|_{M}^{(GPU)}}, 1) $$
 
 ### row 14 - TG_TILES_IN_N
 
@@ -146,7 +146,7 @@ $$ \mathrm{T_{clk}^{(total)}} = \frac{\frac{\frac{\frac{\mathrm{M_dim} \times \m
 
 ### row 69 - TOTAL_L2_READ_B
 
-$$ \mathrm{L2Rd_{B}^{(total)}} = \mathrm{Size_{B}^{(matA)}} \times \operatorname{CEILING}(\frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(ThreadGroup, realized\ by\ multiple\ MMA\ iterations)}}}, 1) + \mathrm{Size_{B}^{(matB)}} \times \operatorname{CEILING}(\frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(ThreadGroup)}}}, 1) $$
+$$ \mathrm{L2Rd_{B}^{(total)}} = \mathrm{Size_{B}^{(matA)}} \times \mathrm{CEILING}(\frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(ThreadGroup, realized\ by\ multiple\ MMA\ iterations)}}}, 1) + \mathrm{Size_{B}^{(matB)}} \times \mathrm{CEILING}(\frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(ThreadGroup)}}}, 1) $$
 
 ### row 70 - TOTAL_L2_WRITE_B
 
@@ -154,7 +154,7 @@ $$ \mathrm{L2Wr_{B}^{(total)}} = \mathrm{Size_{matB}^{(matC,matD)}} $$
 
 ### row 71 - TOTAL_L1_READ_B
 
-$$ \mathrm{L1Rd_{B}^{(total)}} = \mathrm{Size_{B}^{(matA)}} \times \operatorname{CEILING}(\frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(Thread)}}}, 1) + \mathrm{Size_{B}^{(matB)}} \times \operatorname{CEILING}(\frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(Thread)}}}, 1) $$
+$$ \mathrm{L1Rd_{B}^{(total)}} = \mathrm{Size_{B}^{(matA)}} \times \mathrm{CEILING}(\frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(Thread)}}}, 1) + \mathrm{Size_{B}^{(matB)}} \times \mathrm{CEILING}(\frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(Thread)}}}, 1) $$
 
 ### row 72 - TOTAL_L1_WRITE_B
 
@@ -234,11 +234,11 @@ $$ \mathrm{L2RdB_{total}} = \mathrm{L2Rd_{B}^{(total)}} $$
 
 ### row 110 - PROBABILITY_OF_MATA_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT
 
-$$ \mathrm{P_{L2Hit, after 1st wave}^{(matA)}} = \operatorname{IF}(\mathrm{Size_{B}^{(matA)}} + \mathrm{Size_{B}^{(matB)}} + \mathrm{Size_{matB}^{(matC,matD)}} \le \mathrm{|L2Bytes|}, 1.0, \operatorname{IF}(\mathrm{K_dim} > 2 \times \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}, 0.0, 1 - \frac{\mathrm{K_dim} - \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}}{\mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}})) $$
+$$ \mathrm{P_{L2Hit, after 1st wave}^{(matA)}} = \mathrm{IF}(\mathrm{Size_{B}^{(matA)}} + \mathrm{Size_{B}^{(matB)}} + \mathrm{Size_{matB}^{(matC,matD)}} \le \mathrm{|L2Bytes|}, 1.0, \mathrm{IF}(\mathrm{K_dim} > 2 \times \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}, 0.0, 1 - \frac{\mathrm{K_dim} - \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}}{\mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}})) $$
 
 ### row 111 - PROBABILITY_OF_MATB_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT
 
-$$ \mathrm{P_{L2Hit, after 1st wave}^{(matB)}} = \operatorname{IF}(\mathrm{Size_{B}^{(matA)}} + \mathrm{Size_{B}^{(matB)}} + \mathrm{Size_{matB}^{(matC,matD)}} \le \mathrm{|L2Bytes|}, 1.0, 0.0) $$
+$$ \mathrm{P_{L2Hit, after 1st wave}^{(matB)}} = \mathrm{IF}(\mathrm{Size_{B}^{(matA)}} + \mathrm{Size_{B}^{(matB)}} + \mathrm{Size_{matB}^{(matC,matD)}} \le \mathrm{|L2Bytes|}, 1.0, 0.0) $$
 
 ### row 112 - PROBABILITY_OF_MATA_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT
 
@@ -250,7 +250,7 @@ $$ \mathrm{P_{L2Miss, after 1st wave}^{(matB)}} = 1 - \mathrm{P_{L2Hit, after 1s
 
 ### row 116 - TOTAL_HBM_READ_B_AFTER_A_COMPLETION_OF_A_WAVE_CONSIDER_COLD_CACHE
 
-$$ \mathrm{MemRdB_{cold start}^{(wave)}} = \frac{\mathrm{Size_{B}^{(matA)}} + \mathrm{Size_{B}^{(matA)}} \times \left(\operatorname{CEILING}(\frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matA)}} + \mathrm{Size_{B}^{(matB)}} + \mathrm{Size_{B}^{(matB)}} \times \left(\operatorname{CEILING}(\frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matB)}} + \left(\mathrm{L2RdB_{total}} - \left(\mathrm{Size_{B}^{(matA)}} + \mathrm{Size_{B}^{(matA)}} \times \left(\operatorname{CEILING}(\frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matA)}} + \mathrm{Size_{B}^{(matB)}} + \mathrm{Size_{B}^{(matB)}} \times \left(\operatorname{CEILING}(\frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matB)}}\right)\right) \times \mathrm{L2MissRate}}{2} $$
+$$ \mathrm{MemRdB_{cold start}^{(wave)}} = \frac{\mathrm{Size_{B}^{(matA)}} + \mathrm{Size_{B}^{(matA)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matA)}} + \mathrm{Size_{B}^{(matB)}} + \mathrm{Size_{B}^{(matB)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matB)}} + \left(\mathrm{L2RdB_{total}} - \left(\mathrm{Size_{B}^{(matA)}} + \mathrm{Size_{B}^{(matA)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matA)}} + \mathrm{Size_{B}^{(matB)}} + \mathrm{Size_{B}^{(matB)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matB)}}\right)\right) \times \mathrm{L2MissRate}}{2} $$
 
 ### row 117 - TOTAL_HBM_WRITE_B
 

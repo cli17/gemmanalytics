@@ -733,9 +733,9 @@ def _formula_to_latex_expr(expr: str) -> str:
     func_names = {
         'MIN': r'\min',
         'MAX': r'\max',
-        'CEILING': r'\operatorname{CEILING}',
-        'FLOOR': r'\operatorname{FLOOR}',
-        'IF': r'\operatorname{IF}',
+        'CEILING': r'\mathrm{CEILING}',
+        'FLOOR': r'\mathrm{FLOOR}',
+        'IF': r'\mathrm{IF}',
     }
 
     def _wrap(text: str) -> str:
