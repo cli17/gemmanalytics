@@ -12,19 +12,19 @@ These are hardware parameters loaded from `default_machine_params.csv`.
 
 | Variable | Equation |
 |----------|----------|
-| ${GT_FREQ_GHZ}$ | Input parameter (GPU Frequency in GHz) |
-| ${XECU_COUNT}$ | Input parameter (XeCU count) |
-| ${XECORE_PER_XECU}$ | Input parameter (XeCore per XeCU) |
-| ${EU_PER_XECORE}$ | Input parameter (EU per XeCore) |
-| ${L2_BANKS_PER_XECU}$ | Input parameter (L2 banks per XeCU) |
-| ${BANK_CAPACITY_MB}$ | Input parameter (Bank capacity in MB) |
-| ${DPAS_DEPTH}$ | Input parameter (DPAS pipeline depth) |
-| ${COMPUTE_EFFICIENCY_PCT}$ | Input parameter (Compute efficiency percentage) |
-| ${L1_READ_MAX_B_EU_CLK}$ | Input parameter (L1 max read in B/EU/clk) |
-| ${L1_WRITE_MAX_B_EU_CLK}$ | Input parameter (L1 max write in B/EU/clk) |
-| ${GTI_READ_MAX_BW_B_CLK}$ | Input parameter (GTI read max BW in B/clk) |
-| ${GTI_WRITE_MAX_BW_B_CLK}$ | Input parameter (GTI write max BW in B/clk) |
-| ${MAX_POSSIBLE_HBM_BW_GB_S}$ | Input parameter (Max HBM BW in GB/s) |
+| ${GT\_FREQ\_GHZ}$ | Input parameter (GPU Frequency in GHz) |
+| ${XECU\_COUNT}$ | Input parameter (XeCU count) |
+| ${XECORE\_PER\_XECU}$ | Input parameter (XeCore per XeCU) |
+| ${EU\_PER\_XECORE}$ | Input parameter (EU per XeCore) |
+| ${L2\_BANKS\_PER\_XECU}$ | Input parameter (L2 banks per XeCU) |
+| ${BANK\_CAPACITY\_MB}$ | Input parameter (Bank capacity in MB) |
+| ${DPAS\_DEPTH}$ | Input parameter (DPAS pipeline depth) |
+| ${COMPUTE\_EFFICIENCY\_PCT}$ | Input parameter (Compute efficiency percentage) |
+| ${L1\_READ\_MAX\_B\_EU\_CLK}$ | Input parameter (L1 max read in B/EU/clk) |
+| ${L1\_WRITE\_MAX\_B\_EU\_CLK}$ | Input parameter (L1 max write in B/EU/clk) |
+| ${GTI\_READ\_MAX\_BW\_B\_CLK}$ | Input parameter (GTI read max BW in B/clk) |
+| ${GTI\_WRITE\_MAX\_BW\_B\_CLK}$ | Input parameter (GTI write max BW in B/clk) |
+| ${MAX\_POSSIBLE\_HBM\_BW\_GB\_S}$ | Input parameter (Max HBM BW in GB/s) |
 
 ---
 
@@ -34,24 +34,24 @@ These are workload/algorithm parameters loaded from `default_workload_params.csv
 
 | Variable | Equation |
 |----------|----------|
-| ${INPUT_A_DATA_FORMAT}$ | Input parameter (e.g., 'fp8', 'fp4') |
-| ${INPUT_B_DATA_FORMAT}$ | Input parameter (e.g., 'fp8', 'fp4') |
-| ${OUTPUT_D_DATA_FORMAT}$ | Input parameter (e.g., 'fp8') |
+| ${INPUT\_A\_DATA\_FORMAT}$ | Input parameter (e.g., 'fp8', 'fp4') |
+| ${INPUT\_B\_DATA\_FORMAT}$ | Input parameter (e.g., 'fp8', 'fp4') |
+| ${OUTPUT\_D\_DATA\_FORMAT}$ | Input parameter (e.g., 'fp8') |
 | $M$ | Input parameter (Matrix M dimension) |
 | $K$ | Input parameter (Matrix K dimension) |
 | $N$ | Input parameter (Matrix N dimension) |
-| ${OUTPUT_BYTES_PER_ELEMENT_FP32}$ | Input parameter |
-| ${MACHINE_OCCUPANCY_PCT}$ | Input parameter (Machine occupancy percentage) |
-| ${M_PER_THREAD}$ | Input parameter (M elements per thread) |
-| ${K_PER_THREAD}$ | Input parameter (K elements per thread) |
-| ${N_PER_THREAD}$ | Input parameter (N elements per thread) |
-| ${TG_WIDTH_IN_UNITS_OF_THREAD}$ | Input parameter (ThreadGroup width) |
-| ${TG_HEIGHT_IN_UNITS_OF_THREAD}$ | Input parameter (ThreadGroup height) |
-| ${XECORE_CLUSTER_WIDTH_IN_UNITS_OF_TG}$ | Input parameter (Cluster width in TGs) |
-| ${XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_TG}$ | Input parameter (Cluster height in TGs) |
-| ${XECU_TILE_WIDTH_IN_UNITS_OF_TG}$ | Input parameter (XeCU tile width in TGs) |
-| ${XECU_TILE_HEIGHT_IN_UNITS_OF_TG}$ | Input parameter (XeCU tile height in TGs) |
-| ${GPU_TILE_WIDTH_IN_XECU_UNIT}$ | Input parameter (GPU tile width in XeCU units) |
+| ${OUTPUT\_BYTES\_PER\_ELEMENT\_FP32}$ | Input parameter |
+| ${MACHINE\_OCCUPANCY\_PCT}$ | Input parameter (Machine occupancy percentage) |
+| ${M\_PER\_THREAD}$ | Input parameter (M elements per thread) |
+| ${K\_PER\_THREAD}$ | Input parameter (K elements per thread) |
+| ${N\_PER\_THREAD}$ | Input parameter (N elements per thread) |
+| ${TG\_WIDTH\_IN\_UNITS\_OF\_THREAD}$ | Input parameter (ThreadGroup width) |
+| ${TG\_HEIGHT\_IN\_UNITS\_OF\_THREAD}$ | Input parameter (ThreadGroup height) |
+| ${XECORE\_CLUSTER\_WIDTH\_IN\_UNITS\_OF\_TG}$ | Input parameter (Cluster width in TGs) |
+| ${XECORE\_CLUSTER\_HEIGHT\_IN\_UNITS\_OF\_TG}$ | Input parameter (Cluster height in TGs) |
+| ${XECU\_TILE\_WIDTH\_IN\_UNITS\_OF\_TG}$ | Input parameter (XeCU tile width in TGs) |
+| ${XECU\_TILE\_HEIGHT\_IN\_UNITS\_OF\_TG}$ | Input parameter (XeCU tile height in TGs) |
+| ${GPU\_TILE\_WIDTH\_IN\_XECU\_UNIT}$ | Input parameter (GPU tile width in XeCU units) |
 
 ---
 
@@ -61,77 +61,77 @@ All computed from workload and machine parameters.
 
 ### Data Format Conversion
 
-$${INPUT_A_BYTES_PER_ELEMENT} = {DATA_FORMAT_TO_BYTES}[{INPUT_A_DATA_FORMAT}]$$
+$${INPUT\_A\_BYTES\_PER\_ELEMENT} = {DATA\_FORMAT\_TO\_BYTES}[{INPUT\_A\_DATA\_FORMAT}]$$
 
-$${INPUT_B_BYTES_PER_ELEMENT} = {DATA_FORMAT_TO_BYTES}[{INPUT_B_DATA_FORMAT}]$$
+$${INPUT\_B\_BYTES\_PER\_ELEMENT} = {DATA\_FORMAT\_TO\_BYTES}[{INPUT\_B\_DATA\_FORMAT}]$$
 
-$${OUTPUT_BYTES_PER_ELEMENT_AFTER_DOWN_CONVERSION} = {DATA_FORMAT_TO_BYTES}[{OUTPUT_D_DATA_FORMAT}]$$
+$${OUTPUT\_BYTES\_PER\_ELEMENT\_AFTER\_DOWN\_CONVERSION} = {DATA\_FORMAT\_TO\_BYTES}[{OUTPUT\_D\_DATA\_FORMAT}]$$
 
 ### Hardware Dimensions
 
-$${EU_COUNT} = {XECU_COUNT} \times {XECORE_PER_XECU} \times {EU_PER_XECORE}$$
+$${EU\_COUNT} = {XECU\_COUNT} \times {XECORE\_PER\_XECU} \times {EU\_PER\_XECORE}$$
 
-$${MMA_MAC_THROUGHPUT_PER_XECORE} = {DPAS_DEPTH} \times {EU_PER_XECORE}$$
+$${MMA\_MAC\_THROUGHPUT\_PER\_XECORE} = {DPAS\_DEPTH} \times {EU\_PER\_XECORE}$$
 
 ### Performance & Clock Calculations
 
-$${CLK_SPECIFIED_EFFICIENCY} = \frac{M \times K \times N}{{XECORE_PER_XECU} \times {XECU_COUNT} \times {MMA_MAC_THROUGHPUT_PER_XECORE} \times {COMPUTE_EFFICIENCY_PCT}}$$
+$${CLK\_SPECIFIED\_EFFICIENCY} = \frac{M \times K \times N}{{XECORE\_PER\_XECU} \times {XECU\_COUNT} \times {MMA\_MAC\_THROUGHPUT\_PER\_XECORE} \times {COMPUTE\_EFFICIENCY\_PCT}}$$
 
-$${CLKS_PER_DPAS} = \frac{{M_PER_THREAD} \times {K_PER_THREAD} \times {N_PER_THREAD}}{\frac{{MMA_MAC_THROUGHPUT_PER_XECORE}}{{EU_PER_XECORE}}}$$
+$${CLKS\_PER\_DPAS} = \frac{{M\_PER\_THREAD} \times {K\_PER\_THREAD} \times {N\_PER\_THREAD}}{\frac{{MMA\_MAC\_THROUGHPUT\_PER\_XECORE}}{{EU\_PER\_XECORE}}}$$
 
 ### Thread & ThreadGroup Dimensions
 
-$${THREAD_WIDTH_IN_UNITS_OF_ELEMENTS} = {N_PER_THREAD}$$
+$${THREAD\_WIDTH\_IN\_UNITS\_OF\_ELEMENTS} = {N\_PER\_THREAD}$$
 
-$${THREAD_HEIGHT_IN_UNITS_OF_ELEMENTS} = {M_PER_THREAD}$$
+$${THREAD\_HEIGHT\_IN\_UNITS\_OF\_ELEMENTS} = {M\_PER\_THREAD}$$
 
-$${TG_WIDTH_IN_UNITS_OF_ELEMENT_REALIZED_BY_MULTIPLE_MMA_ITERATIONS} = {TG_WIDTH_IN_UNITS_OF_THREAD} \times {THREAD_WIDTH_IN_UNITS_OF_ELEMENTS}$$
+$${TG\_WIDTH\_IN\_UNITS\_OF\_ELEMENT\_REALIZED\_BY\_MULTIPLE\_MMA\_ITERATIONS} = {TG\_WIDTH\_IN\_UNITS\_OF\_THREAD} \times {THREAD\_WIDTH\_IN\_UNITS\_OF\_ELEMENTS}$$
 
-$${TG_HEIGHT_IN_UNITS_OF_ELEMENT} = {TG_HEIGHT_IN_UNITS_OF_THREAD} \times {THREAD_HEIGHT_IN_UNITS_OF_ELEMENTS}$$
+$${TG\_HEIGHT\_IN\_UNITS\_OF\_ELEMENT} = {TG\_HEIGHT\_IN\_UNITS\_OF\_THREAD} \times {THREAD\_HEIGHT\_IN\_UNITS\_OF\_ELEMENTS}$$
 
 ### Tile Distribution
 
-$${TG_TILES_IN_N} = \frac{N}{{TG_WIDTH_IN_UNITS_OF_ELEMENT_REALIZED_BY_MULTIPLE_MMA_ITERATIONS}}$$
+$${TG\_TILES\_IN\_N} = \frac{N}{{TG\_WIDTH\_IN\_UNITS\_OF\_ELEMENT\_REALIZED\_BY\_MULTIPLE\_MMA\_ITERATIONS}}$$
 
-$${TG_TILES_IN_M} = \frac{M}{{TG_HEIGHT_IN_UNITS_OF_ELEMENT}}$$
+$${TG\_TILES\_IN\_M} = \frac{M}{{TG\_HEIGHT\_IN\_UNITS\_OF\_ELEMENT}}$$
 
-$${XECORE_CLUSTER_WIDTH_IN_UNITS_OF_ELEMENT} = {XECORE_CLUSTER_WIDTH_IN_UNITS_OF_TG} \times {TG_WIDTH_IN_UNITS_OF_ELEMENT_REALIZED_BY_MULTIPLE_MMA_ITERATIONS}$$
+$${XECORE\_CLUSTER\_WIDTH\_IN\_UNITS\_OF\_ELEMENT} = {XECORE\_CLUSTER\_WIDTH\_IN\_UNITS\_OF\_TG} \times {TG\_WIDTH\_IN\_UNITS\_OF\_ELEMENT\_REALIZED\_BY\_MULTIPLE\_MMA\_ITERATIONS}$$
 
-$${TG_CLUSTER_TILES_IN_N} = \frac{N}{{XECORE_CLUSTER_WIDTH_IN_UNITS_OF_ELEMENT}}$$
+$${TG\_CLUSTER\_TILES\_IN\_N} = \frac{N}{{XECORE\_CLUSTER\_WIDTH\_IN\_UNITS\_OF\_ELEMENT}}$$
 
-$${XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_ELEMENT} = {XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_TG} \times {TG_HEIGHT_IN_UNITS_OF_ELEMENT}$$
+$${XECORE\_CLUSTER\_HEIGHT\_IN\_UNITS\_OF\_ELEMENT} = {XECORE\_CLUSTER\_HEIGHT\_IN\_UNITS\_OF\_TG} \times {TG\_HEIGHT\_IN\_UNITS\_OF\_ELEMENT}$$
 
-$${TG_CLUSTER_TILES_IN_M} = \frac{M}{{XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_ELEMENT}}$$
+$${TG\_CLUSTER\_TILES\_IN\_M} = \frac{M}{{XECORE\_CLUSTER\_HEIGHT\_IN\_UNITS\_OF\_ELEMENT}}$$
 
-$${XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT} = {XECU_TILE_WIDTH_IN_UNITS_OF_TG} \times {TG_WIDTH_IN_UNITS_OF_ELEMENT_REALIZED_BY_MULTIPLE_MMA_ITERATIONS}$$
+$${XECU\_TILE\_WIDTH\_IN\_UNITS\_OF\_ELEMENT} = {XECU\_TILE\_WIDTH\_IN\_UNITS\_OF\_TG} \times {TG\_WIDTH\_IN\_UNITS\_OF\_ELEMENT\_REALIZED\_BY\_MULTIPLE\_MMA\_ITERATIONS}$$
 
-$${XECU_TILES_IN_N} = \frac{N}{{XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT}}$$
+$${XECU\_TILES\_IN\_N} = \frac{N}{{XECU\_TILE\_WIDTH\_IN\_UNITS\_OF\_ELEMENT}}$$
 
-$${GPU_TILES_IN_N} = \frac{N}{{XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT} \times {GPU_TILE_WIDTH_IN_XECU_UNIT}}$$
+$${GPU\_TILES\_IN\_N} = \frac{N}{{XECU\_TILE\_WIDTH\_IN\_UNITS\_OF\_ELEMENT} \times {GPU\_TILE\_WIDTH\_IN\_XECU\_UNIT}}$$
 
-$${XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT} = {XECU_TILE_HEIGHT_IN_UNITS_OF_TG} \times {TG_HEIGHT_IN_UNITS_OF_ELEMENT}$$
+$${XECU\_TILE\_HEIGHT\_IN\_UNITS\_OF\_ELEMENT} = {XECU\_TILE\_HEIGHT\_IN\_UNITS\_OF\_TG} \times {TG\_HEIGHT\_IN\_UNITS\_OF\_ELEMENT}$$
 
-$${XECU_TILES_IN_M} = \frac{M}{{XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT}}$$
+$${XECU\_TILES\_IN\_M} = \frac{M}{{XECU\_TILE\_HEIGHT\_IN\_UNITS\_OF\_ELEMENT}}$$
 
-$${GPU_TILE_HEIGHT_IN_XECU_UINT} = \frac{{XECU_COUNT}}{{GPU_TILE_WIDTH_IN_XECU_UNIT}}$$
+$${GPU\_TILE\_HEIGHT\_IN\_XECU\_UINT} = \frac{{XECU\_COUNT}}{{GPU\_TILE\_WIDTH\_IN\_XECU\_UNIT}}$$
 
-$${GPU_TILES_IN_M} = \frac{M}{{XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT} \times {GPU_TILE_HEIGHT_IN_XECU_UINT}}$$
+$${GPU\_TILES\_IN\_M} = \frac{M}{{XECU\_TILE\_HEIGHT\_IN\_UNITS\_OF\_ELEMENT} \times {GPU\_TILE\_HEIGHT\_IN\_XECU\_UINT}}$$
 
-$$WAVES = \lceil {GPU_TILES_IN_N} \rceil \times \lceil {GPU_TILES_IN_M} \rceil$$
+$$WAVES = \lceil {GPU\_TILES\_IN\_N} \rceil \times \lceil {GPU\_TILES\_IN\_M} \rceil$$
 
-$${GPU_TILE_WIDTH_IN_UNITS_OF_ELEMENTS} = {GPU_TILE_WIDTH_IN_XECU_UNIT} \times {XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT}$$
+$${GPU\_TILE\_WIDTH\_IN\_UNITS\_OF\_ELEMENTS} = {GPU\_TILE\_WIDTH\_IN\_XECU\_UNIT} \times {XECU\_TILE\_WIDTH\_IN\_UNITS\_OF\_ELEMENT}$$
 
-$${GPU_TILE_HEIGHT_IN_UNITS_OF_ELEMENTS} = {GPU_TILE_HEIGHT_IN_XECU_UINT} \times {XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT}$$
+$${GPU\_TILE\_HEIGHT\_IN\_UNITS\_OF\_ELEMENTS} = {GPU\_TILE\_HEIGHT\_IN\_XECU\_UINT} \times {XECU\_TILE\_HEIGHT\_IN\_UNITS\_OF\_ELEMENT}$$
 
 ### Memory Sizes (Bytes)
 
-$${MAT_A_INPUT_SIZE_B} = M \times K \times {INPUT_A_BYTES_PER_ELEMENT}$$
+$${MAT\_A\_INPUT\_SIZE\_B} = M \times K \times {INPUT\_A\_BYTES\_PER\_ELEMENT}$$
 
-$${MAT_B_INPUT_SIZE_B} = K \times N \times {INPUT_B_BYTES_PER_ELEMENT}$$
+$${MAT\_B\_INPUT\_SIZE\_B} = K \times N \times {INPUT\_B\_BYTES\_PER\_ELEMENT}$$
 
-$${MAT_C_INPUT_D_OUTPUT_SIZE_B} = M \times N \times {OUTPUT_BYTES_PER_ELEMENT_AFTER_DOWN_CONVERSION}$$
+$${MAT\_C\_INPUT\_D\_OUTPUT\_SIZE\_B} = M \times N \times {OUTPUT\_BYTES\_PER\_ELEMENT\_AFTER\_DOWN\_CONVERSION}$$
 
-$${MAT_D_INTERMEDIATE_SIZE_B} = M \times N \times {OUTPUT_BYTES_PER_ELEMENT_FP32}$$
+$${MAT\_D\_INTERMEDIATE\_SIZE\_B} = M \times N \times {OUTPUT\_BYTES\_PER\_ELEMENT\_FP32}$$
 
 ---
 
@@ -141,93 +141,93 @@ Performance metrics and bandwidth utilization.
 
 ### L2 Cache Statistics
 
-$${TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE} = {BANK_CAPACITY_MB} \times {L2_BANKS_PER_XECU} \times 1024 \times 1024$$
+$${TOTAL\_L2\_SIZE\_B\_FOR\_A\_SINGLE\_INSTANCE} = {BANK\_CAPACITY\_MB} \times {L2\_BANKS\_PER\_XECU} \times 1024 \times 1024$$
 
-$${WORKING_DATA_SET_SIZE_OF_K_IN_L2} = \min\left(20000 \times \frac{{K_PER_THREAD}}{{CLKS_PER_DPAS}}, K\right)$$
+$${WORKING\_DATA\_SET\_SIZE\_OF\_K\_IN\_L2} = \min\left(20000 \times \frac{{K\_PER\_THREAD}}{{CLKS\_PER\_DPAS}}, K\right)$$
 
-$${TOTAL_REQUIRED_L2_SIZE_FOR_IDEAL_HIT_RATE_B} = \left({XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT} \times {INPUT_A_BYTES_PER_ELEMENT} \times {WORKING_DATA_SET_SIZE_OF_K_IN_L2}\right) +$$
-$$\left({XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT} \times {INPUT_B_BYTES_PER_ELEMENT} \times {WORKING_DATA_SET_SIZE_OF_K_IN_L2}\right) +$$
-$$\left({XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT} \times {XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT} \times {OUTPUT_BYTES_PER_ELEMENT_AFTER_DOWN_CONVERSION}\right)$$
+$${TOTAL\_REQUIRED\_L2\_SIZE\_FOR\_IDEAL\_HIT\_RATE\_B} = \left({XECU\_TILE\_HEIGHT\_IN\_UNITS\_OF\_ELEMENT} \times {INPUT\_A\_BYTES\_PER\_ELEMENT} \times {WORKING\_DATA\_SET\_SIZE\_OF\_K\_IN\_L2}\right) +$$
+$$\left({XECU\_TILE\_WIDTH\_IN\_UNITS\_OF\_ELEMENT} \times {INPUT\_B\_BYTES\_PER\_ELEMENT} \times {WORKING\_DATA\_SET\_SIZE\_OF\_K\_IN\_L2}\right) +$$
+$$\left({XECU\_TILE\_WIDTH\_IN\_UNITS\_OF\_ELEMENT} \times {XECU\_TILE\_HEIGHT\_IN\_UNITS\_OF\_ELEMENT} \times {OUTPUT\_BYTES\_PER\_ELEMENT\_AFTER\_DOWN\_CONVERSION}\right)$$
 
 ### L2/L1 Read/Write Traffic
 
-$${TOTAL_L2_READ_B} = {MAT_A_INPUT_SIZE_B} \times \lceil\frac{N}{{TG_WIDTH_IN_UNITS_OF_ELEMENT_REALIZED_BY_MULTIPLE_MMA_ITERATIONS}}\rceil + {MAT_B_INPUT_SIZE_B} \times \lceil\frac{M}{{TG_HEIGHT_IN_UNITS_OF_ELEMENT}}\rceil$$
+$${TOTAL\_L2\_READ\_B} = {MAT\_A\_INPUT\_SIZE\_B} \times \lceil\frac{N}{{TG\_WIDTH\_IN\_UNITS\_OF\_ELEMENT\_REALIZED\_BY\_MULTIPLE\_MMA\_ITERATIONS}}\rceil + {MAT\_B\_INPUT\_SIZE\_B} \times \lceil\frac{M}{{TG\_HEIGHT\_IN\_UNITS\_OF\_ELEMENT}}\rceil$$
 
-$${TOTAL_L2_WRITE_B} = {MAT_C_INPUT_D_OUTPUT_SIZE_B}$$
+$${TOTAL\_L2\_WRITE\_B} = {MAT\_C\_INPUT\_D\_OUTPUT\_SIZE\_B}$$
 
-$${TOTAL_L1_READ_B} = {MAT_A_INPUT_SIZE_B} \times \lceil\frac{N}{{THREAD_WIDTH_IN_UNITS_OF_ELEMENTS}}\rceil + {MAT_B_INPUT_SIZE_B} \times \lceil\frac{M}{{THREAD_HEIGHT_IN_UNITS_OF_ELEMENTS}}\rceil$$
+$${TOTAL\_L1\_READ\_B} = {MAT\_A\_INPUT\_SIZE\_B} \times \lceil\frac{N}{{THREAD\_WIDTH\_IN\_UNITS\_OF\_ELEMENTS}}\rceil + {MAT\_B\_INPUT\_SIZE\_B} \times \lceil\frac{M}{{THREAD\_HEIGHT\_IN\_UNITS\_OF\_ELEMENTS}}\rceil$$
 
-$${TOTAL_L1_WRITE_B} = {MAT_C_INPUT_D_OUTPUT_SIZE_B}$$
+$${TOTAL\_L1\_WRITE\_B} = {MAT\_C\_INPUT\_D\_OUTPUT\_SIZE\_B}$$
 
 ### Per-Clock Bandwidth (B/clock)
 
-$${L2_READ_B_XECORE_CLK} = \frac{{TOTAL_L2_READ_B}}{{XECU_COUNT} \times {XECORE_PER_XECU} \times {CLK_SPECIFIED_EFFICIENCY}}$$
+$${L2\_READ\_B\_XECORE\_CLK} = \frac{{TOTAL\_L2\_READ\_B}}{{XECU\_COUNT} \times {XECORE\_PER\_XECU} \times {CLK\_SPECIFIED\_EFFICIENCY}}$$
 
-$${L2_WRITE_B_XECORE_CLK} = \frac{{TOTAL_L2_WRITE_B}}{{XECU_COUNT} \times {XECORE_PER_XECU} \times {CLK_SPECIFIED_EFFICIENCY}}$$
+$${L2\_WRITE\_B\_XECORE\_CLK} = \frac{{TOTAL\_L2\_WRITE\_B}}{{XECU\_COUNT} \times {XECORE\_PER\_XECU} \times {CLK\_SPECIFIED\_EFFICIENCY}}$$
 
-$${L2_READ_WRITE_B_XECORE_CLK} = {L2_READ_B_XECORE_CLK} + {L2_WRITE_B_XECORE_CLK}$$
+$${L2\_READ\_WRITE\_B\_XECORE\_CLK} = {L2\_READ\_B\_XECORE\_CLK} + {L2\_WRITE\_B\_XECORE\_CLK}$$
 
-$${L1_READ_B_EU_CLK} = \frac{{TOTAL_L1_READ_B}}{{EU_COUNT} \times {CLK_SPECIFIED_EFFICIENCY}}$$
+$${L1\_READ\_B\_EU\_CLK} = \frac{{TOTAL\_L1\_READ\_B}}{{EU\_COUNT} \times {CLK\_SPECIFIED\_EFFICIENCY}}$$
 
-$${L1_READ_B_XECORE_CLK} = {L1_READ_B_EU_CLK} \times {EU_PER_XECORE}$$
+$${L1\_READ\_B\_XECORE\_CLK} = {L1\_READ\_B\_EU\_CLK} \times {EU\_PER\_XECORE}$$
 
-$${L1_WRITE_B_EU_CLK} = \frac{{TOTAL_L1_WRITE_B}}{{EU_COUNT} \times {CLK_SPECIFIED_EFFICIENCY}}$$
+$${L1\_WRITE\_B\_EU\_CLK} = \frac{{TOTAL\_L1\_WRITE\_B}}{{EU\_COUNT} \times {CLK\_SPECIFIED\_EFFICIENCY}}$$
 
-$${L1_WRITE_B_XECORECLK} = {L1_WRITE_B_EU_CLK} \times {EU_PER_XECORE}$$
+$${L1\_WRITE\_B\_XECORECLK} = {L1\_WRITE\_B\_EU\_CLK} \times {EU\_PER\_XECORE}$$
 
 ### Maximum Bandwidth (B/clock)
 
-$${L2_READ_MAX_B_XECORE_CLK} = \frac{{XECORE_PER_XECU} \times 64}{{XECORE_PER_XECU}} = 64$$
+$${L2\_READ\_MAX\_B\_XECORE\_CLK} = \frac{{XECORE\_PER\_XECU} \times 64}{{XECORE\_PER\_XECU}} = 64$$
 
-$${L2_WRITE_MAX_B_XECORE_CLK} = {L2_READ_MAX_B_XECORE_CLK}$$
+$${L2\_WRITE\_MAX\_B\_XECORE\_CLK} = {L2\_READ\_MAX\_B\_XECORE\_CLK}$$
 
-$${L2_READ_WRITE_MAX_B_XECORE_CLK} = {L2_WRITE_MAX_B_XECORE_CLK}$$
+$${L2\_READ\_WRITE\_MAX\_B\_XECORE\_CLK} = {L2\_WRITE\_MAX\_B\_XECORE\_CLK}$$
 
 ### Bandwidth Utilization (%)
 
-$${L2_READ_B_XECORE_CLK_PCT} = \frac{{L2_READ_B_XECORE_CLK}}{{L2_READ_MAX_B_XECORE_CLK}}$$
+$${L2\_READ\_B\_XECORE\_CLK\_PCT} = \frac{{L2\_READ\_B\_XECORE\_CLK}}{{L2\_READ\_MAX\_B\_XECORE\_CLK}}$$
 
-$${L2_WRITE_B_XECORE_CLK_PCT} = \frac{{L2_WRITE_B_XECORE_CLK}}{{L2_WRITE_MAX_B_XECORE_CLK}}$$
+$${L2\_WRITE\_B\_XECORE\_CLK\_PCT} = \frac{{L2\_WRITE\_B\_XECORE\_CLK}}{{L2\_WRITE\_MAX\_B\_XECORE\_CLK}}$$
 
-$${L2_READ_WRITE_B_XECORE_CLK_PCT} = \frac{{L2_READ_WRITE_B_XECORE_CLK}}{{L2_READ_WRITE_MAX_B_XECORE_CLK}}$$
+$${L2\_READ\_WRITE\_B\_XECORE\_CLK\_PCT} = \frac{{L2\_READ\_WRITE\_B\_XECORE\_CLK}}{{L2\_READ\_WRITE\_MAX\_B\_XECORE\_CLK}}$$
 
-$${L1_READ_B_EU_CLK_PCT} = \frac{{L1_READ_B_EU_CLK}}{{L1_READ_MAX_B_EU_CLK}}$$
+$${L1\_READ\_B\_EU\_CLK\_PCT} = \frac{{L1\_READ\_B\_EU\_CLK}}{{L1\_READ\_MAX\_B\_EU\_CLK}}$$
 
-$${L1_WRITE_B_EU_CLK_PCT} = \frac{{L1_WRITE_B_EU_CLK}}{{L1_WRITE_MAX_B_EU_CLK}}$$
+$${L1\_WRITE\_B\_EU\_CLK\_PCT} = \frac{{L1\_WRITE\_B\_EU\_CLK}}{{L1\_WRITE\_MAX\_B\_EU\_CLK}}$$
 
 ### L2 Hit Rate & Miss Rate
 
-$${L2_HIT_RATE_PCT} = \min\left(\frac{{TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE}}{{TOTAL_REQUIRED_L2_SIZE_FOR_IDEAL_HIT_RATE_B}}, 1\right)$$
+$${L2\_HIT\_RATE\_PCT} = \min\left(\frac{{TOTAL\_L2\_SIZE\_B\_FOR\_A\_SINGLE\_INSTANCE}}{{TOTAL\_REQUIRED\_L2\_SIZE\_FOR\_IDEAL\_HIT\_RATE\_B}}, 1\right)$$
 
-$${L2_MISS_RATE_PCT} = 1 - {L2_HIT_RATE_PCT}$$
+$${L2\_MISS\_RATE\_PCT} = 1 - {L2\_HIT\_RATE\_PCT}$$
 
 ### HBM (Main Memory) Traffic
 
-$${TOTAL_L2_READ_TRAFFIC_B} = {TOTAL_L2_READ_B}$$
+$${TOTAL\_L2\_READ\_TRAFFIC\_B} = {TOTAL\_L2\_READ\_B}$$
 
-$${TOTAL_HBM_READ_B} = \text{(complex formula accounting for mat A/B miss probabilities)}$$
+$${TOTAL\_HBM\_READ\_B} = \text{(complex formula accounting for mat A/B miss probabilities)}$$
 
-$${TOTAL_HBM_WRITE_B} = {MAT_C_INPUT_D_OUTPUT_SIZE_B}$$
+$${TOTAL\_HBM\_WRITE\_B} = {MAT\_C\_INPUT\_D\_OUTPUT\_SIZE\_B}$$
 
-$${TOTAL_HBM_B} = {TOTAL_HBM_READ_B} + {TOTAL_HBM_WRITE_B}$$
+$${TOTAL\_HBM\_B} = {TOTAL\_HBM\_READ\_B} + {TOTAL\_HBM\_WRITE\_B}$$
 
 ### HBM Bandwidth (B/clock and %)
 
-$${MAX_POSSIBLE_HBM_BW_FREQ_B_CLK} = \frac{{MAX_POSSIBLE_HBM_BW_GB_S}}{{GT_FREQ_GHZ}}$$
+$${MAX\_POSSIBLE\_HBM\_BW\_FREQ\_B\_CLK} = \frac{{MAX\_POSSIBLE\_HBM\_BW\_GB\_S}}{{GT\_FREQ\_GHZ}}$$
 
-$${HBM_READ_B_CLK} = \frac{{TOTAL_HBM_READ_B}}{{CLK_SPECIFIED_EFFICIENCY}}$$
+$${HBM\_READ\_B\_CLK} = \frac{{TOTAL\_HBM\_READ\_B}}{{CLK\_SPECIFIED\_EFFICIENCY}}$$
 
-$${HBM_WRITE_B_CLK} = \frac{{TOTAL_HBM_WRITE_B}}{{CLK_SPECIFIED_EFFICIENCY}}$$
+$${HBM\_WRITE\_B\_CLK} = \frac{{TOTAL\_HBM\_WRITE\_B}}{{CLK\_SPECIFIED\_EFFICIENCY}}$$
 
-$${HBM_TOTAL_B_CLK} = \frac{{TOTAL_HBM_B}}{{CLK_SPECIFIED_EFFICIENCY}}$$
+$${HBM\_TOTAL\_B\_CLK} = \frac{{TOTAL\_HBM\_B}}{{CLK\_SPECIFIED\_EFFICIENCY}}$$
 
-$${HBM_BW_PCT} = \frac{{HBM_TOTAL_B_CLK}}{{MAX_POSSIBLE_HBM_BW_FREQ_B_CLK}}$$
+$${HBM\_BW\_PCT} = \frac{{HBM\_TOTAL\_B\_CLK}}{{MAX\_POSSIBLE\_HBM\_BW\_FREQ\_B\_CLK}}$$
 
 ### GTI (GPU-to-Interconnect) Bandwidth (%)
 
-$${GTI_READ_BW_PCT} = \frac{{HBM_READ_B_CLK}}{{GTI_READ_MAX_BW_B_CLK}}$$
+$${GTI\_READ\_BW\_PCT} = \frac{{HBM\_READ\_B\_CLK}}{{GTI\_READ\_MAX\_BW\_B\_CLK}}$$
 
-$${GTI_WRITE_BW_PCT} = \frac{{HBM_WRITE_B_CLK}}{{GTI_WRITE_MAX_BW_B_CLK}}$$
+$${GTI\_WRITE\_BW\_PCT} = \frac{{HBM\_WRITE\_B\_CLK}}{{GTI\_WRITE\_MAX\_BW\_B\_CLK}}$$
 
 ---
 
@@ -248,6 +248,7 @@ $${GTI_WRITE_BW_PCT} = \frac{{HBM_WRITE_B_CLK}}{{GTI_WRITE_MAX_BW_B_CLK}}$$
 - TG = ThreadGroup
 - DPAS = Dot Product Accumulate Sparse
 - MMA = Matrix Multiply Accumulate
+
 
 
 
