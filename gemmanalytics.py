@@ -787,7 +787,9 @@ def latex_symbol_for(name: str) -> str:
 
         base = inner[:cut]
         suffix = inner[cut:]
-        return r'{\mathrm{' + base + r'}}' + suffix
+        if not base:
+            return sym
+        return r'\mathrm{' + base + r'}' + suffix
 
     special = SPECIAL_LATEX_SYMBOL_OVERRIDES.get(name, '')
     if special:
