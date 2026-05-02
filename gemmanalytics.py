@@ -966,6 +966,14 @@ def _equation_block(lhs: str, rhs: str, threshold: int = 100) -> str:
     frac = _extract_top_frac(rhs)
     if frac:
         num, den = frac
+        component_long_threshold = max(120, threshold)
+        num_is_very_long = len(num) > component_long_threshold
+        den_is_very_long = len(den) > component_long_threshold
+
+        # Keep compact fractions as a single equation even when lhs is long.
+        if not num_is_very_long and not den_is_very_long:
+            return f'$$ {lhs} = {rhs} $$'
+
         lhs_num = _make_aux_symbol(lhs, r'\mathrm{num}')
         den_is_simple = len(den) < 50 and r'\frac' not in den
         if den_is_simple:
