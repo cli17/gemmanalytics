@@ -616,7 +616,7 @@ LATEX_SYMBOL_OVERRIDES = {
     'GPU_TILE_WIDTH_IN_XECU_UNIT': r'\mathrm{W_{XeCU}^{(GPUTile)}}',
 
     # ---- Workload derived ----
-    'WAVES': r'\mathrm{N_waves}',
+    'WAVES': r'\mathrm{N_{waves}}',
     'TG_TILES_IN_N': r'\mathrm{|Tiles|_{N}^{(TG)}}',
     'TG_TILES_IN_M': r'\mathrm{|Tiles|_{M}^{(TG)}}',
     'TG_CLUSTER_TILES_IN_N': r'\mathrm{|Tiles|_{N}^{(TG\ Cluster)}}',
@@ -648,7 +648,7 @@ LATEX_SYMBOL_OVERRIDES = {
 
     # ---- Machine / machine+workload derived ----
     'EU_COUNT': r'\mathrm{|EU|}',
-    'TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE': r'\mathrm{|L2Bytes|}',
+    'TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE': r'\mathrm{|L2|_{B}}',
     'MAX_POSSIBLE_HBM_BW_FREQ_B_CLK': r'\mathrm{MemBW_{BpClk}^{max}}',
     'MMA_MAC_THROUGHPUT_PER_XECORE': r'\mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}}',
     'CLKS_PER_DPAS': r'\mathrm{CLKS_{DPAS}}',

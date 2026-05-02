@@ -44,7 +44,7 @@ $$ \mathrm{CLKS_{DPAS}}_{\mathrm{den}}_{\mathrm{num}} = \mathrm{\tau_{mMACpClk{\
 
 ### row 13 - WAVES
 
-$$ \mathrm{N_waves} = \mathrm{CEILING}(\mathrm{|Tiles|_{N}^{(GPU)}}, 1) \times \mathrm{CEILING}(\mathrm{|Tiles|_{M}^{(GPU)}}, 1) $$
+$$ \mathrm{N_{waves}} = \mathrm{CEILING}(\mathrm{|Tiles|_{N}^{(GPU)}}, 1) \times \mathrm{CEILING}(\mathrm{|Tiles|_{M}^{(GPU)}}, 1) $$
 
 ### row 14 - TG_TILES_IN_N
 
