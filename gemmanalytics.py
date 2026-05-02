@@ -1161,7 +1161,7 @@ def build_equations_markdown(output_order: str = 'execution') -> str:
         sym = _inline_compat_symbol(latex_symbol_for(name))
         row = ROW_INDEX.get(name, '?')
         base_desc = PARAM_DESCRIPTIONS.get(name, name)
-        lines.append(f'[row {row}] $ {sym} $ : {base_desc}')
+        lines.append(f'${sym}$ : [row {row}] {base_desc}')
         lines.append('')
     lines.append('')
 
@@ -1172,7 +1172,7 @@ def build_equations_markdown(output_order: str = 'execution') -> str:
         sym = _inline_compat_symbol(latex_symbol_for(name))
         row = ROW_INDEX.get(name, '?')
         base_desc = PARAM_DESCRIPTIONS.get(name, name)
-        lines.append(f'[row {row}] $ {sym} $ : {base_desc}')
+        lines.append(f'${sym}$ : [row {row}] {base_desc}')
         lines.append('')
     lines.append('')
 

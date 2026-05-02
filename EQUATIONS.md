@@ -6,70 +6,70 @@ Output order: execution
 
 ## Machine Parameters (Pre-Defined)
 
-[row 8] $ f_{GHz}^{(GT)} $ : GT Freq (GHz)
+$f_{GHz}^{(GT)}$ : [row 8] GT Freq (GHz)
 
-[row 26] $ |XeCU| $ : XeCU count
+$|XeCU|$ : [row 26] XeCU count
 
-[row 27] $ |XeCore|_{perXeCU} $ : XeCore per XeCU
+$|XeCore|_{perXeCU}$ : [row 27] XeCore per XeCU
 
-[row 28] $ |EU|_{perXeCore} $ : EU per XeCore
+$|EU|_{perXeCore}$ : [row 28] EU per XeCore
 
-[row 29] $ |L2Banks|_{perXeCU} $ : L2 banks per XeCU
+$|L2Banks|_{perXeCU}$ : [row 29] L2 banks per XeCU
 
-[row 30] $ L2BankSize_{MB} $ : bank capacity (MB)
+$L2BankSize_{MB}$ : [row 30] bank capacity (MB)
 
-[row 32] $ D_{DPAS} $ : DPAS depth
+$D_{DPAS}$ : [row 32] DPAS depth
 
-[row 35] $ \eta_{systolic} $ : compute efficiency %
+$\eta_{systolic}$ : [row 35] compute efficiency %
 
-[row 86] $ L1RdBW_{Bp(Clk{\cdot}EU)}^{max} $ : L1 read max (B/EU/clk)
+$L1RdBW_{Bp(Clk{\cdot}EU)}^{max}$ : [row 86] L1 read max (B/EU/clk)
 
-[row 87] $ L1WrBW_{Bp(Clk{\cdot}EU)}^{max} $ : L1 write max (B/EU/clk)
+$L1WrBW_{Bp(Clk{\cdot}EU)}^{max}$ : [row 87] L1 write max (B/EU/clk)
 
-[row 97] $ GtiRdBW_{BpClk}^{max} $ : GTI read max BW (B/clk)
+$GtiRdBW_{BpClk}^{max}$ : [row 97] GTI read max BW (B/clk)
 
-[row 98] $ GtiWrBW_{BpClk}^{max} $ : GTI write max BW (B/clk)
+$GtiWrBW_{BpClk}^{max}$ : [row 98] GTI write max BW (B/clk)
 
-[row 124] $ MemBW_{GBps}^{max} $ : max possible HBM BW (GB/s)
+$MemBW_{GBps}^{max}$ : [row 124] max possible HBM BW (GB/s)
 
 
 ## Workload Parameters (Pre-Defined)
 
-[row 3] $ Fmt^{(matA)} $ : input A data format (e.g. fp8)
+$Fmt^{(matA)}$ : [row 3] input A data format (e.g. fp8)
 
-[row 4] $ Fmt^{(matB)} $ : input B data format (e.g. fp4)
+$Fmt^{(matB)}$ : [row 4] input B data format (e.g. fp4)
 
-[row 5] $ Fmt^{(matD\downarrow)} $ : output D data format (e.g. fp8)
+$Fmt^{(matD\downarrow)}$ : [row 5] output D data format (e.g. fp8)
 
-[row 9] $ M_{dim} $ : M dimension
+$M_{dim}$ : [row 9] M dimension
 
-[row 10] $ K_{dim} $ : K dimension
+$K_{dim}$ : [row 10] K dimension
 
-[row 11] $ N_{dim} $ : N dimension
+$N_{dim}$ : [row 11] N dimension
 
-[row 24] $ Byte_{perElement}^{(matD)} $ : output bytes per element (fp32)
+$Byte_{perElement}^{(matD)}$ : [row 24] output bytes per element (fp32)
 
-[row 34] $ \rho_{GT} $ : machine occupancy %
+$\rho_{GT}$ : [row 34] machine occupancy %
 
-[row 39] $ M_{perThread} $ : M per thread
+$M_{perThread}$ : [row 39] M per thread
 
-[row 40] $ K_{perThread} $ : K per thread
+$K_{perThread}$ : [row 40] K per thread
 
-[row 41] $ N_{perThread} $ : N per thread
+$N_{perThread}$ : [row 41] N per thread
 
-[row 45] $ W_{thread}^{(ThreadGroup)} $ : TG width in units of thread
+$W_{thread}^{(ThreadGroup)}$ : [row 45] TG width in units of thread
 
-[row 46] $ H_{thread}^{(ThreadGroup)} $ : TG height in units of thread
+$H_{thread}^{(ThreadGroup)}$ : [row 46] TG height in units of thread
 
-[row 50] $ W_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)} $ : XeCore cluster width in units of TG (keep cluster size as 4)
+$W_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)}$ : [row 50] XeCore cluster width in units of TG (keep cluster size as 4)
 
-[row 51] $ H_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)} $ : XeCore cluster height in units of TG (keep cluster size as 4)
+$H_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)}$ : [row 51] XeCore cluster height in units of TG (keep cluster size as 4)
 
-[row 54] $ W_{TG}^{(XECUTile)} $ : XeCU tile width in units of TG
+$W_{TG}^{(XECUTile)}$ : [row 54] XeCU tile width in units of TG
 
-[row 55] $ H_{TG}^{(XECUTile)} $ : XeCU tile height in units of TG
+$H_{TG}^{(XECUTile)}$ : [row 55] XeCU tile height in units of TG
 
-[row 58] $ W_{XeCU}^{(GPUTile)} $ : GPU tile width in XeCU unit
+$W_{XeCU}^{(GPUTile)}$ : [row 58] GPU tile width in XeCU unit
 
 
 ## Computed Equations
