@@ -91,11 +91,11 @@ $$ \mathrm{H_{element}^{(ThreadGroup)}} = \mathrm{H_{thread}^{(ThreadGroup)}} \t
 
 ### row 52 - XECORE CLUSTER WIDTH IN UNITS OF ELEMENT
 
-$$ \mathrm{W_{element}^{(XeCoreCluster)}} = \mathrm{W_{TG,keep\ cluster\ size as 4}^{(XeCoreCluster)}} \times \mathrm{W_{element}^{(ThreadGroup, realized\ by\ multiple\ MMA\ iterations)}} $$
+$$ \mathrm{W_{element}^{(XeCoreCluster)}} = \mathrm{W_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)}} \times \mathrm{W_{element}^{(ThreadGroup, realized\ by\ multiple\ MMA\ iterations)}} $$
 
 ### row 53 - XECORE CLUSTER HEIGHT IN UNITS OF ELEMENT
 
-$$ \mathrm{H_{element}^{(XeCoreCluster)}} = \mathrm{H_{TG,keep\ cluster\ size as 4}^{(XeCoreCluster)}} \times \mathrm{H_{element}^{(ThreadGroup)}} $$
+$$ \mathrm{H_{element}^{(XeCoreCluster)}} = \mathrm{H_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)}} \times \mathrm{H_{element}^{(ThreadGroup)}} $$
 
 ### row 56 - XECU TILE WIDTH IN UNITS OF ELEMENT
 
@@ -136,15 +136,15 @@ $$ \mathrm{Size_{B}^{(matD\downarrow)}} = \mathrm{M_{dim}} \times \mathrm{N_{dim
 ### row 103 - WORKING DATA SET SIZE OF K IN L2 CORRESP 20K CLOCKS OF
 ### THREAD DIVERGENCE
 
-$$ \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}} = \min(20000 \times \frac{\mathrm{K_{pThread}}}{\mathrm{CLKS_{DPAS}}}, \mathrm{K_{dim}}) $$
+$$ \mathrm{|WorkingSet|_{20K\ clks\ of\ thread\ divergence}^{(K\ in\ L2)}} = \min(20000 \times \frac{\mathrm{K_{pThread}}}{\mathrm{CLKS_{DPAS}}}, \mathrm{K_{dim}}) $$
 
 ### row 104 - TOTAL REQUIRED L2 SIZE FOR IDEAL HIT RATE B FOR A SINGLE
 ### INSTANCE AND SINGLE WAVE
 
 $$
 \begin{aligned}
-\mathrm{TotalRequiredL2Size_{matB\ always hit}^{1\ instance,\ 1\ wave}} &= \mathrm{H_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(matA)}} \times \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}} \\
-&\quad + \mathrm{W_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(matB)}} \times \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}} \\
+\mathrm{TotalRequiredL2Size_{matB\ always hit}^{1\ instance,\ 1\ wave}} &= \mathrm{H_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(matA)}} \times \mathrm{|WorkingSet|_{20K\ clks\ of\ thread\ divergence}^{(K\ in\ L2)}} \\
+&\quad + \mathrm{W_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(matB)}} \times \mathrm{|WorkingSet|_{20K\ clks\ of\ thread\ divergence}^{(K\ in\ L2)}} \\
 &\quad + \mathrm{W_{element}^{(XeCUTile)}} \times \mathrm{H_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(D\downarrow)}}
 \end{aligned}
 $$
@@ -266,10 +266,10 @@ $$ \mathrm{L2RdB_{total}} = \mathrm{L2Rd_{B}^{(total)}} $$
 
 $$
 \begin{aligned}
-\mathrm{P_{L2Hit, after 1st wave}^{(matA)}} &= \mathrm{IF}(\mathrm{Size_{B}^{(matA)}} \\
+\mathrm{P_{L2Hit,\ after\ 1st\ wave}^{(matA)}} &= \mathrm{IF}(\mathrm{Size_{B}^{(matA)}} \\
 &\quad + \mathrm{Size_{B}^{(matB)}} \\
-&\quad + \mathrm{Size_{B}^{(matC,matD)}} \le \mathrm{|L2|_{B}}, 1.0, \mathrm{IF}(\mathrm{K_{dim}} > 2 \times \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}, 0.0, 1 \\
-&\quad - \frac{\mathrm{K_{dim}} - \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}}{\mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}}))
+&\quad + \mathrm{Size_{B}^{(matC,matD)}} \le \mathrm{|L2|_{B}}, 1.0, \mathrm{IF}(\mathrm{K_{dim}} > 2 \times \mathrm{|WorkingSet|_{20K\ clks\ of\ thread\ divergence}^{(K\ in\ L2)}}, 0.0, 1 \\
+&\quad - \frac{\mathrm{K_{dim}} - \mathrm{|WorkingSet|_{20K\ clks\ of\ thread\ divergence}^{(K\ in\ L2)}}}{\mathrm{|WorkingSet|_{20K\ clks\ of\ thread\ divergence}^{(K\ in\ L2)}}}))
 \end{aligned}
 $$
 
@@ -278,7 +278,7 @@ $$
 
 $$
 \begin{aligned}
-\mathrm{P_{L2Hit, after 1st wave}^{(matB)}} &= \mathrm{IF}(\mathrm{Size_{B}^{(matA)}} \\
+\mathrm{P_{L2Hit,\ after\ 1st\ wave}^{(matB)}} &= \mathrm{IF}(\mathrm{Size_{B}^{(matA)}} \\
 &\quad + \mathrm{Size_{B}^{(matB)}} \\
 &\quad + \mathrm{Size_{B}^{(matC,matD)}} \le \mathrm{|L2|_{B}}, 1.0, 0.0)
 \end{aligned}
@@ -287,41 +287,51 @@ $$
 ### row 112 - PROBABILITY OF MATA MISS IN L2 DURING A NON FIRST WAVE
 ### PCT
 
-$$ \mathrm{P_{L2Miss, after 1st wave}^{(matA)}} = 1 - \mathrm{P_{L2Hit, after 1st wave}^{(matA)}} $$
+$$
+\begin{aligned}
+\mathrm{P_{L2Miss,\ after\ 1st\ wave}^{(matA)}} &= 1 \\
+&\quad - \mathrm{P_{L2Hit,\ after\ 1st\ wave}^{(matA)}}
+\end{aligned}
+$$
 
 ### row 113 - PROBABILITY OF MATB MISS IN L2 DURING A NON FIRST WAVE
 ### PCT
 
-$$ \mathrm{P_{L2Miss, after 1st wave}^{(matB)}} = 1 - \mathrm{P_{L2Hit, after 1st wave}^{(matB)}} $$
+$$
+\begin{aligned}
+\mathrm{P_{L2Miss,\ after\ 1st\ wave}^{(matB)}} &= 1 \\
+&\quad - \mathrm{P_{L2Hit,\ after\ 1st\ wave}^{(matB)}}
+\end{aligned}
+$$
 
 ### row 116 - TOTAL HBM READ B AFTER A COMPLETION OF A WAVE CONSIDER
 ### COLD CACHE
 
-$$ \mathrm{MemRdB_{cold start}^{(wave)}} = \frac{\left(\mathrm{MemRdB_{cold start}^{(wave)}}\right)_{\mathrm{num}}}{2} $$
+$$ \mathrm{MemRdB_{cold\ start}^{(wave)}} = \frac{\left(\mathrm{MemRdB_{cold\ start}^{(wave)}}\right)_{\mathrm{num}}}{2} $$
 
 $$
 \begin{aligned}
-\left(\mathrm{MemRdB_{cold start}^{(wave)}}\right)_{\mathrm{num}} &= \mathrm{Size_{B}^{(matA)}} \\
-&\quad + \mathrm{Size_{B}^{(matA)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{N_{dim}}}{\mathrm{W_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matA)}} \\
+\left(\mathrm{MemRdB_{cold\ start}^{(wave)}}\right)_{\mathrm{num}} &= \mathrm{Size_{B}^{(matA)}} \\
+&\quad + \mathrm{Size_{B}^{(matA)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{N_{dim}}}{\mathrm{W_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss,\ after\ 1st\ wave}^{(matA)}} \\
 &\quad + \mathrm{Size_{B}^{(matB)}} \\
-&\quad + \mathrm{Size_{B}^{(matB)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{M_{dim}}}{\mathrm{H_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matB)}} \\
-&\quad + \left(\left(\mathrm{MemRdB_{cold start}^{(wave)}}\right)_{\mathrm{num}}\right)_{\mathrm{aux4}} \times \mathrm{L2MissRate}
+&\quad + \mathrm{Size_{B}^{(matB)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{M_{dim}}}{\mathrm{H_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss,\ after\ 1st\ wave}^{(matB)}} \\
+&\quad + \left(\left(\mathrm{MemRdB_{cold\ start}^{(wave)}}\right)_{\mathrm{num}}\right)_{\mathrm{aux4}} \times \mathrm{L2MissRate}
 \end{aligned}
 $$
 
 $$
 \begin{aligned}
-\left(\left(\mathrm{MemRdB_{cold start}^{(wave)}}\right)_{\mathrm{num}}\right)_{\mathrm{aux4}} &= \mathrm{L2RdB_{total}} \\
-&\quad - \left(\left(\left(\mathrm{MemRdB_{cold start}^{(wave)}}\right)_{\mathrm{num}}\right)_{\mathrm{aux4}}\right)_{\mathrm{aux1}}
+\left(\left(\mathrm{MemRdB_{cold\ start}^{(wave)}}\right)_{\mathrm{num}}\right)_{\mathrm{aux4}} &= \mathrm{L2RdB_{total}} \\
+&\quad - \left(\left(\left(\mathrm{MemRdB_{cold\ start}^{(wave)}}\right)_{\mathrm{num}}\right)_{\mathrm{aux4}}\right)_{\mathrm{aux1}}
 \end{aligned}
 $$
 
 $$
 \begin{aligned}
-\left(\left(\left(\mathrm{MemRdB_{cold start}^{(wave)}}\right)_{\mathrm{num}}\right)_{\mathrm{aux4}}\right)_{\mathrm{aux1}} &= \mathrm{Size_{B}^{(matA)}} \\
-&\quad + \mathrm{Size_{B}^{(matA)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{N_{dim}}}{\mathrm{W_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matA)}} \\
+\left(\left(\left(\mathrm{MemRdB_{cold\ start}^{(wave)}}\right)_{\mathrm{num}}\right)_{\mathrm{aux4}}\right)_{\mathrm{aux1}} &= \mathrm{Size_{B}^{(matA)}} \\
+&\quad + \mathrm{Size_{B}^{(matA)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{N_{dim}}}{\mathrm{W_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss,\ after\ 1st\ wave}^{(matA)}} \\
 &\quad + \mathrm{Size_{B}^{(matB)}} \\
-&\quad + \mathrm{Size_{B}^{(matB)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{M_{dim}}}{\mathrm{H_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matB)}}
+&\quad + \mathrm{Size_{B}^{(matB)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{M_{dim}}}{\mathrm{H_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss,\ after\ 1st\ wave}^{(matB)}}
 \end{aligned}
 $$
 
@@ -331,11 +341,11 @@ $$ \mathrm{MemWrB^{(total)}} = \mathrm{Size_{B}^{(matC,matD)}} $$
 
 ### row 118 - TOTAL HBM B
 
-$$ \mathrm{MemRdWrB^{(total)}} = \mathrm{MemWrB^{(total)}} + \mathrm{MemRdB_{cold start}^{(wave)}} $$
+$$ \mathrm{MemRdWrB^{(total)}} = \mathrm{MemWrB^{(total)}} + \mathrm{MemRdB_{cold\ start}^{(wave)}} $$
 
 ### row 121 - HBM READ B CLK
 
-$$ \mathrm{MemRdB_{pClk}} = \frac{\mathrm{MemRdB_{cold start}^{(wave)}}}{\mathrm{T_{clk}^{(total)}}} $$
+$$ \mathrm{MemRdB_{pClk}} = \frac{\mathrm{MemRdB_{cold\ start}^{(wave)}}}{\mathrm{T_{clk}^{(total)}}} $$
 
 ### row 122 - HBM WRITE B CLK
 
