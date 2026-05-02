@@ -4,35 +4,35 @@ Auto-generated from PYTHON_FORMULAS and LATEX_SYMBOL_OVERRIDES in gemmanalytics.
 
 Output order: execution
 
-### row 22 - INPUT_A_BYTES_PER_ELEMENT
+### row 22 - INPUT A BYTES PER ELEMENT
 
 $$ \mathrm{Bytes_{pElement}^{(matA)}} = \mathrm{DataFormatToBytes}[\mathrm{Fmt^{(matA)}}] $$
 
-### row 23 - INPUT_B_BYTES_PER_ELEMENT
+### row 23 - INPUT B BYTES PER ELEMENT
 
 $$ \mathrm{Bytes_{pElement}^{(matB)}} = \mathrm{DataFormatToBytes}[\mathrm{Fmt^{(matB)}}] $$
 
-### row 25 - OUTPUT_BYTES_PER_ELEMENT_AFTER_DOWN_CONVERSION
+### row 25 - OUTPUT BYTES PER ELEMENT AFTER DOWN CONVERSION
 
 $$ \mathrm{Bytes_{pElement}^{(D\downarrow)}} = \mathrm{DataFormatToBytes}[\mathrm{Fmt^{(matD\downarrow)}}] $$
 
-### row 33 - EU_COUNT
+### row 33 - EU COUNT
 
 $$ \mathrm{|EU|} = \mathrm{|XeCore|_{pXeCU}} \times \mathrm{|EU|_{pXeCore}} \times \mathrm{|XeCU|} $$
 
-### row 102 - TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE
+### row 102 - TOTAL L2 SIZE B FOR A SINGLE INSTANCE
 
 $$ \mathrm{|L2|_{B}} = \mathrm{L2BankSize_{MB}} \times \mathrm{|L2Banks|_{pXeCU}} \times 1024 \times 1024 $$
 
-### row 125 - MAX_POSSIBLE_HBM_BW_FREQ_B_CLK
+### row 125 - MAX POSSIBLE HBM BW FREQ B CLK
 
 $$ \mathrm{MemBW_{BpClk}^{max}} = \frac{\mathrm{MemBW_{GBps}^{max}}}{\mathrm{f_{GHz}^{(GT)}}} $$
 
-### row 36 - MMA_MAC_THROUGHPUT_PER_XECORE
+### row 36 - MMA MAC THROUGHPUT PER XECORE
 
 $$ \mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}} = \min(\frac{4}{\frac{\mathrm{FLOOR}(\mathrm{Bytes_{pElement}^{(matA)}} \times 2, 1)}{2}}, \frac{4}{\frac{\mathrm{FLOOR}(\mathrm{Bytes_{pElement}^{(matB)}} \times 2, 1)}{2}}) \times \mathrm{D_{DPAS}} \times 16 \times \mathrm{|EU|_{pXeCore}} $$
 
-### row 42 - CLKS_PER_DPAS
+### row 42 - CLKS PER DPAS
 
 $$ \mathrm{CLKS_{DPAS}} = \frac{\mathrm{CLKS_{DPAS}}_{\mathrm{num}}}{\mathrm{CLKS_{DPAS}}_{\mathrm{den}}} $$
 
@@ -46,7 +46,7 @@ $$ \mathrm{CLKS_{DPAS}}_{\mathrm{den}}_{\mathrm{num}} = \mathrm{\tau_{mMACpClk{\
 
 $$ \mathrm{N_{waves}} = \mathrm{CEILING}(\mathrm{|Tiles|_{N}^{(GPU)}}, 1) \times \mathrm{CEILING}(\mathrm{|Tiles|_{M}^{(GPU)}}, 1) $$
 
-### row 14 - TG_TILES_IN_N
+### row 14 - TG TILES IN N
 
 $$ \mathrm{|Tiles|_{N}^{(TG)}} = \frac{\mathrm{|Tiles|_{N}^{(TG)}}_{\mathrm{num}}}{\mathrm{|Tiles|_{N}^{(TG)}}_{\mathrm{den}}} $$
 
@@ -54,31 +54,31 @@ $$ \mathrm{|Tiles|_{N}^{(TG)}}_{\mathrm{num}} = \mathrm{N_{dim}} $$
 
 $$ \mathrm{|Tiles|_{N}^{(TG)}}_{\mathrm{den}} = \mathrm{W_{element}^{(ThreadGroup, realized\ by\ multiple\ MMA\ iterations)}} $$
 
-### row 15 - TG_TILES_IN_M
+### row 15 - TG TILES IN M
 
 $$ \mathrm{|Tiles|_{M}^{(TG)}} = \frac{\mathrm{M_{dim}}}{\mathrm{H_{element}^{(ThreadGroup)}}} $$
 
-### row 16 - TG_CLUSTER_TILES_IN_N
+### row 16 - TG CLUSTER TILES IN N
 
 $$ \mathrm{|Tiles|_{N}^{(TG\ Cluster)}} = \frac{\mathrm{|Tiles|_{N}^{(TG\ Cluster)}}_{\mathrm{num}}}{\mathrm{W_{element}^{(XeCoreCluster)}}} $$
 
 $$ \mathrm{|Tiles|_{N}^{(TG\ Cluster)}}_{\mathrm{num}} = \mathrm{N_{dim}} $$
 
-### row 17 - TG_CLUSTER_TILES_IN_M
+### row 17 - TG CLUSTER TILES IN M
 
 $$ \mathrm{|Tiles|_{M}^{(TG\ Cluster)}} = \frac{\mathrm{|Tiles|_{M}^{(TG\ Cluster)}}_{\mathrm{num}}}{\mathrm{H_{element}^{(XeCoreCluster)}}} $$
 
 $$ \mathrm{|Tiles|_{M}^{(TG\ Cluster)}}_{\mathrm{num}} = \mathrm{M_{dim}} $$
 
-### row 18 - XECU_TILES_IN_N
+### row 18 - XECU TILES IN N
 
 $$ \mathrm{|Tiles|_{N}^{(XeCU)}} = \frac{\mathrm{N_{dim}}}{\mathrm{W_{element}^{(XeCUTile)}}} $$
 
-### row 19 - XECU_TILES_IN_M
+### row 19 - XECU TILES IN M
 
 $$ \mathrm{|Tiles|_{M}^{(XeCU)}} = \frac{\mathrm{M_{dim}}}{\mathrm{H_{element}^{(XeCUTile)}}} $$
 
-### row 20 - GPU_TILES_IN_N
+### row 20 - GPU TILES IN N
 
 $$ \mathrm{|Tiles|_{N}^{(GPU)}} = \frac{\mathrm{|Tiles|_{N}^{(GPU)}}_{\mathrm{num}}}{\mathrm{W_{XeCU}^{(GPUTile)}}} $$
 
@@ -86,7 +86,7 @@ $$ \mathrm{|Tiles|_{N}^{(GPU)}}_{\mathrm{num}} = \frac{\mathrm{|Tiles|_{N}^{(GPU
 
 $$ \mathrm{|Tiles|_{N}^{(GPU)}}_{\mathrm{num}}_{\mathrm{num}} = \mathrm{N_{dim}} $$
 
-### row 21 - GPU_TILES_IN_M
+### row 21 - GPU TILES IN M
 
 $$ \mathrm{|Tiles|_{M}^{(GPU)}} = \frac{\mathrm{|Tiles|_{M}^{(GPU)}}_{\mathrm{num}}}{\mathrm{H_{XeCU}^{(GPUTile)}}} $$
 
@@ -94,71 +94,74 @@ $$ \mathrm{|Tiles|_{M}^{(GPU)}}_{\mathrm{num}} = \frac{\mathrm{|Tiles|_{M}^{(GPU
 
 $$ \mathrm{|Tiles|_{M}^{(GPU)}}_{\mathrm{num}}_{\mathrm{num}} = \mathrm{M_{dim}} $$
 
-### row 43 - THREAD_WIDTH_IN_UNITS_OF_ELEMENTS
+### row 43 - THREAD WIDTH IN UNITS OF ELEMENTS
 
 $$ \mathrm{W_{element}^{(Thread)}} = \mathrm{N_{pThread}} $$
 
-### row 44 - THREAD_HEIGHT_IN_UNITS_OF_ELEMENTS
+### row 44 - THREAD HEIGHT IN UNITS OF ELEMENTS
 
 $$ \mathrm{H_{element}^{(Thread)}} = \mathrm{M_{pThread}} $$
 
-### row 47 - TG_WIDTH_IN_UNITS_OF_ELEMENT_REALIZED_BY_MULTIPLE_MMA_ITERATIONS
+### row 47 - TG WIDTH IN UNITS OF ELEMENT REALIZED BY MULTIPLE MMA
+### ITERATIONS
 
 $$ \mathrm{W_{element}^{(ThreadGroup, realized\ by\ multiple\ MMA\ iterations)}} = \mathrm{W_{thread}^{(ThreadGroup)}} \times \mathrm{W_{element}^{(Thread)}} $$
 
-### row 48 - TG_HEIGHT_IN_UNITS_OF_ELEMENT
+### row 48 - TG HEIGHT IN UNITS OF ELEMENT
 
 $$ \mathrm{H_{element}^{(ThreadGroup)}} = \mathrm{H_{thread}^{(ThreadGroup)}} \times \mathrm{H_{element}^{(Thread)}} $$
 
-### row 52 - XECORE_CLUSTER_WIDTH_IN_UNITS_OF_ELEMENT
+### row 52 - XECORE CLUSTER WIDTH IN UNITS OF ELEMENT
 
 $$ \mathrm{W_{element}^{(XeCoreCluster)}} = \mathrm{W_{TG,keep\ cluster\ size as 4}^{(XeCoreCluster)}} \times \mathrm{W_{element}^{(ThreadGroup, realized\ by\ multiple\ MMA\ iterations)}} $$
 
-### row 53 - XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_ELEMENT
+### row 53 - XECORE CLUSTER HEIGHT IN UNITS OF ELEMENT
 
 $$ \mathrm{H_{element}^{(XeCoreCluster)}} = \mathrm{H_{TG,keep\ cluster\ size as 4}^{(XeCoreCluster)}} \times \mathrm{H_{element}^{(ThreadGroup)}} $$
 
-### row 56 - XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT
+### row 56 - XECU TILE WIDTH IN UNITS OF ELEMENT
 
 $$ \mathrm{W_{element}^{(XeCUTile)}} = \mathrm{W_{TG}^{(XECUTile)}} \times \mathrm{W_{element}^{(ThreadGroup, realized\ by\ multiple\ MMA\ iterations)}} $$
 
-### row 57 - XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT
+### row 57 - XECU TILE HEIGHT IN UNITS OF ELEMENT
 
 $$ \mathrm{H_{element}^{(XeCUTile)}} = \mathrm{H_{TG}^{(XECUTile)}} \times \mathrm{H_{element}^{(ThreadGroup)}} $$
 
-### row 59 - GPU_TILE_HEIGHT_IN_XECU_UINT
+### row 59 - GPU TILE HEIGHT IN XECU UINT
 
 $$ \mathrm{H_{XeCU}^{(GPUTile)}} = \frac{\mathrm{|XeCU|}}{\mathrm{W_{XeCU}^{(GPUTile)}}} $$
 
-### row 60 - GPU_TILE_WIDTH_IN_UNITS_OF_ELEMETNS
+### row 60 - GPU TILE WIDTH IN UNITS OF ELEMETNS
 
 $$ \mathrm{W_{element}^{(GPUTile)}} = \mathrm{W_{XeCU}^{(GPUTile)}} \times \mathrm{W_{element}^{(XeCUTile)}} $$
 
-### row 61 - GPU_TILE_HEIGHT_IN_UNITS_OF_ELEMETNS
+### row 61 - GPU TILE HEIGHT IN UNITS OF ELEMETNS
 
 $$ \mathrm{H_{element}^{(GPUTile)}} = \mathrm{H_{XeCU}^{(GPUTile)}} \times \mathrm{H_{element}^{(XeCUTile)}} $$
 
-### row 63 - MAT_A_INPUT_SIZE_B
+### row 63 - MAT A INPUT SIZE B
 
 $$ \mathrm{Size_{B}^{(matA)}} = \mathrm{M_{dim}} \times \mathrm{K_{dim}} \times \mathrm{Bytes_{pElement}^{(matA)}} $$
 
-### row 64 - MAT_B_INPUT_SIZE_B
+### row 64 - MAT B INPUT SIZE B
 
 $$ \mathrm{Size_{B}^{(matB)}} = \mathrm{K_{dim}} \times \mathrm{N_{dim}} \times \mathrm{Bytes_{pElement}^{(matB)}} $$
 
-### row 65 - MAT_C_INPUT_D_OUTPUT_SIZE_B
+### row 65 - MAT C INPUT D OUTPUT SIZE B
 
 $$ \mathrm{Size_{B}^{(matC,matD)}} = \mathrm{M_{dim}} \times \mathrm{N_{dim}} \times \mathrm{Bytes_{pElement}^{(D\downarrow)}} $$
 
-### row 66 - MAT_D_INTERMEDIATE_SIZE_B
+### row 66 - MAT D INTERMEDIATE SIZE B
 
 $$ \mathrm{Size_{B}^{(matD\downarrow)}} = \mathrm{M_{dim}} \times \mathrm{N_{dim}} \times \mathrm{Byte_{pElement}^{(matD)}} $$
 
-### row 103 - WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE
+### row 103 - WORKING DATA SET SIZE OF K IN L2 CORRESP 20K CLOCKS OF
+### THREAD DIVERGENCE
 
 $$ \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}} = \min(20000 \times \frac{\mathrm{K_{pThread}}}{\mathrm{CLKS_{DPAS}}}, \mathrm{K_{dim}}) $$
 
-### row 104 - TOTAL_REQUIRED_L2_SIZE_FOR_IDEAL_HIT_RATE_B_FOR_A_SINGLE_INSTANCE_AND_SINGLE_WAVE
+### row 104 - TOTAL REQUIRED L2 SIZE FOR IDEAL HIT RATE B FOR A SINGLE
+### INSTANCE AND SINGLE WAVE
 
 $$
 \begin{aligned}
@@ -168,7 +171,7 @@ $$
 \end{aligned}
 $$
 
-### row 37 - CLK_SPECIFIED_EFFICIENCY
+### row 37 - CLK SPECIFIED EFFICIENCY
 
 $$ \mathrm{T_{clk}^{(total)}} = \frac{\mathrm{T_{clk}^{(total)}}_{\mathrm{num}}}{\mathrm{\eta_{systolic}}} $$
 
@@ -180,7 +183,7 @@ $$ \mathrm{T_{clk}^{(total)}}_{\mathrm{num}}_{\mathrm{num}}_{\mathrm{num}} = \fr
 
 $$ \mathrm{T_{clk}^{(total)}}_{\mathrm{num}}_{\mathrm{num}}_{\mathrm{num}}_{\mathrm{num}} = \mathrm{M_{dim}} \times \mathrm{K_{dim}} \times \mathrm{N_{dim}} $$
 
-### row 69 - TOTAL_L2_READ_B
+### row 69 - TOTAL L2 READ B
 
 $$
 \begin{aligned}
@@ -189,11 +192,11 @@ $$
 \end{aligned}
 $$
 
-### row 70 - TOTAL_L2_WRITE_B
+### row 70 - TOTAL L2 WRITE B
 
 $$ \mathrm{L2Wr_{B}^{(total)}} = \mathrm{Size_{B}^{(matC,matD)}} $$
 
-### row 71 - TOTAL_L1_READ_B
+### row 71 - TOTAL L1 READ B
 
 $$
 \begin{aligned}
@@ -202,11 +205,11 @@ $$
 \end{aligned}
 $$
 
-### row 72 - TOTAL_L1_WRITE_B
+### row 72 - TOTAL L1 WRITE B
 
 $$ \mathrm{L1Wr_{B}^{(total)}} = \mathrm{Size_{B}^{(matC,matD)}} $$
 
-### row 74 - L2_READ_B_XECORE_CLK
+### row 74 - L2 READ B XECORE CLK
 
 $$ \mathrm{L2RdB_{p(Clk{\cdot}XeCore)}} = \frac{\mathrm{L2RdB_{p(Clk{\cdot}XeCore)}}_{\mathrm{num}}}{\mathrm{T_{clk}^{(total)}}} $$
 
@@ -214,7 +217,7 @@ $$ \mathrm{L2RdB_{p(Clk{\cdot}XeCore)}}_{\mathrm{num}} = \frac{\mathrm{L2RdB_{p(
 
 $$ \mathrm{L2RdB_{p(Clk{\cdot}XeCore)}}_{\mathrm{num}}_{\mathrm{num}} = \mathrm{L2Rd_{B}^{(total)}} $$
 
-### row 75 - L2_WRITE_B_XECORE_CLK
+### row 75 - L2 WRITE B XECORE CLK
 
 $$ \mathrm{L2WrB_{p(Clk{\cdot}XeCore)}} = \frac{\mathrm{L2WrB_{p(Clk{\cdot}XeCore)}}_{\mathrm{num}}}{\mathrm{T_{clk}^{(total)}}} $$
 
@@ -222,7 +225,7 @@ $$ \mathrm{L2WrB_{p(Clk{\cdot}XeCore)}}_{\mathrm{num}} = \frac{\mathrm{L2WrB_{p(
 
 $$ \mathrm{L2WrB_{p(Clk{\cdot}XeCore)}}_{\mathrm{num}}_{\mathrm{num}} = \mathrm{L2Wr_{B}^{(total)}} $$
 
-### row 76 - L2_READ_WRITE_B_XECORE_CLK
+### row 76 - L2 READ WRITE B XECORE CLK
 
 $$
 \begin{aligned}
@@ -231,15 +234,15 @@ $$
 \end{aligned}
 $$
 
-### row 77 - L1_READ_B_XECORE_CLK
+### row 77 - L1 READ B XECORE CLK
 
 $$ \mathrm{L1RdB_{p(Clk{\cdot}XeCore)}} = \mathrm{L1RdB_{p(Clk{\cdot}EU)}} \times \mathrm{|EU|_{pXeCore}} $$
 
-### row 78 - L1_WRITE_B_XECORECLK
+### row 78 - L1 WRITE B XECORECLK
 
 $$ \mathrm{L1WrB_{p(Clk{\cdot}XeCore)}} = \mathrm{L1WrB_{p(Clk{\cdot}EU)}} \times \mathrm{|EU|_{pXeCore}} $$
 
-### row 79 - L1_READ_B_EU_CLK
+### row 79 - L1 READ B EU CLK
 
 $$ \mathrm{L1RdB_{p(Clk{\cdot}EU)}} = \frac{\mathrm{L1RdB_{p(Clk{\cdot}EU)}}_{\mathrm{num}}}{\mathrm{T_{clk}^{(total)}}} $$
 
@@ -247,7 +250,7 @@ $$ \mathrm{L1RdB_{p(Clk{\cdot}EU)}}_{\mathrm{num}} = \frac{\mathrm{L1RdB_{p(Clk{
 
 $$ \mathrm{L1RdB_{p(Clk{\cdot}EU)}}_{\mathrm{num}}_{\mathrm{num}} = \mathrm{L1Rd_{B}^{(total)}} $$
 
-### row 80 - L1_WRITE_B_EU_CLK
+### row 80 - L1 WRITE B EU CLK
 
 $$ \mathrm{L1WrB_{p(Clk{\cdot}EU)}} = \frac{\mathrm{L1WrB_{p(Clk{\cdot}EU)}}_{\mathrm{num}}}{\mathrm{T_{clk}^{(total)}}} $$
 
@@ -255,63 +258,65 @@ $$ \mathrm{L1WrB_{p(Clk{\cdot}EU)}}_{\mathrm{num}} = \frac{\mathrm{L1WrB_{p(Clk{
 
 $$ \mathrm{L1WrB_{p(Clk{\cdot}EU)}}_{\mathrm{num}}_{\mathrm{num}} = \mathrm{L1Wr_{B}^{(total)}} $$
 
-### row 83 - L2_READ_MAX_B_XECORE_CLK
+### row 83 - L2 READ MAX B XECORE CLK
 
 $$ \mathrm{L2RdB_{p(Clk{\cdot}XeCore)}^{(max)}} = \frac{\mathrm{L2RdB_{p(Clk{\cdot}XeCore)}^{(max)}}_{\mathrm{num}}}{\mathrm{|XeCore|_{pXeCU}}} $$
 
 $$ \mathrm{L2RdB_{p(Clk{\cdot}XeCore)}^{(max)}}_{\mathrm{num}} = \mathrm{|XeCore|_{pXeCU}} \times 64 $$
 
-### row 84 - L2_WRITE_MAX_B_XECORE_CLK
+### row 84 - L2 WRITE MAX B XECORE CLK
 
 $$ \mathrm{L2WrB_{p(Clk{\cdot}XeCore)}^{(max)}} = \mathrm{L2RdB_{p(Clk{\cdot}XeCore)}^{(max)}} $$
 
-### row 85 - L2_READ_WRITE_MAX_B_XECORE_CLK
+### row 85 - L2 READ WRITE MAX B XECORE CLK
 
 $$ \mathrm{L2RdWrB_{p(Clk{\cdot}XeCore)}^{(max)}} = \mathrm{L2WrB_{p(Clk{\cdot}XeCore)}^{(max)}} $$
 
-### row 90 - L2_READ_B_XECORE_CLK_PCT
+### row 90 - L2 READ B XECORE CLK PCT
 
 $$ \mathrm{\eta_{L2RdB/p(Clk{\cdot}XeCore)}} = \frac{\mathrm{\eta_{L2RdB/p(Clk{\cdot}XeCore)}}_{\mathrm{num}}}{\mathrm{L2RdB_{p(Clk{\cdot}XeCore)}^{(max)}}} $$
 
 $$ \mathrm{\eta_{L2RdB/p(Clk{\cdot}XeCore)}}_{\mathrm{num}} = \mathrm{L2RdB_{p(Clk{\cdot}XeCore)}} $$
 
-### row 91 - L2_WRITE_B_XECORE_CLK_PCT
+### row 91 - L2 WRITE B XECORE CLK PCT
 
 $$ \mathrm{\eta_{L2WrB/p(Clk{\cdot}XeCore)}} = \frac{\mathrm{\eta_{L2WrB/p(Clk{\cdot}XeCore)}}_{\mathrm{num}}}{\mathrm{L2WrB_{p(Clk{\cdot}XeCore)}^{(max)}}} $$
 
 $$ \mathrm{\eta_{L2WrB/p(Clk{\cdot}XeCore)}}_{\mathrm{num}} = \mathrm{L2WrB_{p(Clk{\cdot}XeCore)}} $$
 
-### row 92 - L2_READ_WRITE_B_XECORE_CLK_PCT
+### row 92 - L2 READ WRITE B XECORE CLK PCT
 
 $$ \mathrm{\eta_{L2RdWrB/p(Clk{\cdot}XeCore)}} = \frac{\mathrm{\eta_{L2RdWrB/p(Clk{\cdot}XeCore)}}_{\mathrm{num}}}{\mathrm{L2RdWrB_{p(Clk{\cdot}XeCore)}^{(max)}}} $$
 
 $$ \mathrm{\eta_{L2RdWrB/p(Clk{\cdot}XeCore)}}_{\mathrm{num}} = \mathrm{L2RdWrB_{p(Clk{\cdot}XeCore)}} $$
 
-### row 93 - L1_READ_B_EU_CLK_PCT
+### row 93 - L1 READ B EU CLK PCT
 
 $$ \mathrm{\eta_{L1RdB/p(Clk{\cdot}EU)}} = \frac{\mathrm{\eta_{L1RdB/p(Clk{\cdot}EU)}}_{\mathrm{num}}}{\mathrm{L1RdBW_{BpClk{\cdot}EU}^{max}}} $$
 
 $$ \mathrm{\eta_{L1RdB/p(Clk{\cdot}EU)}}_{\mathrm{num}} = \mathrm{L1RdB_{p(Clk{\cdot}EU)}} $$
 
-### row 94 - L1_WRITE_B_EU_CLK_PCT
+### row 94 - L1 WRITE B EU CLK PCT
 
 $$ \mathrm{\eta_{L1WrB/p(Clk{\cdot}EU)}} = \frac{\mathrm{\eta_{L1WrB/p(Clk{\cdot}EU)}}_{\mathrm{num}}}{\mathrm{L1WrBW_{BpClk{\cdot}EU}^{max}}} $$
 
 $$ \mathrm{\eta_{L1WrB/p(Clk{\cdot}EU)}}_{\mathrm{num}} = \mathrm{L1WrB_{p(Clk{\cdot}EU)}} $$
 
-### row 106 - L2_HIT_RATE_ASSUMED_RANDOM_ACCESS_WITHIN_THE_WORKING_DATA_SET_PCT
+### row 106 - L2 HIT RATE ASSUMED RANDOM ACCESS WITHIN THE WORKING
+### DATA SET PCT
 
 $$ \mathrm{L2HitRate_{random\ WS\ access}} = \min(\frac{\mathrm{|L2|_{B}}}{\mathrm{TotalRequiredL2Size_{matB\ always hit}^{1\ instance,\ 1\ wave}}}, 1) $$
 
-### row 107 - L2_MISS_RATE_PCT
+### row 107 - L2 MISS RATE PCT
 
 $$ \mathrm{L2MissRate} = 1 - \mathrm{L2HitRate_{random\ WS\ access}} $$
 
-### row 108 - TOTAL_L2_READ_TRAFFIC_B
+### row 108 - TOTAL L2 READ TRAFFIC B
 
 $$ \mathrm{L2RdB_{total}} = \mathrm{L2Rd_{B}^{(total)}} $$
 
-### row 110 - PROBABILITY_OF_MATA_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT
+### row 110 - PROBABILITY OF MATA HIT IN L2 DURING A NON FIRST WAVE
+### PCT
 
 $$
 \begin{aligned}
@@ -322,7 +327,8 @@ $$
 \end{aligned}
 $$
 
-### row 111 - PROBABILITY_OF_MATB_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT
+### row 111 - PROBABILITY OF MATB HIT IN L2 DURING A NON FIRST WAVE
+### PCT
 
 $$
 \begin{aligned}
@@ -332,15 +338,18 @@ $$
 \end{aligned}
 $$
 
-### row 112 - PROBABILITY_OF_MATA_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT
+### row 112 - PROBABILITY OF MATA MISS IN L2 DURING A NON FIRST WAVE
+### PCT
 
 $$ \mathrm{P_{L2Miss, after 1st wave}^{(matA)}} = 1 - \mathrm{P_{L2Hit, after 1st wave}^{(matA)}} $$
 
-### row 113 - PROBABILITY_OF_MATB_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT
+### row 113 - PROBABILITY OF MATB MISS IN L2 DURING A NON FIRST WAVE
+### PCT
 
 $$ \mathrm{P_{L2Miss, after 1st wave}^{(matB)}} = 1 - \mathrm{P_{L2Hit, after 1st wave}^{(matB)}} $$
 
-### row 116 - TOTAL_HBM_READ_B_AFTER_A_COMPLETION_OF_A_WAVE_CONSIDER_COLD_CACHE
+### row 116 - TOTAL HBM READ B AFTER A COMPLETION OF A WAVE CONSIDER
+### COLD CACHE
 
 $$ \mathrm{MemRdB_{cold start}^{(wave)}} = \frac{\mathrm{MemRdB_{cold start}^{(wave)}}_{\mathrm{num}}}{2} $$
 
@@ -370,34 +379,34 @@ $$
 \end{aligned}
 $$
 
-### row 117 - TOTAL_HBM_WRITE_B
+### row 117 - TOTAL HBM WRITE B
 
 $$ \mathrm{MemWrB^{(total)}} = \mathrm{Size_{B}^{(matC,matD)}} $$
 
-### row 118 - TOTAL_HBM_B
+### row 118 - TOTAL HBM B
 
 $$ \mathrm{MemRdWrB^{(total)}} = \mathrm{MemWrB^{(total)}} + \mathrm{MemRdB_{cold start}^{(wave)}} $$
 
-### row 121 - HBM_READ_B_CLK
+### row 121 - HBM READ B CLK
 
 $$ \mathrm{MemRdB_{pClk}} = \frac{\mathrm{MemRdB_{cold start}^{(wave)}}}{\mathrm{T_{clk}^{(total)}}} $$
 
-### row 122 - HBM_WRITE_B_CLK
+### row 122 - HBM WRITE B CLK
 
 $$ \mathrm{MemWrB_{pClk}} = \frac{\mathrm{MemWrB^{(total)}}}{\mathrm{T_{clk}^{(total)}}} $$
 
-### row 123 - HBM_TOTAL_B_CLK
+### row 123 - HBM TOTAL B CLK
 
 $$ \mathrm{MemRdWrB_{pClk}} = \frac{\mathrm{MemRdWrB^{(total)}}}{\mathrm{T_{clk}^{(total)}}} $$
 
-### row 126 - HBM_BW_PCT
+### row 126 - HBM BW PCT
 
 $$ \mathrm{\eta_{MemBW}} = \frac{\mathrm{MemRdWrB_{pClk}}}{\mathrm{MemBW_{BpClk}^{max}}} $$
 
-### row 127 - GTI_READ_BW_PCT
+### row 127 - GTI READ BW PCT
 
 $$ \mathrm{\eta_{GTIRdBW}} = \frac{\mathrm{MemRdB_{pClk}}}{\mathrm{GtiRdBW_{BpClk}^{max}}} $$
 
-### row 128 - GTI_WRITE_BW_PCT
+### row 128 - GTI WRITE BW PCT
 
 $$ \mathrm{\eta_{GTIWrBW}} = \frac{\mathrm{MemWrB_{pClk}}}{\mathrm{GtiWrBW_{BpClk}^{max}}} $$

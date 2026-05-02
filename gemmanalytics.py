@@ -982,6 +982,35 @@ def _equation_block(lhs: str, rhs: str, threshold: int = 100) -> str:
     return f'$$ {lhs} = {rhs} $$'
 
 
+def _format_equation_header(row: int | str, name: str, max_chars: int = 56) -> list[str]:
+    """Format equation section headers and wrap long names at underscore boundaries."""
+    words = name.split('_')
+    wrapped: list[str] = []
+    current: list[str] = []
+    current_len = 0
+
+    for w in words:
+        add_len = len(w) + (1 if current else 0)
+        if current and current_len + add_len > max_chars:
+            wrapped.append(' '.join(current))
+            current = [w]
+            current_len = len(w)
+        else:
+            current.append(w)
+            current_len += add_len
+
+    if current:
+        wrapped.append(' '.join(current))
+
+    if not wrapped:
+        return [f'### row {row}']
+
+    lines = [f'### row {row} - {wrapped[0]}']
+    for tail in wrapped[1:]:
+        lines.append(f'### {tail}')
+    return lines
+
+
 def build_equations_markdown(output_order: str = 'execution') -> str:
     """Build equations markdown using LATEX_SYMBOL_OVERRIDES + PYTHON_FORMULAS."""
     internal_order = _resolve_output_order(output_order)
@@ -1000,7 +1029,7 @@ def build_equations_markdown(output_order: str = 'execution') -> str:
         if not formula:
             continue
         row = ROW_INDEX.get(name, '?')
-        lines.append(f'### row {row} - {name}')
+        lines.extend(_format_equation_header(row, name))
         lines.append('')
         lhs = latex_symbol_for(name)
         rhs = _formula_to_latex_expr(formula)
