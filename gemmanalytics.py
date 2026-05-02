@@ -761,7 +761,7 @@ def latex_symbol_for(name: str) -> str:
     """Return custom LaTeX symbol if provided, else safe default."""
 
     def _normalize_custom_symbol(sym: str) -> str:
-        """Normalize symbols like \mathrm{X_{a}^{b}} into {\mathrm{X}}_{a}^{b}.
+        r"""Normalize symbols like \mathrm{X_{a}^{b}} into {\mathrm{X}}_{a}^{b}.
 
         This avoids markdown math renderers that report "double subscript" when
         scripts are embedded directly inside \mathrm{...}.
