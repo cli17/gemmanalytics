@@ -759,11 +759,43 @@ SPECIAL_LATEX_SYMBOL_OVERRIDES = {
 
 def latex_symbol_for(name: str) -> str:
     """Return custom LaTeX symbol if provided, else safe default."""
+
+    def _normalize_custom_symbol(sym: str) -> str:
+        """Normalize symbols like \mathrm{X_{a}^{b}} into {\mathrm{X}}_{a}^{b}.
+
+        This avoids markdown math renderers that report "double subscript" when
+        scripts are embedded directly inside \mathrm{...}.
+        """
+        prefix = r'\mathrm{'
+        if not (sym.startswith(prefix) and sym.endswith('}')):
+            return sym
+
+        inner = sym[len(prefix):-1]
+        depth = 0
+        cut = -1
+        for i, ch in enumerate(inner):
+            if ch == '{':
+                depth += 1
+            elif ch == '}':
+                depth -= 1
+            elif depth == 0 and (ch == '_' or ch == '^'):
+                cut = i
+                break
+
+        if cut == -1:
+            return sym
+
+        base = inner[:cut]
+        suffix = inner[cut:]
+        return r'{\mathrm{' + base + r'}}' + suffix
+
     special = SPECIAL_LATEX_SYMBOL_OVERRIDES.get(name, '')
     if special:
         return special
     custom = LATEX_SYMBOL_OVERRIDES.get(name, '')
-    return custom if custom else default_latex_symbol(name)
+    if custom:
+        return _normalize_custom_symbol(custom)
+    return default_latex_symbol(name)
 
 
 def _formula_to_latex_expr(expr: str) -> str:
