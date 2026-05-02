@@ -218,35 +218,35 @@ $$ \mathrm{L1WrB_{p(Clk{\cdot}EU)}} = \frac{\frac{\mathrm{L1Wr_{B}^{(total)}}}{\
 
 ### row 83 - L2 READ MAX B XECORE CLK
 
-$$ \mathrm{L2RdB_{p(Clk{\cdot}XeCore)}^{(max)}} = \frac{\mathrm{|XeCore|_{pXeCU}} \times 64}{\mathrm{|XeCore|_{pXeCU}}} $$
+$$ \mathrm{L2RdBW_{Bp(Clk{\cdot}XeCore)}^{(max)}} = \frac{\mathrm{|XeCore|_{pXeCU}} \times 64}{\mathrm{|XeCore|_{pXeCU}}} $$
 
 ### row 84 - L2 WRITE MAX B XECORE CLK
 
-$$ \mathrm{L2WrB_{p(Clk{\cdot}XeCore)}^{(max)}} = \mathrm{L2RdB_{p(Clk{\cdot}XeCore)}^{(max)}} $$
+$$ \mathrm{L2WrBW_{Bp(Clk{\cdot}XeCore)}^{(max)}} = \mathrm{L2RdBW_{Bp(Clk{\cdot}XeCore)}^{(max)}} $$
 
 ### row 85 - L2 READ WRITE MAX B XECORE CLK
 
-$$ \mathrm{L2RdWrB_{p(Clk{\cdot}XeCore)}^{(max)}} = \mathrm{L2WrB_{p(Clk{\cdot}XeCore)}^{(max)}} $$
+$$ \mathrm{L2RdWrBW_{Bp(Clk{\cdot}XeCore)}^{(max)}} = \mathrm{L2WrBW_{Bp(Clk{\cdot}XeCore)}^{(max)}} $$
 
 ### row 90 - L2 READ B XECORE CLK PCT
 
-$$ \mathrm{\eta_{L2RdB/p(Clk{\cdot}XeCore)}} = \frac{\mathrm{L2RdB_{p(Clk{\cdot}XeCore)}}}{\mathrm{L2RdB_{p(Clk{\cdot}XeCore)}^{(max)}}} $$
+$$ \mathrm{\eta_{L2RdBWpXeCore}} = \frac{\mathrm{L2RdB_{p(Clk{\cdot}XeCore)}}}{\mathrm{L2RdBW_{Bp(Clk{\cdot}XeCore)}^{(max)}}} $$
 
 ### row 91 - L2 WRITE B XECORE CLK PCT
 
-$$ \mathrm{\eta_{L2WrB/p(Clk{\cdot}XeCore)}} = \frac{\mathrm{L2WrB_{p(Clk{\cdot}XeCore)}}}{\mathrm{L2WrB_{p(Clk{\cdot}XeCore)}^{(max)}}} $$
+$$ \mathrm{\eta_{L2WrBWpXeCore}} = \frac{\mathrm{L2WrB_{p(Clk{\cdot}XeCore)}}}{\mathrm{L2WrBW_{Bp(Clk{\cdot}XeCore)}^{(max)}}} $$
 
 ### row 92 - L2 READ WRITE B XECORE CLK PCT
 
-$$ \mathrm{\eta_{L2RdWrB/p(Clk{\cdot}XeCore)}} = \frac{\mathrm{L2RdWrB_{p(Clk{\cdot}XeCore)}}}{\mathrm{L2RdWrB_{p(Clk{\cdot}XeCore)}^{(max)}}} $$
+$$ \mathrm{\eta_{L2RdWrBWpXeCore}} = \frac{\mathrm{L2RdWrB_{p(Clk{\cdot}XeCore)}}}{\mathrm{L2RdWrBW_{Bp(Clk{\cdot}XeCore)}^{(max)}}} $$
 
 ### row 93 - L1 READ B EU CLK PCT
 
-$$ \mathrm{\eta_{L1RdB/p(Clk{\cdot}EU)}} = \frac{\mathrm{L1RdB_{p(Clk{\cdot}EU)}}}{\mathrm{L1RdBW_{BpClk{\cdot}EU}^{max}}} $$
+$$ \mathrm{\eta_{L1RdBWpEU}} = \frac{\mathrm{L1RdB_{p(Clk{\cdot}EU)}}}{\mathrm{L1RdB_{BpClk{\cdot}EU}^{max}}} $$
 
 ### row 94 - L1 WRITE B EU CLK PCT
 
-$$ \mathrm{\eta_{L1WrB/p(Clk{\cdot}EU)}} = \frac{\mathrm{L1WrB_{p(Clk{\cdot}EU)}}}{\mathrm{L1WrBW_{BpClk{\cdot}EU}^{max}}} $$
+$$ \mathrm{\eta_{L1WrBWpEU}} = \frac{\mathrm{L1WrB_{p(Clk{\cdot}EU)}}}{\mathrm{L1WrB_{BpClk{\cdot}EU}^{max}}} $$
 
 ### row 106 - L2 HIT RATE ASSUMED RANDOM ACCESS WITHIN THE WORKING
 ### DATA SET PCT
@@ -361,8 +361,8 @@ $$ \mathrm{\eta_{MemBW}} = \frac{\mathrm{MemRdWrB_{pClk}}}{\mathrm{MemBW_{BpClk}
 
 ### row 127 - GTI READ BW PCT
 
-$$ \mathrm{\eta_{GTIRdBW}} = \frac{\mathrm{MemRdB_{pClk}}}{\mathrm{GtiRdBW_{BpClk}^{max}}} $$
+$$ \mathrm{\eta_{GTIRdBW}} = \frac{\mathrm{MemRdB_{pClk}}}{\mathrm{GTI-READ-MAX-BW-B-CLK}} $$
 
 ### row 128 - GTI WRITE BW PCT
 
-$$ \mathrm{\eta_{GTIWrBW}} = \frac{\mathrm{MemWrB_{pClk}}}{\mathrm{GtiWrBW_{BpClk}^{max}}} $$
+$$ \mathrm{\eta_{GTIWrBW}} = \frac{\mathrm{MemWrB_{pClk}}}{\mathrm{GTI-WRITE-MAX-BW-B-CLK}} $$
