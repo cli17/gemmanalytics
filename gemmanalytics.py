@@ -817,6 +817,49 @@ def _formula_to_latex_expr(expr: str) -> str:
     return _render(tree.body, 0)
 
 
+def _split_top_level_additive(expr: str) -> list[str]:
+    """Split a LaTeX expression at top-level + and - operators (brace/paren-depth-aware)."""
+    parts: list[str] = []
+    depth = 0        # { } depth
+    pdepth = 0       # \left( ... \right) depth
+    i = 0
+    start = 0
+    while i < len(expr):
+        if expr[i] == '{':
+            depth += 1
+        elif expr[i] == '}':
+            depth -= 1
+        elif expr[i:i+6] == r'\left(':
+            pdepth += 1
+            i += 5
+        elif expr[i:i+7] == r'\right)':
+            pdepth -= 1
+            i += 6
+        elif expr[i] in '+-' and depth == 0 and pdepth == 0:
+            # binary operator: surrounded by spaces
+            if i > 0 and expr[i - 1] == ' ' and i + 1 < len(expr) and expr[i + 1] == ' ':
+                parts.append(expr[start:i].strip())
+                start = i  # keep operator with following term
+        i += 1
+    tail = expr[start:].strip()
+    if tail:
+        parts.append(tail)
+    return parts
+
+
+def _equation_block(lhs: str, rhs: str, threshold: int = 100) -> str:
+    """Return a markdown display-math block, wrapping to aligned env if the equation is long."""
+    if len(lhs) + len(rhs) + 5 <= threshold:
+        return f'$$ {lhs} = {rhs} $$'
+    parts = _split_top_level_additive(rhs)
+    if len(parts) <= 1:
+        return f'$$ {lhs} = {rhs} $$'
+    inner = f'{lhs} &= {parts[0]}'
+    for p in parts[1:]:
+        inner += f' \\\\\n&\\quad {p}'
+    return f'$$\n\\begin{{aligned}}\n{inner}\n\\end{{aligned}}\n$$'
+
+
 def build_equations_markdown(output_order: str = 'execution') -> str:
     """Build equations markdown using LATEX_SYMBOL_OVERRIDES + PYTHON_FORMULAS."""
     internal_order = _resolve_output_order(output_order)
@@ -839,7 +882,7 @@ def build_equations_markdown(output_order: str = 'execution') -> str:
         lines.append('')
         lhs = latex_symbol_for(name)
         rhs = _formula_to_latex_expr(formula)
-        lines.append(f'$$ {lhs} = {rhs} $$')
+        lines.append(_equation_block(lhs, rhs))
         lines.append('')
 
     return '\n'.join(lines).rstrip() + '\n'

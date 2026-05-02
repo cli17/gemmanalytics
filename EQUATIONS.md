@@ -138,7 +138,13 @@ $$ \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}} = \min(2000
 
 ### row 104 - TOTAL_REQUIRED_L2_SIZE_FOR_IDEAL_HIT_RATE_B_FOR_A_SINGLE_INSTANCE_AND_SINGLE_WAVE
 
-$$ \mathrm{TotalRequiredL2Size_{matB\ always hit}^{1\ instance,\ 1\ wave}} = \mathrm{H_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(matA)}} \times \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}} + \mathrm{W_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(matB)}} \times \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}} + \mathrm{W_{element}^{(XeCUTile)}} \times \mathrm{H_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(D\downarrow)}} $$
+$$
+\begin{aligned}
+\mathrm{TotalRequiredL2Size_{matB\ always hit}^{1\ instance,\ 1\ wave}} &= \mathrm{H_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(matA)}} \times \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}} \\
+&\quad + \mathrm{W_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(matB)}} \times \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}} \\
+&\quad + \mathrm{W_{element}^{(XeCUTile)}} \times \mathrm{H_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(D\downarrow)}}
+\end{aligned}
+$$
 
 ### row 37 - CLK_SPECIFIED_EFFICIENCY
 
@@ -146,7 +152,12 @@ $$ \mathrm{T_{clk}^{(total)}} = \frac{\frac{\frac{\frac{\mathrm{M_dim} \times \m
 
 ### row 69 - TOTAL_L2_READ_B
 
-$$ \mathrm{L2Rd_{B}^{(total)}} = \mathrm{Size_{B}^{(matA)}} \times \mathrm{CEILING}(\frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(ThreadGroup, realized\ by\ multiple\ MMA\ iterations)}}}, 1) + \mathrm{Size_{B}^{(matB)}} \times \mathrm{CEILING}(\frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(ThreadGroup)}}}, 1) $$
+$$
+\begin{aligned}
+\mathrm{L2Rd_{B}^{(total)}} &= \mathrm{Size_{B}^{(matA)}} \times \mathrm{CEILING}(\frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(ThreadGroup, realized\ by\ multiple\ MMA\ iterations)}}}, 1) \\
+&\quad + \mathrm{Size_{B}^{(matB)}} \times \mathrm{CEILING}(\frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(ThreadGroup)}}}, 1)
+\end{aligned}
+$$
 
 ### row 70 - TOTAL_L2_WRITE_B
 
@@ -154,7 +165,12 @@ $$ \mathrm{L2Wr_{B}^{(total)}} = \mathrm{Size_{matB}^{(matC,matD)}} $$
 
 ### row 71 - TOTAL_L1_READ_B
 
-$$ \mathrm{L1Rd_{B}^{(total)}} = \mathrm{Size_{B}^{(matA)}} \times \mathrm{CEILING}(\frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(Thread)}}}, 1) + \mathrm{Size_{B}^{(matB)}} \times \mathrm{CEILING}(\frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(Thread)}}}, 1) $$
+$$
+\begin{aligned}
+\mathrm{L1Rd_{B}^{(total)}} &= \mathrm{Size_{B}^{(matA)}} \times \mathrm{CEILING}(\frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(Thread)}}}, 1) \\
+&\quad + \mathrm{Size_{B}^{(matB)}} \times \mathrm{CEILING}(\frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(Thread)}}}, 1)
+\end{aligned}
+$$
 
 ### row 72 - TOTAL_L1_WRITE_B
 
@@ -170,7 +186,12 @@ $$ \mathrm{L2WrB_{p(Clk{\cdot}XeCore)}} = \frac{\frac{\mathrm{L2Wr_{B}^{(total)}
 
 ### row 76 - L2_READ_WRITE_B_XECORE_CLK
 
-$$ \mathrm{L2RdWrB_{p(Clk{\cdot}XeCore)}} = \mathrm{L2RdB_{p(Clk{\cdot}XeCore)}} + \mathrm{L2WrB_{p(Clk{\cdot}XeCore)}} $$
+$$
+\begin{aligned}
+\mathrm{L2RdWrB_{p(Clk{\cdot}XeCore)}} &= \mathrm{L2RdB_{p(Clk{\cdot}XeCore)}} \\
+&\quad + \mathrm{L2WrB_{p(Clk{\cdot}XeCore)}}
+\end{aligned}
+$$
 
 ### row 77 - L1_READ_B_XECORE_CLK
 
@@ -234,11 +255,24 @@ $$ \mathrm{L2RdB_{total}} = \mathrm{L2Rd_{B}^{(total)}} $$
 
 ### row 110 - PROBABILITY_OF_MATA_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT
 
-$$ \mathrm{P_{L2Hit, after 1st wave}^{(matA)}} = \mathrm{IF}(\mathrm{Size_{B}^{(matA)}} + \mathrm{Size_{B}^{(matB)}} + \mathrm{Size_{matB}^{(matC,matD)}} \le \mathrm{|L2Bytes|}, 1.0, \mathrm{IF}(\mathrm{K_dim} > 2 \times \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}, 0.0, 1 - \frac{\mathrm{K_dim} - \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}}{\mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}})) $$
+$$
+\begin{aligned}
+\mathrm{P_{L2Hit, after 1st wave}^{(matA)}} &= \mathrm{IF}(\mathrm{Size_{B}^{(matA)}} \\
+&\quad + \mathrm{Size_{B}^{(matB)}} \\
+&\quad + \mathrm{Size_{matB}^{(matC,matD)}} \le \mathrm{|L2Bytes|}, 1.0, \mathrm{IF}(\mathrm{K_dim} > 2 \times \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}, 0.0, 1 \\
+&\quad - \frac{\mathrm{K_dim} - \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}}{\mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}}))
+\end{aligned}
+$$
 
 ### row 111 - PROBABILITY_OF_MATB_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT
 
-$$ \mathrm{P_{L2Hit, after 1st wave}^{(matB)}} = \mathrm{IF}(\mathrm{Size_{B}^{(matA)}} + \mathrm{Size_{B}^{(matB)}} + \mathrm{Size_{matB}^{(matC,matD)}} \le \mathrm{|L2Bytes|}, 1.0, 0.0) $$
+$$
+\begin{aligned}
+\mathrm{P_{L2Hit, after 1st wave}^{(matB)}} &= \mathrm{IF}(\mathrm{Size_{B}^{(matA)}} \\
+&\quad + \mathrm{Size_{B}^{(matB)}} \\
+&\quad + \mathrm{Size_{matB}^{(matC,matD)}} \le \mathrm{|L2Bytes|}, 1.0, 0.0)
+\end{aligned}
+$$
 
 ### row 112 - PROBABILITY_OF_MATA_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT
 
