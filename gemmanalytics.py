@@ -283,10 +283,12 @@ def compute_core_values(workload_params: dict, machine_params: dict) -> dict:
     # row 102 | Total L2 size (B) for a single instance
     TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE = BANK_CAPACITY_MB * L2_BANKS_PER_XECU * 1024 * 1024
 
-    # row 103 | working data set size of K in L2(corresp 20K clocks of thread divergence)
+    # [row 103] Working data set size of K in L2
+    #           (corresponds to 20K clocks of thread divergence)
     WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE = MIN(20000 * (K_PER_THREAD / CLKS_PER_DPAS), K)
 
-    # row 104 | Total required L2 size for ideal hit rate (B) for a single instance and single wave
+    # [row 104] Total required L2 size for ideal hit rate (B)
+    #           for a single instance and single wave
     TOTAL_REQUIRED_L2_SIZE_FOR_IDEAL_HIT_RATE_B_FOR_A_SINGLE_INSTANCE_AND_SINGLE_WAVE = (
         (XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT * INPUT_A_BYTES_PER_ELEMENT *
         WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE) +
@@ -383,7 +385,7 @@ def compute_core_values(workload_params: dict, machine_params: dict) -> dict:
     # row 108 | Total L2 read traffic (B)
     TOTAL_L2_READ_TRAFFIC_B = TOTAL_L2_READ_B
 
-    # row 110 | probability of matA hit in L2 during a non-first wave %
+    # [row 110] Probability of matA hit in L2 during a non-first wave (%)
     PROBABILITY_OF_MATA_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT = (
         IF(MAT_A_INPUT_SIZE_B + MAT_B_INPUT_SIZE_B + MAT_C_INPUT_D_OUTPUT_SIZE_B <=
         TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE, 1.0, IF(K > 2 *
@@ -392,19 +394,20 @@ def compute_core_values(workload_params: dict, machine_params: dict) -> dict:
         WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE))
     )
 
-    # row 111 | probability of matB hit in L2 during a non-first wave %
+    # [row 111] Probability of matB hit in L2 during a non-first wave (%)
     PROBABILITY_OF_MATB_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT = (
         IF(MAT_A_INPUT_SIZE_B + MAT_B_INPUT_SIZE_B + MAT_C_INPUT_D_OUTPUT_SIZE_B <=
         TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE, 1.0, 0.0)
     )
 
-    # row 112 | probability of matA miss in L2 during a non-first wave %
+    # [row 112] Probability of matA miss in L2 during a non-first wave (%)
     PROBABILITY_OF_MATA_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT = 1 - PROBABILITY_OF_MATA_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT
 
-    # row 113 | probability of matB miss in L2 during a non-first wave %
+    # [row 113] Probability of matB miss in L2 during a non-first wave (%)
     PROBABILITY_OF_MATB_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT = 1 - PROBABILITY_OF_MATB_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT
 
-    # row 116 | Total HBM read (B), after a completion of a wave, consider cold cache
+    # [row 116] Total HBM read (B) after completion of a wave
+    #           (cold-cache assumption)
     TOTAL_HBM_READ_B_AFTER_A_COMPLETION_OF_A_WAVE_CONSIDER_COLD_CACHE = (
         (MAT_A_INPUT_SIZE_B + MAT_A_INPUT_SIZE_B * (CEILING(N / XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT, 1)
         - 1) * PROBABILITY_OF_MATA_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT + MAT_B_INPUT_SIZE_B +
