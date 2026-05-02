@@ -30,11 +30,11 @@ $$ \mathrm{MemBW_{BpClk}^{max}} = \frac{\mathrm{MemBW_{GBps}^{max}}}{\mathrm{f_{
 
 ### row 36 - MMA MAC THROUGHPUT PER XECORE
 
-$$ \mathrm{\eta_{mMACpClk{\cdot}XeCore}^{(peak)}} = \min(\frac{4}{\frac{\mathrm{FLOOR}(\mathrm{Bytes_{pElement}^{(matA)}} \times 2, 1)}{2}}, \frac{4}{\frac{\mathrm{FLOOR}(\mathrm{Bytes_{pElement}^{(matB)}} \times 2, 1)}{2}}) \times \mathrm{D_{DPAS}} \times 16 \times \mathrm{|EU|_{pXeCore}} $$
+$$ \mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}} = \min(\frac{4}{\frac{\mathrm{FLOOR}(\mathrm{Bytes_{pElement}^{(matA)}} \times 2, 1)}{2}}, \frac{4}{\frac{\mathrm{FLOOR}(\mathrm{Bytes_{pElement}^{(matB)}} \times 2, 1)}{2}}) \times \mathrm{D_{DPAS}} \times 16 \times \mathrm{|EU|_{pXeCore}} $$
 
 ### row 42 - CLKS PER DPAS
 
-$$ \mathrm{CLKS_{DPAS}} = \frac{\mathrm{M_{pThread}} \times \mathrm{K_{pThread}} \times \mathrm{N_{pThread}}}{\frac{\mathrm{\eta_{mMACpClk{\cdot}XeCore}^{(peak)}}}{\mathrm{|EU|_{pXeCore}}}} $$
+$$ \mathrm{CLKS_{DPAS}} = \frac{\mathrm{M_{pThread}} \times \mathrm{K_{pThread}} \times \mathrm{N_{pThread}}}{\frac{\mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}}}{\mathrm{|EU|_{pXeCore}}}} $$
 
 ### row 13 - WAVES
 
@@ -153,7 +153,7 @@ $$
 
 $$ \mathrm{T_{clk}^{(total)}} = \frac{\left(\mathrm{T_{clk}^{(total)}}\right)_{\mathrm{num}}}{\mathrm{\eta_{systolic}}} $$
 
-$$ \left(\mathrm{T_{clk}^{(total)}}\right)_{\mathrm{num}} = \frac{\left(\left(\mathrm{T_{clk}^{(total)}}\right)_{\mathrm{num}}\right)_{\mathrm{num}}}{\mathrm{\eta_{mMACpClk{\cdot}XeCore}^{(peak)}}} $$
+$$ \left(\mathrm{T_{clk}^{(total)}}\right)_{\mathrm{num}} = \frac{\left(\left(\mathrm{T_{clk}^{(total)}}\right)_{\mathrm{num}}\right)_{\mathrm{num}}}{\mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}}} $$
 
 $$ \left(\left(\mathrm{T_{clk}^{(total)}}\right)_{\mathrm{num}}\right)_{\mathrm{num}} = \frac{\frac{\mathrm{M_{dim}} \times \mathrm{K_{dim}} \times \mathrm{N_{dim}}}{\mathrm{|XeCore|_{pXeCU}}}}{\mathrm{|XeCU|}} $$
 

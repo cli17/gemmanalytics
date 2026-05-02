@@ -653,7 +653,7 @@ LATEX_SYMBOL_OVERRIDES = {
     'EU_COUNT': r'\mathrm{|EU|}',
     'TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE': r'\mathrm{|L2|_{B}}',
     'MAX_POSSIBLE_HBM_BW_FREQ_B_CLK': r'\mathrm{MemBW_{BpClk}^{max}}',
-    'MMA_MAC_THROUGHPUT_PER_XECORE': r'\mathrm{\eta_{mMACpClk{\cdot}XeCore}^{(peak)}}',
+    'MMA_MAC_THROUGHPUT_PER_XECORE': r'\mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}}',
     'CLKS_PER_DPAS': r'\mathrm{CLKS_{DPAS}}',
 
     # ---- Machine stats ----
