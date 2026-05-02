@@ -1130,9 +1130,10 @@ def build_equations_markdown(output_order: str = 'execution') -> str:
     lines.append('## Machine Parameters (Pre-Defined)')
     lines.append('')
     for name in MACHINE_PRE_NAMES:
+        sym = latex_symbol_for(name)
         row = ROW_INDEX.get(name, '?')
         base_desc = PARAM_DESCRIPTIONS.get(name, name)
-        lines.append(f'[row {row}] {name} : {base_desc}')
+        lines.append(f'[row {row}] $ {sym} $ : {base_desc}')
         lines.append('')
     lines.append('')
 
@@ -1140,9 +1141,10 @@ def build_equations_markdown(output_order: str = 'execution') -> str:
     lines.append('## Workload Parameters (Pre-Defined)')
     lines.append('')
     for name in FORMAT_KEY_NAMES + WORKLOAD_PRE_NAMES:
+        sym = latex_symbol_for(name)
         row = ROW_INDEX.get(name, '?')
         base_desc = PARAM_DESCRIPTIONS.get(name, name)
-        lines.append(f'[row {row}] {name} : {base_desc}')
+        lines.append(f'[row {row}] $ {sym} $ : {base_desc}')
         lines.append('')
     lines.append('')
 
