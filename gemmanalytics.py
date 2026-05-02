@@ -1086,6 +1086,32 @@ def _latex_text_escape(text: str) -> str:
     return escaped
 
 
+def _inline_compat_symbol(sym: str) -> str:
+    """Make custom symbols safer for limited inline-math renderers.
+
+    Some renderers drop base tokens when using \mathrm{...} in inline math,
+    leaving only sub/superscripts visible. For pre-defined parameter rows,
+    strip the outer \mathrm wrappers while preserving scripts.
+    """
+    out = sym
+    prefix = r'\mathrm{'
+    while prefix in out:
+        start = out.find(prefix)
+        i = start + len(prefix)
+        depth = 1
+        while i < len(out) and depth > 0:
+            if out[i] == '{':
+                depth += 1
+            elif out[i] == '}':
+                depth -= 1
+            i += 1
+        if depth != 0:
+            break
+        inner = out[start + len(prefix):i - 1]
+        out = out[:start] + inner + out[i:]
+    return out
+
+
 def _format_equation_header(row: int | str, name: str, max_chars: int = 56) -> list[str]:
     """Format equation section headers and wrap long names at underscore boundaries."""
     words = name.split('_')
@@ -1132,7 +1158,7 @@ def build_equations_markdown(output_order: str = 'execution') -> str:
     lines.append('## Machine Parameters (Pre-Defined)')
     lines.append('')
     for name in MACHINE_PRE_NAMES:
-        sym = latex_symbol_for(name)
+        sym = _inline_compat_symbol(latex_symbol_for(name))
         row = ROW_INDEX.get(name, '?')
         base_desc = PARAM_DESCRIPTIONS.get(name, name)
         lines.append(f'[row {row}] $ {sym} $ : {base_desc}')
@@ -1143,7 +1169,7 @@ def build_equations_markdown(output_order: str = 'execution') -> str:
     lines.append('## Workload Parameters (Pre-Defined)')
     lines.append('')
     for name in FORMAT_KEY_NAMES + WORKLOAD_PRE_NAMES:
-        sym = latex_symbol_for(name)
+        sym = _inline_compat_symbol(latex_symbol_for(name))
         row = ROW_INDEX.get(name, '?')
         base_desc = PARAM_DESCRIPTIONS.get(name, name)
         lines.append(f'[row {row}] $ {sym} $ : {base_desc}')

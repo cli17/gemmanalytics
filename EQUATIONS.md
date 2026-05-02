@@ -6,70 +6,70 @@ Output order: execution
 
 ## Machine Parameters (Pre-Defined)
 
-[row 8] $ \mathrm{f}_{GHz}^{(GT)} $ : GT Freq (GHz)
+[row 8] $ f_{GHz}^{(GT)} $ : GT Freq (GHz)
 
-[row 26] $ \mathrm{|XeCU|} $ : XeCU count
+[row 26] $ |XeCU| $ : XeCU count
 
-[row 27] $ \mathrm{|XeCore|}_{perXeCU} $ : XeCore per XeCU
+[row 27] $ |XeCore|_{perXeCU} $ : XeCore per XeCU
 
-[row 28] $ \mathrm{|EU|}_{perXeCore} $ : EU per XeCore
+[row 28] $ |EU|_{perXeCore} $ : EU per XeCore
 
-[row 29] $ \mathrm{|L2Banks|}_{perXeCU} $ : L2 banks per XeCU
+[row 29] $ |L2Banks|_{perXeCU} $ : L2 banks per XeCU
 
-[row 30] $ \mathrm{L2BankSize}_{MB} $ : bank capacity (MB)
+[row 30] $ L2BankSize_{MB} $ : bank capacity (MB)
 
-[row 32] $ \mathrm{D}_{DPAS} $ : DPAS depth
+[row 32] $ D_{DPAS} $ : DPAS depth
 
-[row 35] $ \mathrm{\eta}_{systolic} $ : compute efficiency %
+[row 35] $ \eta_{systolic} $ : compute efficiency %
 
-[row 86] $ \mathrm{L1RdBW}_{Bp(Clk{\cdot}EU)}^{max} $ : L1 read max (B/EU/clk)
+[row 86] $ L1RdBW_{Bp(Clk{\cdot}EU)}^{max} $ : L1 read max (B/EU/clk)
 
-[row 87] $ \mathrm{L1WrBW}_{Bp(Clk{\cdot}EU)}^{max} $ : L1 write max (B/EU/clk)
+[row 87] $ L1WrBW_{Bp(Clk{\cdot}EU)}^{max} $ : L1 write max (B/EU/clk)
 
-[row 97] $ \mathrm{GtiRdBW}_{BpClk}^{max} $ : GTI read max BW (B/clk)
+[row 97] $ GtiRdBW_{BpClk}^{max} $ : GTI read max BW (B/clk)
 
-[row 98] $ \mathrm{GtiWrBW}_{BpClk}^{max} $ : GTI write max BW (B/clk)
+[row 98] $ GtiWrBW_{BpClk}^{max} $ : GTI write max BW (B/clk)
 
-[row 124] $ \mathrm{MemBW}_{GBps}^{max} $ : max possible HBM BW (GB/s)
+[row 124] $ MemBW_{GBps}^{max} $ : max possible HBM BW (GB/s)
 
 
 ## Workload Parameters (Pre-Defined)
 
-[row 3] $ \mathrm{Fmt}^{(matA)} $ : input A data format (e.g. fp8)
+[row 3] $ Fmt^{(matA)} $ : input A data format (e.g. fp8)
 
-[row 4] $ \mathrm{Fmt}^{(matB)} $ : input B data format (e.g. fp4)
+[row 4] $ Fmt^{(matB)} $ : input B data format (e.g. fp4)
 
-[row 5] $ \mathrm{Fmt}^{(matD\downarrow)} $ : output D data format (e.g. fp8)
+[row 5] $ Fmt^{(matD\downarrow)} $ : output D data format (e.g. fp8)
 
-[row 9] $ \mathrm{M}_{dim} $ : M dimension
+[row 9] $ M_{dim} $ : M dimension
 
-[row 10] $ \mathrm{K}_{dim} $ : K dimension
+[row 10] $ K_{dim} $ : K dimension
 
-[row 11] $ \mathrm{N}_{dim} $ : N dimension
+[row 11] $ N_{dim} $ : N dimension
 
-[row 24] $ \mathrm{Byte}_{perElement}^{(matD)} $ : output bytes per element (fp32)
+[row 24] $ Byte_{perElement}^{(matD)} $ : output bytes per element (fp32)
 
-[row 34] $ \mathrm{\rho}_{GT} $ : machine occupancy %
+[row 34] $ \rho_{GT} $ : machine occupancy %
 
-[row 39] $ \mathrm{M}_{perThread} $ : M per thread
+[row 39] $ M_{perThread} $ : M per thread
 
-[row 40] $ \mathrm{K}_{perThread} $ : K per thread
+[row 40] $ K_{perThread} $ : K per thread
 
-[row 41] $ \mathrm{N}_{perThread} $ : N per thread
+[row 41] $ N_{perThread} $ : N per thread
 
-[row 45] $ \mathrm{W}_{thread}^{(ThreadGroup)} $ : TG width in units of thread
+[row 45] $ W_{thread}^{(ThreadGroup)} $ : TG width in units of thread
 
-[row 46] $ \mathrm{H}_{thread}^{(ThreadGroup)} $ : TG height in units of thread
+[row 46] $ H_{thread}^{(ThreadGroup)} $ : TG height in units of thread
 
-[row 50] $ \mathrm{W}_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)} $ : XeCore cluster width in units of TG (keep cluster size as 4)
+[row 50] $ W_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)} $ : XeCore cluster width in units of TG (keep cluster size as 4)
 
-[row 51] $ \mathrm{H}_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)} $ : XeCore cluster height in units of TG (keep cluster size as 4)
+[row 51] $ H_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)} $ : XeCore cluster height in units of TG (keep cluster size as 4)
 
-[row 54] $ \mathrm{W}_{TG}^{(XECUTile)} $ : XeCU tile width in units of TG
+[row 54] $ W_{TG}^{(XECUTile)} $ : XeCU tile width in units of TG
 
-[row 55] $ \mathrm{H}_{TG}^{(XECUTile)} $ : XeCU tile height in units of TG
+[row 55] $ H_{TG}^{(XECUTile)} $ : XeCU tile height in units of TG
 
-[row 58] $ \mathrm{W}_{XeCU}^{(GPUTile)} $ : GPU tile width in XeCU unit
+[row 58] $ W_{XeCU}^{(GPUTile)} $ : GPU tile width in XeCU unit
 
 
 ## Computed Equations
