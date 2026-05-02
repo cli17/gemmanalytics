@@ -1087,7 +1087,7 @@ def _latex_text_escape(text: str) -> str:
 
 
 def _inline_compat_symbol(sym: str) -> str:
-    """Make custom symbols safer for limited inline-math renderers.
+    r"""Make custom symbols safer for limited inline-math renderers.
 
     Some renderers drop base tokens when using \mathrm{...} in inline math,
     leaving only sub/superscripts visible. For pre-defined parameter rows,
