@@ -881,8 +881,21 @@ def _extract_top_frac(s: str) -> tuple[str, str] | None:
         return None
 
 
+def _make_aux_symbol(lhs: str, suffix: str) -> str:
+    """Append _{suffix} as a subscript to a LaTeX symbol."""
+    return f'{lhs}_{{{suffix}}}'
+
+
 def _equation_block(lhs: str, rhs: str, threshold: int = 100) -> str:
-    """Return a markdown display-math block, wrapping to aligned env if the equation is long."""
+    """Return one or more markdown display-math blocks.
+
+    Short equations:  single $$ ... $$ line.
+    Long additive RHS: one aligned block split at top-level +/-.
+    Long fraction RHS: three equations —
+        (1) lhs = lhs_{num} / lhs_{den}  (or  lhs = lhs_{num} / simple_den)
+        (2) lhs_{num} = <numerator>       (recursively wrapped if still long)
+        (3) lhs_{den} = <denominator>     (only when denominator is complex)
+    """
     if len(lhs) + len(rhs) + 5 <= threshold:
         return f'$$ {lhs} = {rhs} $$'
 
@@ -894,17 +907,22 @@ def _equation_block(lhs: str, rhs: str, threshold: int = 100) -> str:
             inner += f' \\\\\n&\\quad {p}'
         return f'$$\n\\begin{{aligned}}\n{inner}\n\\end{{aligned}}\n$$'
 
-    # Case 2: single top-level \frac with a long numerator — factor out and split numerator
+    # Case 2: single top-level \frac — decompose into 2 or 3 sub-equations
     frac = _extract_top_frac(rhs)
     if frac:
         num, den = frac
-        num_parts = _split_top_level_additive(num)
-        if len(num_parts) > 1:
-            inner = f'{lhs} &= \\frac{{1}}{{{den}}}\\Big({num_parts[0]}'
-            for p in num_parts[1:]:
-                inner += f' \\\\\n&\\quad {p}'
-            inner += r'\Big)'
-            return f'$$\n\\begin{{aligned}}\n{inner}\n\\end{{aligned}}\n$$'
+        lhs_num = _make_aux_symbol(lhs, r'\mathrm{num}')
+        den_is_simple = len(den) < 50 and r'\frac' not in den
+        if den_is_simple:
+            summary = f'$$ {lhs} = \\frac{{{lhs_num}}}{{{den}}} $$'
+            num_block = _equation_block(lhs_num, num, threshold)
+            return summary + '\n\n' + num_block
+        else:
+            lhs_den = _make_aux_symbol(lhs, r'\mathrm{den}')
+            summary = f'$$ {lhs} = \\frac{{{lhs_num}}}{{{lhs_den}}} $$'
+            num_block = _equation_block(lhs_num, num, threshold)
+            den_block = _equation_block(lhs_den, den, threshold)
+            return summary + '\n\n' + num_block + '\n\n' + den_block
 
     return f'$$ {lhs} = {rhs} $$'
 

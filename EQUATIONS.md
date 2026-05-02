@@ -34,7 +34,13 @@ $$ \mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}} = \min(\frac{4}{\frac{\mathrm{
 
 ### row 42 - CLKS_PER_DPAS
 
-$$ \mathrm{CLKS_{DPAS}} = \frac{\mathrm{M_{pThread}} \times \mathrm{K_{pThread}} \times \mathrm{N_{pThread}}}{\frac{\mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}}}{\mathrm{|EU|_{pXeCore}}}} $$
+$$ \mathrm{CLKS_{DPAS}} = \frac{\mathrm{CLKS_{DPAS}}_{\mathrm{num}}}{\mathrm{CLKS_{DPAS}}_{\mathrm{den}}} $$
+
+$$ \mathrm{CLKS_{DPAS}}_{\mathrm{num}} = \mathrm{M_{pThread}} \times \mathrm{K_{pThread}} \times \mathrm{N_{pThread}} $$
+
+$$ \mathrm{CLKS_{DPAS}}_{\mathrm{den}} = \frac{\mathrm{CLKS_{DPAS}}_{\mathrm{den}}_{\mathrm{num}}}{\mathrm{|EU|_{pXeCore}}} $$
+
+$$ \mathrm{CLKS_{DPAS}}_{\mathrm{den}}_{\mathrm{num}} = \mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}} $$
 
 ### row 13 - WAVES
 
@@ -42,7 +48,11 @@ $$ \mathrm{N_waves} = \mathrm{CEILING}(\mathrm{|Tiles|_{N}^{(GPU)}}, 1) \times \
 
 ### row 14 - TG_TILES_IN_N
 
-$$ \mathrm{|Tiles|_{N}^{(TG)}} = \frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(ThreadGroup, realized\ by\ multiple\ MMA\ iterations)}}} $$
+$$ \mathrm{|Tiles|_{N}^{(TG)}} = \frac{\mathrm{|Tiles|_{N}^{(TG)}}_{\mathrm{num}}}{\mathrm{|Tiles|_{N}^{(TG)}}_{\mathrm{den}}} $$
+
+$$ \mathrm{|Tiles|_{N}^{(TG)}}_{\mathrm{num}} = \mathrm{N_dim} $$
+
+$$ \mathrm{|Tiles|_{N}^{(TG)}}_{\mathrm{den}} = \mathrm{W_{element}^{(ThreadGroup, realized\ by\ multiple\ MMA\ iterations)}} $$
 
 ### row 15 - TG_TILES_IN_M
 
@@ -50,11 +60,15 @@ $$ \mathrm{|Tiles|_{M}^{(TG)}} = \frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(Thr
 
 ### row 16 - TG_CLUSTER_TILES_IN_N
 
-$$ \mathrm{|Tiles|_{N}^{(TG\ Cluster)}} = \frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(XeCoreCluster)}}} $$
+$$ \mathrm{|Tiles|_{N}^{(TG\ Cluster)}} = \frac{\mathrm{|Tiles|_{N}^{(TG\ Cluster)}}_{\mathrm{num}}}{\mathrm{W_{element}^{(XeCoreCluster)}}} $$
+
+$$ \mathrm{|Tiles|_{N}^{(TG\ Cluster)}}_{\mathrm{num}} = \mathrm{N_dim} $$
 
 ### row 17 - TG_CLUSTER_TILES_IN_M
 
-$$ \mathrm{|Tiles|_{M}^{(TG\ Cluster)}} = \frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(XeCoreCluster)}}} $$
+$$ \mathrm{|Tiles|_{M}^{(TG\ Cluster)}} = \frac{\mathrm{|Tiles|_{M}^{(TG\ Cluster)}}_{\mathrm{num}}}{\mathrm{H_{element}^{(XeCoreCluster)}}} $$
+
+$$ \mathrm{|Tiles|_{M}^{(TG\ Cluster)}}_{\mathrm{num}} = \mathrm{M_dim} $$
 
 ### row 18 - XECU_TILES_IN_N
 
@@ -66,11 +80,19 @@ $$ \mathrm{|Tiles|_{M}^{(XeCU)}} = \frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(X
 
 ### row 20 - GPU_TILES_IN_N
 
-$$ \mathrm{|Tiles|_{N}^{(GPU)}} = \frac{\frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(XeCUTile)}}}}{\mathrm{W_{XeCU}^{(GPUTile)}}} $$
+$$ \mathrm{|Tiles|_{N}^{(GPU)}} = \frac{\mathrm{|Tiles|_{N}^{(GPU)}}_{\mathrm{num}}}{\mathrm{W_{XeCU}^{(GPUTile)}}} $$
+
+$$ \mathrm{|Tiles|_{N}^{(GPU)}}_{\mathrm{num}} = \frac{\mathrm{|Tiles|_{N}^{(GPU)}}_{\mathrm{num}}_{\mathrm{num}}}{\mathrm{W_{element}^{(XeCUTile)}}} $$
+
+$$ \mathrm{|Tiles|_{N}^{(GPU)}}_{\mathrm{num}}_{\mathrm{num}} = \mathrm{N_dim} $$
 
 ### row 21 - GPU_TILES_IN_M
 
-$$ \mathrm{|Tiles|_{M}^{(GPU)}} = \frac{\frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(XeCUTile)}}}}{\mathrm{H_{XeCU}^{(GPUTile)}}} $$
+$$ \mathrm{|Tiles|_{M}^{(GPU)}} = \frac{\mathrm{|Tiles|_{M}^{(GPU)}}_{\mathrm{num}}}{\mathrm{H_{XeCU}^{(GPUTile)}}} $$
+
+$$ \mathrm{|Tiles|_{M}^{(GPU)}}_{\mathrm{num}} = \frac{\mathrm{|Tiles|_{M}^{(GPU)}}_{\mathrm{num}}_{\mathrm{num}}}{\mathrm{H_{element}^{(XeCUTile)}}} $$
+
+$$ \mathrm{|Tiles|_{M}^{(GPU)}}_{\mathrm{num}}_{\mathrm{num}} = \mathrm{M_dim} $$
 
 ### row 43 - THREAD_WIDTH_IN_UNITS_OF_ELEMENTS
 
@@ -148,7 +170,15 @@ $$
 
 ### row 37 - CLK_SPECIFIED_EFFICIENCY
 
-$$ \mathrm{T_{clk}^{(total)}} = \frac{\frac{\frac{\frac{\mathrm{M_dim} \times \mathrm{K_dim} \times \mathrm{N_dim}}{\mathrm{|XeCore|_{pXeCU}}}}{\mathrm{|XeCU|}}}{\mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}}}}{\mathrm{\eta_{systolic}}} $$
+$$ \mathrm{T_{clk}^{(total)}} = \frac{\mathrm{T_{clk}^{(total)}}_{\mathrm{num}}}{\mathrm{\eta_{systolic}}} $$
+
+$$ \mathrm{T_{clk}^{(total)}}_{\mathrm{num}} = \frac{\mathrm{T_{clk}^{(total)}}_{\mathrm{num}}_{\mathrm{num}}}{\mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}}} $$
+
+$$ \mathrm{T_{clk}^{(total)}}_{\mathrm{num}}_{\mathrm{num}} = \frac{\mathrm{T_{clk}^{(total)}}_{\mathrm{num}}_{\mathrm{num}}_{\mathrm{num}}}{\mathrm{|XeCU|}} $$
+
+$$ \mathrm{T_{clk}^{(total)}}_{\mathrm{num}}_{\mathrm{num}}_{\mathrm{num}} = \frac{\mathrm{T_{clk}^{(total)}}_{\mathrm{num}}_{\mathrm{num}}_{\mathrm{num}}_{\mathrm{num}}}{\mathrm{|XeCore|_{pXeCU}}} $$
+
+$$ \mathrm{T_{clk}^{(total)}}_{\mathrm{num}}_{\mathrm{num}}_{\mathrm{num}}_{\mathrm{num}} = \mathrm{M_dim} \times \mathrm{K_dim} \times \mathrm{N_dim} $$
 
 ### row 69 - TOTAL_L2_READ_B
 
@@ -178,11 +208,19 @@ $$ \mathrm{L1Wr_{B}^{(total)}} = \mathrm{Size_{matB}^{(matC,matD)}} $$
 
 ### row 74 - L2_READ_B_XECORE_CLK
 
-$$ \mathrm{L2RdB_{p(Clk{\cdot}XeCore)}} = \frac{\frac{\mathrm{L2Rd_{B}^{(total)}}}{\mathrm{|XeCU|} \times \mathrm{|XeCore|_{pXeCU}}}}{\mathrm{T_{clk}^{(total)}}} $$
+$$ \mathrm{L2RdB_{p(Clk{\cdot}XeCore)}} = \frac{\mathrm{L2RdB_{p(Clk{\cdot}XeCore)}}_{\mathrm{num}}}{\mathrm{T_{clk}^{(total)}}} $$
+
+$$ \mathrm{L2RdB_{p(Clk{\cdot}XeCore)}}_{\mathrm{num}} = \frac{\mathrm{L2RdB_{p(Clk{\cdot}XeCore)}}_{\mathrm{num}}_{\mathrm{num}}}{\mathrm{|XeCU|} \times \mathrm{|XeCore|_{pXeCU}}} $$
+
+$$ \mathrm{L2RdB_{p(Clk{\cdot}XeCore)}}_{\mathrm{num}}_{\mathrm{num}} = \mathrm{L2Rd_{B}^{(total)}} $$
 
 ### row 75 - L2_WRITE_B_XECORE_CLK
 
-$$ \mathrm{L2WrB_{p(Clk{\cdot}XeCore)}} = \frac{\frac{\mathrm{L2Wr_{B}^{(total)}}}{\mathrm{|XeCU|} \times \mathrm{|XeCore|_{pXeCU}}}}{\mathrm{T_{clk}^{(total)}}} $$
+$$ \mathrm{L2WrB_{p(Clk{\cdot}XeCore)}} = \frac{\mathrm{L2WrB_{p(Clk{\cdot}XeCore)}}_{\mathrm{num}}}{\mathrm{T_{clk}^{(total)}}} $$
+
+$$ \mathrm{L2WrB_{p(Clk{\cdot}XeCore)}}_{\mathrm{num}} = \frac{\mathrm{L2WrB_{p(Clk{\cdot}XeCore)}}_{\mathrm{num}}_{\mathrm{num}}}{\mathrm{|XeCU|} \times \mathrm{|XeCore|_{pXeCU}}} $$
+
+$$ \mathrm{L2WrB_{p(Clk{\cdot}XeCore)}}_{\mathrm{num}}_{\mathrm{num}} = \mathrm{L2Wr_{B}^{(total)}} $$
 
 ### row 76 - L2_READ_WRITE_B_XECORE_CLK
 
@@ -203,15 +241,25 @@ $$ \mathrm{L1WrB_{p(Clk{\cdot}XeCore)}} = \mathrm{L1WrB_{p(Clk{\cdot}EU)}} \time
 
 ### row 79 - L1_READ_B_EU_CLK
 
-$$ \mathrm{L1RdB_{p(Clk{\cdot}EU)}} = \frac{\frac{\mathrm{L1Rd_{B}^{(total)}}}{\mathrm{|EU|}}}{\mathrm{T_{clk}^{(total)}}} $$
+$$ \mathrm{L1RdB_{p(Clk{\cdot}EU)}} = \frac{\mathrm{L1RdB_{p(Clk{\cdot}EU)}}_{\mathrm{num}}}{\mathrm{T_{clk}^{(total)}}} $$
+
+$$ \mathrm{L1RdB_{p(Clk{\cdot}EU)}}_{\mathrm{num}} = \frac{\mathrm{L1RdB_{p(Clk{\cdot}EU)}}_{\mathrm{num}}_{\mathrm{num}}}{\mathrm{|EU|}} $$
+
+$$ \mathrm{L1RdB_{p(Clk{\cdot}EU)}}_{\mathrm{num}}_{\mathrm{num}} = \mathrm{L1Rd_{B}^{(total)}} $$
 
 ### row 80 - L1_WRITE_B_EU_CLK
 
-$$ \mathrm{L1WrB_{p(Clk{\cdot}EU)}} = \frac{\frac{\mathrm{L1Wr_{B}^{(total)}}}{\mathrm{|EU|}}}{\mathrm{T_{clk}^{(total)}}} $$
+$$ \mathrm{L1WrB_{p(Clk{\cdot}EU)}} = \frac{\mathrm{L1WrB_{p(Clk{\cdot}EU)}}_{\mathrm{num}}}{\mathrm{T_{clk}^{(total)}}} $$
+
+$$ \mathrm{L1WrB_{p(Clk{\cdot}EU)}}_{\mathrm{num}} = \frac{\mathrm{L1WrB_{p(Clk{\cdot}EU)}}_{\mathrm{num}}_{\mathrm{num}}}{\mathrm{|EU|}} $$
+
+$$ \mathrm{L1WrB_{p(Clk{\cdot}EU)}}_{\mathrm{num}}_{\mathrm{num}} = \mathrm{L1Wr_{B}^{(total)}} $$
 
 ### row 83 - L2_READ_MAX_B_XECORE_CLK
 
-$$ \mathrm{L2RdB_{p(Clk{\cdot}XeCore)}^{(max)}} = \frac{\mathrm{|XeCore|_{pXeCU}} \times 64}{\mathrm{|XeCore|_{pXeCU}}} $$
+$$ \mathrm{L2RdB_{p(Clk{\cdot}XeCore)}^{(max)}} = \frac{\mathrm{L2RdB_{p(Clk{\cdot}XeCore)}^{(max)}}_{\mathrm{num}}}{\mathrm{|XeCore|_{pXeCU}}} $$
+
+$$ \mathrm{L2RdB_{p(Clk{\cdot}XeCore)}^{(max)}}_{\mathrm{num}} = \mathrm{|XeCore|_{pXeCU}} \times 64 $$
 
 ### row 84 - L2_WRITE_MAX_B_XECORE_CLK
 
@@ -223,23 +271,33 @@ $$ \mathrm{L2RdWrB_{p(Clk{\cdot}XeCore)}^{(max)}} = \mathrm{L2WrB_{p(Clk{\cdot}X
 
 ### row 90 - L2_READ_B_XECORE_CLK_PCT
 
-$$ \mathrm{\eta_{L2RdB/p(Clk{\cdot}XeCore)}} = \frac{\mathrm{L2RdB_{p(Clk{\cdot}XeCore)}}}{\mathrm{L2RdB_{p(Clk{\cdot}XeCore)}^{(max)}}} $$
+$$ \mathrm{\eta_{L2RdB/p(Clk{\cdot}XeCore)}} = \frac{\mathrm{\eta_{L2RdB/p(Clk{\cdot}XeCore)}}_{\mathrm{num}}}{\mathrm{L2RdB_{p(Clk{\cdot}XeCore)}^{(max)}}} $$
+
+$$ \mathrm{\eta_{L2RdB/p(Clk{\cdot}XeCore)}}_{\mathrm{num}} = \mathrm{L2RdB_{p(Clk{\cdot}XeCore)}} $$
 
 ### row 91 - L2_WRITE_B_XECORE_CLK_PCT
 
-$$ \mathrm{\eta_{L2WrB/p(Clk{\cdot}XeCore)}} = \frac{\mathrm{L2WrB_{p(Clk{\cdot}XeCore)}}}{\mathrm{L2WrB_{p(Clk{\cdot}XeCore)}^{(max)}}} $$
+$$ \mathrm{\eta_{L2WrB/p(Clk{\cdot}XeCore)}} = \frac{\mathrm{\eta_{L2WrB/p(Clk{\cdot}XeCore)}}_{\mathrm{num}}}{\mathrm{L2WrB_{p(Clk{\cdot}XeCore)}^{(max)}}} $$
+
+$$ \mathrm{\eta_{L2WrB/p(Clk{\cdot}XeCore)}}_{\mathrm{num}} = \mathrm{L2WrB_{p(Clk{\cdot}XeCore)}} $$
 
 ### row 92 - L2_READ_WRITE_B_XECORE_CLK_PCT
 
-$$ \mathrm{\eta_{L2RdWrB/p(Clk{\cdot}XeCore)}} = \frac{\mathrm{L2RdWrB_{p(Clk{\cdot}XeCore)}}}{\mathrm{L2RdWrB_{p(Clk{\cdot}XeCore)}^{(max)}}} $$
+$$ \mathrm{\eta_{L2RdWrB/p(Clk{\cdot}XeCore)}} = \frac{\mathrm{\eta_{L2RdWrB/p(Clk{\cdot}XeCore)}}_{\mathrm{num}}}{\mathrm{L2RdWrB_{p(Clk{\cdot}XeCore)}^{(max)}}} $$
+
+$$ \mathrm{\eta_{L2RdWrB/p(Clk{\cdot}XeCore)}}_{\mathrm{num}} = \mathrm{L2RdWrB_{p(Clk{\cdot}XeCore)}} $$
 
 ### row 93 - L1_READ_B_EU_CLK_PCT
 
-$$ \mathrm{\eta_{L1RdB/p(Clk{\cdot}EU)}} = \frac{\mathrm{L1RdB_{p(Clk{\cdot}EU)}}}{\mathrm{L1RdBW_{BpClk{\cdot}EU}^{max}}} $$
+$$ \mathrm{\eta_{L1RdB/p(Clk{\cdot}EU)}} = \frac{\mathrm{\eta_{L1RdB/p(Clk{\cdot}EU)}}_{\mathrm{num}}}{\mathrm{L1RdBW_{BpClk{\cdot}EU}^{max}}} $$
+
+$$ \mathrm{\eta_{L1RdB/p(Clk{\cdot}EU)}}_{\mathrm{num}} = \mathrm{L1RdB_{p(Clk{\cdot}EU)}} $$
 
 ### row 94 - L1_WRITE_B_EU_CLK_PCT
 
-$$ \mathrm{\eta_{L1WrB/p(Clk{\cdot}EU)}} = \frac{\mathrm{L1WrB_{p(Clk{\cdot}EU)}}}{\mathrm{L1WrBW_{BpClk{\cdot}EU}^{max}}} $$
+$$ \mathrm{\eta_{L1WrB/p(Clk{\cdot}EU)}} = \frac{\mathrm{\eta_{L1WrB/p(Clk{\cdot}EU)}}_{\mathrm{num}}}{\mathrm{L1WrBW_{BpClk{\cdot}EU}^{max}}} $$
+
+$$ \mathrm{\eta_{L1WrB/p(Clk{\cdot}EU)}}_{\mathrm{num}} = \mathrm{L1WrB_{p(Clk{\cdot}EU)}} $$
 
 ### row 106 - L2_HIT_RATE_ASSUMED_RANDOM_ACCESS_WITHIN_THE_WORKING_DATA_SET_PCT
 
@@ -284,13 +342,15 @@ $$ \mathrm{P_{L2Miss, after 1st wave}^{(matB)}} = 1 - \mathrm{P_{L2Hit, after 1s
 
 ### row 116 - TOTAL_HBM_READ_B_AFTER_A_COMPLETION_OF_A_WAVE_CONSIDER_COLD_CACHE
 
+$$ \mathrm{MemRdB_{cold start}^{(wave)}} = \frac{\mathrm{MemRdB_{cold start}^{(wave)}}_{\mathrm{num}}}{2} $$
+
 $$
 \begin{aligned}
-\mathrm{MemRdB_{cold start}^{(wave)}} &= \frac{1}{2}\Big(\mathrm{Size_{B}^{(matA)}} \\
+\mathrm{MemRdB_{cold start}^{(wave)}}_{\mathrm{num}} &= \mathrm{Size_{B}^{(matA)}} \\
 &\quad + \mathrm{Size_{B}^{(matA)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matA)}} \\
 &\quad + \mathrm{Size_{B}^{(matB)}} \\
 &\quad + \mathrm{Size_{B}^{(matB)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matB)}} \\
-&\quad + \left(\mathrm{L2RdB_{total}} - \left(\mathrm{Size_{B}^{(matA)}} + \mathrm{Size_{B}^{(matA)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matA)}} + \mathrm{Size_{B}^{(matB)}} + \mathrm{Size_{B}^{(matB)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matB)}}\right)\right) \times \mathrm{L2MissRate}\Big)
+&\quad + \left(\mathrm{L2RdB_{total}} - \left(\mathrm{Size_{B}^{(matA)}} + \mathrm{Size_{B}^{(matA)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matA)}} + \mathrm{Size_{B}^{(matB)}} + \mathrm{Size_{B}^{(matB)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matB)}}\right)\right) \times \mathrm{L2MissRate}
 \end{aligned}
 $$
 
