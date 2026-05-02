@@ -1,3 +1,2 @@
-// Widen usable text area and scale display math to reduce equation overflow
-#set page(margin: (x: 1.2cm, y: 2cm))
-#show math.equation.where(block: true): set text(size: 0.76em)
+// Landscape orientation with normal margins to fit wide equations
+#set page(flipped: true, margin: (x: 1.5cm, y: 2cm))
