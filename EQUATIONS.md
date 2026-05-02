@@ -6,40 +6,71 @@ Output order: execution
 
 ## Machine Parameters (Pre-Defined)
 
-$\mathrm{f_{GHz}^{(GT)}}$ : GT Freq (GHz)  
-$\mathrm{|XeCU|}$ : XeCU count  
-$\mathrm{|XeCore|_{perXeCU}}$ : XeCore per XeCU  
-$\mathrm{|EU|_{perXeCore}}$ : EU per XeCore  
-$\mathrm{|L2Banks|_{perXeCU}}$ : L2 banks per XeCU  
-$\mathrm{L2BankSize_{MB}}$ : bank capacity (MB)  
-$\mathrm{D_{DPAS}}$ : DPAS depth  
-$\mathrm{\eta_{systolic}}$ : compute efficiency %  
-$\mathrm{L1RdBW_{Bp(Clk{\cdot}EU)}^{max}}$ : L1 read max (B/EU/clk)  
-$\mathrm{L1WrBW_{Bp(Clk{\cdot}EU)}^{max}}$ : L1 write max (B/EU/clk)  
-$\mathrm{GtiRdBW_{BpClk}^{max}}$ : GTI read max BW (B/clk)  
-$\mathrm{GtiWrBW_{BpClk}^{max}}$ : GTI write max BW (B/clk)  
-$\mathrm{MemBW_{GBps}^{max}}$ : max possible HBM BW (GB/s)  
+$\mathrm{f_{GHz}^{(GT)}}$ : GT Freq (GHz)
+
+$\mathrm{|XeCU|}$ : XeCU count
+
+$\mathrm{|XeCore|_{perXeCU}}$ : XeCore per XeCU
+
+$\mathrm{|EU|_{perXeCore}}$ : EU per XeCore
+
+$\mathrm{|L2Banks|_{perXeCU}}$ : L2 banks per XeCU
+
+$\mathrm{L2BankSize_{MB}}$ : bank capacity (MB)
+
+$\mathrm{D_{DPAS}}$ : DPAS depth
+
+$\mathrm{\eta_{systolic}}$ : compute efficiency %
+
+$\mathrm{L1RdBW_{Bp(Clk{\cdot}EU)}^{max}}$ : L1 read max (B/EU/clk)
+
+$\mathrm{L1WrBW_{Bp(Clk{\cdot}EU)}^{max}}$ : L1 write max (B/EU/clk)
+
+$\mathrm{GtiRdBW_{BpClk}^{max}}$ : GTI read max BW (B/clk)
+
+$\mathrm{GtiWrBW_{BpClk}^{max}}$ : GTI write max BW (B/clk)
+
+$\mathrm{MemBW_{GBps}^{max}}$ : max possible HBM BW (GB/s)
+
 
 ## Workload Parameters (Pre-Defined)
 
-$\mathrm{Fmt^{(matA)}}$ : input A data format (e.g. fp8)  
-$\mathrm{Fmt^{(matB)}}$ : input B data format (e.g. fp4)  
-$\mathrm{Fmt^{(matD\downarrow)}}$ : output D data format (e.g. fp8)  
-$\mathrm{M_{dim}}$ : M dimension  
-$\mathrm{K_{dim}}$ : K dimension  
-$\mathrm{N_{dim}}$ : N dimension  
-$\mathrm{Byte_{perElement}^{(matD)}}$ : output bytes per element (fp32)  
-$\mathrm{\rho_{GT}}$ : machine occupancy %  
-$\mathrm{M_{perThread}}$ : M per thread  
-$\mathrm{K_{perThread}}$ : K per thread  
-$\mathrm{N_{perThread}}$ : N per thread  
-$\mathrm{W_{thread}^{(ThreadGroup)}}$ : TG width in units of thread  
-$\mathrm{H_{thread}^{(ThreadGroup)}}$ : TG height in units of thread  
-$\mathrm{W_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)}}$ : XeCore cluster width in units of TG (keep cluster size as 4)  
-$\mathrm{H_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)}}$ : XeCore cluster height in units of TG (keep cluster size as 4)  
-$\mathrm{W_{TG}^{(XECUTile)}}$ : XeCU tile width in units of TG  
-$\mathrm{H_{TG}^{(XECUTile)}}$ : XeCU tile height in units of TG  
-$\mathrm{W_{XeCU}^{(GPUTile)}}$ : GPU tile width in XeCU unit  
+$\mathrm{Fmt^{(matA)}}$ : input A data format (e.g. fp8)
+
+$\mathrm{Fmt^{(matB)}}$ : input B data format (e.g. fp4)
+
+$\mathrm{Fmt^{(matD\downarrow)}}$ : output D data format (e.g. fp8)
+
+$\mathrm{M_{dim}}$ : M dimension
+
+$\mathrm{K_{dim}}$ : K dimension
+
+$\mathrm{N_{dim}}$ : N dimension
+
+$\mathrm{Byte_{perElement}^{(matD)}}$ : output bytes per element (fp32)
+
+$\mathrm{\rho_{GT}}$ : machine occupancy %
+
+$\mathrm{M_{perThread}}$ : M per thread
+
+$\mathrm{K_{perThread}}$ : K per thread
+
+$\mathrm{N_{perThread}}$ : N per thread
+
+$\mathrm{W_{thread}^{(ThreadGroup)}}$ : TG width in units of thread
+
+$\mathrm{H_{thread}^{(ThreadGroup)}}$ : TG height in units of thread
+
+$\mathrm{W_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)}}$ : XeCore cluster width in units of TG (keep cluster size as 4)
+
+$\mathrm{H_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)}}$ : XeCore cluster height in units of TG (keep cluster size as 4)
+
+$\mathrm{W_{TG}^{(XECUTile)}}$ : XeCU tile width in units of TG
+
+$\mathrm{H_{TG}^{(XECUTile)}}$ : XeCU tile height in units of TG
+
+$\mathrm{W_{XeCU}^{(GPUTile)}}$ : GPU tile width in XeCU unit
+
 
 ## Computed Equations
 
