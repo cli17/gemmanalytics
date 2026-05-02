@@ -6,71 +6,40 @@ Output order: execution
 
 ## Machine Parameters (Pre-Defined)
 
-$$ {\mathrm{f}}_{GHz}^{(GT)} \;:\; \text{row 8: GT Freq (GHz)} $$
-
-$$ \mathrm{|XeCU|} \;:\; \text{row 26: XeCU count} $$
-
-$$ {\mathrm{|XeCore|}}_{perXeCU} \;:\; \text{row 27: XeCore per XeCU} $$
-
-$$ {\mathrm{|EU|}}_{perXeCore} \;:\; \text{row 28: EU per XeCore} $$
-
-$$ {\mathrm{|L2Banks|}}_{perXeCU} \;:\; \text{row 29: L2 banks per XeCU} $$
-
-$$ {\mathrm{L2BankSize}}_{MB} \;:\; \text{row 30: bank capacity (MB)} $$
-
-$$ {\mathrm{D}}_{DPAS} \;:\; \text{row 32: DPAS depth} $$
-
-$$ {\mathrm{\eta}}_{systolic} \;:\; \text{row 35: compute efficiency \%} $$
-
-$$ {\mathrm{L1RdBW}}_{Bp(Clk{\cdot}EU)}^{max} \;:\; \text{row 86: L1 read max (B/EU/clk)} $$
-
-$$ {\mathrm{L1WrBW}}_{Bp(Clk{\cdot}EU)}^{max} \;:\; \text{row 87: L1 write max (B/EU/clk)} $$
-
-$$ {\mathrm{GtiRdBW}}_{BpClk}^{max} \;:\; \text{row 97: GTI read max BW (B/clk)} $$
-
-$$ {\mathrm{GtiWrBW}}_{BpClk}^{max} \;:\; \text{row 98: GTI write max BW (B/clk)} $$
-
-$$ {\mathrm{MemBW}}_{GBps}^{max} \;:\; \text{row 124: max possible HBM BW (GB/s)} $$
-
+[row 8] GT_FREQ_GHZ : GT Freq (GHz)
+[row 26] XECU_COUNT : XeCU count
+[row 27] XECORE_PER_XECU : XeCore per XeCU
+[row 28] EU_PER_XECORE : EU per XeCore
+[row 29] L2_BANKS_PER_XECU : L2 banks per XeCU
+[row 30] BANK_CAPACITY_MB : bank capacity (MB)
+[row 32] DPAS_DEPTH : DPAS depth
+[row 35] COMPUTE_EFFICIENCY_PCT : compute efficiency %
+[row 86] L1_READ_MAX_B_EU_CLK : L1 read max (B/EU/clk)
+[row 87] L1_WRITE_MAX_B_EU_CLK : L1 write max (B/EU/clk)
+[row 97] GTI_READ_MAX_BW_B_CLK : GTI read max BW (B/clk)
+[row 98] GTI_WRITE_MAX_BW_B_CLK : GTI write max BW (B/clk)
+[row 124] MAX_POSSIBLE_HBM_BW_GB_S : max possible HBM BW (GB/s)
 
 ## Workload Parameters (Pre-Defined)
 
-$$ {\mathrm{Fmt}}^{(matA)} \;:\; \text{row 3: input A data format (e.g. fp8)} $$
-
-$$ {\mathrm{Fmt}}^{(matB)} \;:\; \text{row 4: input B data format (e.g. fp4)} $$
-
-$$ {\mathrm{Fmt}}^{(matD\downarrow)} \;:\; \text{row 5: output D data format (e.g. fp8)} $$
-
-$$ {\mathrm{M}}_{dim} \;:\; \text{row 9: M dimension} $$
-
-$$ {\mathrm{K}}_{dim} \;:\; \text{row 10: K dimension} $$
-
-$$ {\mathrm{N}}_{dim} \;:\; \text{row 11: N dimension} $$
-
-$$ {\mathrm{Byte}}_{perElement}^{(matD)} \;:\; \text{row 24: output bytes per element (fp32)} $$
-
-$$ {\mathrm{\rho}}_{GT} \;:\; \text{row 34: machine occupancy \%} $$
-
-$$ {\mathrm{M}}_{perThread} \;:\; \text{row 39: M per thread} $$
-
-$$ {\mathrm{K}}_{perThread} \;:\; \text{row 40: K per thread} $$
-
-$$ {\mathrm{N}}_{perThread} \;:\; \text{row 41: N per thread} $$
-
-$$ {\mathrm{W}}_{thread}^{(ThreadGroup)} \;:\; \text{row 45: TG width in units of thread} $$
-
-$$ {\mathrm{H}}_{thread}^{(ThreadGroup)} \;:\; \text{row 46: TG height in units of thread} $$
-
-$$ {\mathrm{W}}_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)} \;:\; \text{row 50: XeCore cluster width in units of TG (keep cluster size as 4)} $$
-
-$$ {\mathrm{H}}_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)} \;:\; \text{row 51: XeCore cluster height in units of TG (keep cluster size as 4)} $$
-
-$$ {\mathrm{W}}_{TG}^{(XECUTile)} \;:\; \text{row 54: XeCU tile width in units of TG} $$
-
-$$ {\mathrm{H}}_{TG}^{(XECUTile)} \;:\; \text{row 55: XeCU tile height in units of TG} $$
-
-$$ {\mathrm{W}}_{XeCU}^{(GPUTile)} \;:\; \text{row 58: GPU tile width in XeCU unit} $$
-
+[row 3] INPUT_A_DATA_FORMAT : input A data format (e.g. fp8)
+[row 4] INPUT_B_DATA_FORMAT : input B data format (e.g. fp4)
+[row 5] OUTPUT_D_DATA_FORMAT : output D data format (e.g. fp8)
+[row 9] M : M dimension
+[row 10] K : K dimension
+[row 11] N : N dimension
+[row 24] OUTPUT_BYTES_PER_ELEMENT_FP32 : output bytes per element (fp32)
+[row 34] MACHINE_OCCUPANCY_PCT : machine occupancy %
+[row 39] M_PER_THREAD : M per thread
+[row 40] K_PER_THREAD : K per thread
+[row 41] N_PER_THREAD : N per thread
+[row 45] TG_WIDTH_IN_UNITS_OF_THREAD : TG width in units of thread
+[row 46] TG_HEIGHT_IN_UNITS_OF_THREAD : TG height in units of thread
+[row 50] XECORE_CLUSTER_WIDTH_IN_UNITS_OF_TG_KEEP_THE_CLUSTER_SIZE_AS_4 : XeCore cluster width in units of TG (keep cluster size as 4)
+[row 51] XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_TG_KEEP_THE_CLUSTER_SIZE_AS_4 : XeCore cluster height in units of TG (keep cluster size as 4)
+[row 54] XECU_TILE_WIDTH_IN_UNITS_OF_TG : XeCU tile width in units of TG
+[row 55] XECU_TILE_HEIGHT_IN_UNITS_OF_TG : XeCU tile height in units of TG
+[row 58] GPU_TILE_WIDTH_IN_XECU_UNIT : GPU tile width in XeCU unit
 
 ## Computed Equations
 
