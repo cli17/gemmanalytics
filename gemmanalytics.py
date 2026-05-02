@@ -1133,6 +1133,7 @@ def build_equations_markdown(output_order: str = 'execution') -> str:
         row = ROW_INDEX.get(name, '?')
         base_desc = PARAM_DESCRIPTIONS.get(name, name)
         lines.append(f'[row {row}] {name} : {base_desc}')
+        lines.append('')
     lines.append('')
 
     # --- Section: Workload Parameters (Pre-Defined) ---
@@ -1142,6 +1143,7 @@ def build_equations_markdown(output_order: str = 'execution') -> str:
         row = ROW_INDEX.get(name, '?')
         base_desc = PARAM_DESCRIPTIONS.get(name, name)
         lines.append(f'[row {row}] {name} : {base_desc}')
+        lines.append('')
     lines.append('')
 
     # --- Computed equations (skip pre-defined inputs already listed above) ---

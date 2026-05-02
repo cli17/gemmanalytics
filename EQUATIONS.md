@@ -7,39 +7,70 @@ Output order: execution
 ## Machine Parameters (Pre-Defined)
 
 [row 8] GT_FREQ_GHZ : GT Freq (GHz)
+
 [row 26] XECU_COUNT : XeCU count
+
 [row 27] XECORE_PER_XECU : XeCore per XeCU
+
 [row 28] EU_PER_XECORE : EU per XeCore
+
 [row 29] L2_BANKS_PER_XECU : L2 banks per XeCU
+
 [row 30] BANK_CAPACITY_MB : bank capacity (MB)
+
 [row 32] DPAS_DEPTH : DPAS depth
+
 [row 35] COMPUTE_EFFICIENCY_PCT : compute efficiency %
+
 [row 86] L1_READ_MAX_B_EU_CLK : L1 read max (B/EU/clk)
+
 [row 87] L1_WRITE_MAX_B_EU_CLK : L1 write max (B/EU/clk)
+
 [row 97] GTI_READ_MAX_BW_B_CLK : GTI read max BW (B/clk)
+
 [row 98] GTI_WRITE_MAX_BW_B_CLK : GTI write max BW (B/clk)
+
 [row 124] MAX_POSSIBLE_HBM_BW_GB_S : max possible HBM BW (GB/s)
+
 
 ## Workload Parameters (Pre-Defined)
 
 [row 3] INPUT_A_DATA_FORMAT : input A data format (e.g. fp8)
+
 [row 4] INPUT_B_DATA_FORMAT : input B data format (e.g. fp4)
+
 [row 5] OUTPUT_D_DATA_FORMAT : output D data format (e.g. fp8)
+
 [row 9] M : M dimension
+
 [row 10] K : K dimension
+
 [row 11] N : N dimension
+
 [row 24] OUTPUT_BYTES_PER_ELEMENT_FP32 : output bytes per element (fp32)
+
 [row 34] MACHINE_OCCUPANCY_PCT : machine occupancy %
+
 [row 39] M_PER_THREAD : M per thread
+
 [row 40] K_PER_THREAD : K per thread
+
 [row 41] N_PER_THREAD : N per thread
+
 [row 45] TG_WIDTH_IN_UNITS_OF_THREAD : TG width in units of thread
+
 [row 46] TG_HEIGHT_IN_UNITS_OF_THREAD : TG height in units of thread
+
 [row 50] XECORE_CLUSTER_WIDTH_IN_UNITS_OF_TG_KEEP_THE_CLUSTER_SIZE_AS_4 : XeCore cluster width in units of TG (keep cluster size as 4)
+
 [row 51] XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_TG_KEEP_THE_CLUSTER_SIZE_AS_4 : XeCore cluster height in units of TG (keep cluster size as 4)
+
 [row 54] XECU_TILE_WIDTH_IN_UNITS_OF_TG : XeCU tile width in units of TG
+
 [row 55] XECU_TILE_HEIGHT_IN_UNITS_OF_TG : XeCU tile height in units of TG
+
 [row 58] GPU_TILE_WIDTH_IN_XECU_UNIT : GPU tile width in XeCU unit
+
 
 ## Computed Equations
 
