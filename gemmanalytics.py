@@ -847,17 +847,66 @@ def _split_top_level_additive(expr: str) -> list[str]:
     return parts
 
 
+def _brace_extract(s: str, start: int) -> tuple[str, int]:
+    """Extract the content of balanced braces starting at index 'start' (must be '{').
+    Returns (content, index_after_closing_brace)."""
+    assert s[start] == '{'
+    depth = 0
+    i = start
+    while i < len(s):
+        if s[i] == '{':
+            depth += 1
+        elif s[i] == '}':
+            depth -= 1
+            if depth == 0:
+                return s[start + 1:i], i + 1
+        i += 1
+    raise ValueError('Unmatched brace in LaTeX expression')
+
+
+def _extract_top_frac(s: str) -> tuple[str, str] | None:
+    """If s is exactly \\frac{num}{den} with nothing trailing, return (num, den), else None."""
+    prefix = r'\frac{'
+    if not s.startswith(prefix):
+        return None
+    try:
+        num, after_num = _brace_extract(s, len(prefix) - 1)
+        if after_num >= len(s) or s[after_num] != '{':
+            return None
+        den, after_den = _brace_extract(s, after_num)
+        if after_den != len(s):
+            return None
+        return num, den
+    except (ValueError, AssertionError):
+        return None
+
+
 def _equation_block(lhs: str, rhs: str, threshold: int = 100) -> str:
     """Return a markdown display-math block, wrapping to aligned env if the equation is long."""
     if len(lhs) + len(rhs) + 5 <= threshold:
         return f'$$ {lhs} = {rhs} $$'
+
+    # Case 1: top-level additive — split on + / -
     parts = _split_top_level_additive(rhs)
-    if len(parts) <= 1:
-        return f'$$ {lhs} = {rhs} $$'
-    inner = f'{lhs} &= {parts[0]}'
-    for p in parts[1:]:
-        inner += f' \\\\\n&\\quad {p}'
-    return f'$$\n\\begin{{aligned}}\n{inner}\n\\end{{aligned}}\n$$'
+    if len(parts) > 1:
+        inner = f'{lhs} &= {parts[0]}'
+        for p in parts[1:]:
+            inner += f' \\\\\n&\\quad {p}'
+        return f'$$\n\\begin{{aligned}}\n{inner}\n\\end{{aligned}}\n$$'
+
+    # Case 2: single top-level \frac with a long numerator — factor out and split numerator
+    frac = _extract_top_frac(rhs)
+    if frac:
+        num, den = frac
+        num_parts = _split_top_level_additive(num)
+        if len(num_parts) > 1:
+            inner = f'{lhs} &= \\frac{{1}}{{{den}}}\\Big({num_parts[0]}'
+            for p in num_parts[1:]:
+                inner += f' \\\\\n&\\quad {p}'
+            inner += r'\Big)'
+            return f'$$\n\\begin{{aligned}}\n{inner}\n\\end{{aligned}}\n$$'
+
+    return f'$$ {lhs} = {rhs} $$'
 
 
 def build_equations_markdown(output_order: str = 'execution') -> str:
