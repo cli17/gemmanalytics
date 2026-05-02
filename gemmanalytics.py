@@ -1088,7 +1088,7 @@ def build_equations_markdown(output_order: str = 'execution') -> str:
     for name in MACHINE_PRE_NAMES:
         sym = latex_symbol_for(name)
         desc = PARAM_DESCRIPTIONS.get(name, name)
-        lines.append(f'$${sym}$$ : {desc}')
+        lines.append(f'${sym}$ : {desc}  ')
     lines.append('')
 
     # --- Section: Workload Parameters (Pre-Defined) ---
@@ -1097,7 +1097,7 @@ def build_equations_markdown(output_order: str = 'execution') -> str:
     for name in FORMAT_KEY_NAMES + WORKLOAD_PRE_NAMES:
         sym = latex_symbol_for(name)
         desc = PARAM_DESCRIPTIONS.get(name, name)
-        lines.append(f'$${sym}$$ : {desc}')
+        lines.append(f'${sym}$ : {desc}  ')
     lines.append('')
 
     # --- Computed equations (skip pre-defined inputs already listed above) ---
