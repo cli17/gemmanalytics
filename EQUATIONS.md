@@ -22,15 +22,15 @@ $$ \mathrm{|EU|} = \mathrm{|XeCore|_{perXeCU}} \times \mathrm{|EU|_{perXeCore}} 
 
 ### row 36a - MMA MAC THROUGHPUT PER EU
 
-$$ \mathrm{\tau_{mMACpClk{\cdot}EU}^{(peak)}} = \frac{4}{max(\mathrm{Bytes_{perElement}^{(matA)}}, \mathrm{Bytes_{perElement}^{(matB)}})} \times \mathrm{D_{DPAS}} \times 16 $$
+$$ \mathrm{\tau_{mMACp(Clk{\cdot}EU)}^{(peak)}} = \frac{4}{max(\mathrm{Bytes_{perElement}^{(matA)}}, \mathrm{Bytes_{perElement}^{(matB)}})} \times \mathrm{D_{DPAS}} \times 16 $$
 
 ### row 36 - MMA MAC THROUGHPUT PER XECORE
 
-$$ \mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}} = \mathrm{\tau_{mMACpClk{\cdot}EU}^{(peak)}} \times \mathrm{|EU|_{perXeCore}} $$
+$$ \mathrm{\tau_{mMACp(Clk{\cdot}XeCore)}^{(peak)}} = \mathrm{\tau_{mMACp(Clk{\cdot}EU)}^{(peak)}} \times \mathrm{|EU|_{perXeCore}} $$
 
 ### row 42 - CLKS PER DPAS
 
-$$ \mathrm{CLKS_{DPAS}} = \frac{\mathrm{M_{perThread}} \times \mathrm{K_{perThread}} \times \mathrm{N_{perThread}}}{\frac{\mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}}}{\mathrm{|EU|_{perXeCore}}}} $$
+$$ \mathrm{CLKS_{DPAS}} = \frac{\mathrm{M_{perThread}} \times \mathrm{K_{perThread}} \times \mathrm{N_{perThread}}}{\frac{\mathrm{\tau_{mMACp(Clk{\cdot}XeCore)}^{(peak)}}}{\mathrm{|EU|_{perXeCore}}}} $$
 
 ### row 43 - THREAD WIDTH IN UNITS OF ELEMENTS
 
@@ -159,7 +159,7 @@ $$ \mathrm{WL_{MAC}^{(XeCore)}} = \frac{\mathrm{M_{dim}} \times \mathrm{K_{dim}}
 
 ### row 37 - CLK SPECIFIED EFFICIENCY
 
-$$ \mathrm{T_{clk}^{(total)}} = \frac{\mathrm{WL_{MAC}^{(XeCore)}}}{\mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}} \times \mathrm{\eta_{systolic}}} $$
+$$ \mathrm{T_{clk}^{(total)}} = \frac{\mathrm{WL_{MAC}^{(XeCore)}}}{\mathrm{\tau_{mMACp(Clk{\cdot}XeCore)}^{(peak)}} \times \mathrm{\eta_{systolic}}} $$
 
 ### row 69 - TOTAL L2 READ B
 
