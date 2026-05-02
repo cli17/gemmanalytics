@@ -20,7 +20,7 @@ $$ \mathrm{Bytes_{perElement}^{(matD\downarrow)}} = \mathrm{DataFormatToBytes}[\
 
 $$ \mathrm{|EU|} = \mathrm{|XeCore|_{perXeCU}} \times \mathrm{|EU|_{perXeCore}} \times \mathrm{|XeCU|} $$
 
-### row ? - MMA MAC THROUGHPUT PER EU
+### row 36a - MMA MAC THROUGHPUT PER EU
 
 $$ \mathrm{\tau_{mMACpClk{\cdot}EU}^{(peak)}} = \frac{4}{max(\mathrm{Bytes_{perElement}^{(matA)}}, \mathrm{Bytes_{perElement}^{(matB)}})} \times \mathrm{D_{DPAS}} \times 16 $$
 
