@@ -1084,14 +1084,17 @@ def build_equations_markdown(output_order: str = 'execution') -> str:
 
     for name in item_order:
         formula = PYTHON_FORMULAS.get(name, '')
-        if not formula:
-            continue
         row = ROW_INDEX.get(name, '?')
         lines.extend(_format_equation_header(row, name))
         lines.append('')
         lhs = latex_symbol_for(name)
-        rhs = _formula_to_latex_expr(formula)
-        lines.append(_equation_block(lhs, rhs))
+        if not formula:
+            lines.append(f'$$ {lhs} $$')
+            lines.append('')
+            lines.append('*input parameter*')
+        else:
+            rhs = _formula_to_latex_expr(formula)
+            lines.append(_equation_block(lhs, rhs))
         lines.append('')
 
     return '\n'.join(lines).rstrip() + '\n'
