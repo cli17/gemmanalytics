@@ -1040,6 +1040,18 @@ def _equation_block(lhs: str, rhs: str, threshold: int = 100) -> str:
     return f'$$ {lhs} = {rhs} $$'
 
 
+def _latex_text_escape(text: str) -> str:
+    """Escape plain text for safe use inside LaTeX \text{...}."""
+    escaped = text
+    escaped = escaped.replace('\\', r'\textbackslash{}')
+    escaped = escaped.replace('{', r'\{').replace('}', r'\}')
+    escaped = escaped.replace('#', r'\#').replace('$', r'\$')
+    escaped = escaped.replace('%', r'\%').replace('&', r'\&')
+    escaped = escaped.replace('_', r'\_').replace('^', r'\^{}')
+    escaped = escaped.replace('~', r'\~{}')
+    return escaped
+
+
 def _format_equation_header(row: int | str, name: str, max_chars: int = 56) -> list[str]:
     """Format equation section headers and wrap long names at underscore boundaries."""
     words = name.split('_')
@@ -1088,7 +1100,7 @@ def build_equations_markdown(output_order: str = 'execution') -> str:
     for name in MACHINE_PRE_NAMES:
         sym = latex_symbol_for(name)
         desc = PARAM_DESCRIPTIONS.get(name, name)
-        lines.append(f'${sym}$ : {desc}')
+        lines.append(f'$$ {sym} \\;:\\; \\text{{{_latex_text_escape(desc)}}} $$')
         lines.append('')
     lines.append('')
 
@@ -1098,7 +1110,7 @@ def build_equations_markdown(output_order: str = 'execution') -> str:
     for name in FORMAT_KEY_NAMES + WORKLOAD_PRE_NAMES:
         sym = latex_symbol_for(name)
         desc = PARAM_DESCRIPTIONS.get(name, name)
-        lines.append(f'${sym}$ : {desc}')
+        lines.append(f'$$ {sym} \\;:\\; \\text{{{_latex_text_escape(desc)}}} $$')
         lines.append('')
     lines.append('')
 
