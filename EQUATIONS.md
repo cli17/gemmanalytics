@@ -4,193 +4,44 @@ Auto-generated from PYTHON_FORMULAS and LATEX_SYMBOL_OVERRIDES in gemmanalytics.
 
 Output order: execution
 
-### row 8 - GT FREQ GHZ
-
-$$ \mathrm{f_{GHz}^{(GT)}} $$
-
-*input parameter*
-
-### row 26 - XECU COUNT
-
-$$ \mathrm{|XeCU|} $$
-
-*input parameter*
-
-### row 27 - XECORE PER XECU
-
-$$ \mathrm{|XeCore|_{perXeCU}} $$
-
-*input parameter*
-
-### row 28 - EU PER XECORE
-
-$$ \mathrm{|EU|_{perXeCore}} $$
-
-*input parameter*
-
-### row 29 - L2 BANKS PER XECU
-
-$$ \mathrm{|L2Banks|_{perXeCU}} $$
-
-*input parameter*
-
-### row 30 - BANK CAPACITY MB
-
-$$ \mathrm{L2BankSize_{MB}} $$
-
-*input parameter*
-
-### row 32 - DPAS DEPTH
-
-$$ \mathrm{D_{DPAS}} $$
-
-*input parameter*
-
-### row 35 - COMPUTE EFFICIENCY PCT
-
-$$ \mathrm{\eta_{systolic}} $$
-
-*input parameter*
-
-### row 86 - L1 READ MAX B EU CLK
-
-$$ \mathrm{L1RdBW_{Bp(Clk{\cdot}EU)}^{max}} $$
-
-*input parameter*
-
-### row 87 - L1 WRITE MAX B EU CLK
-
-$$ \mathrm{L1WrBW_{Bp(Clk{\cdot}EU)}^{max}} $$
-
-*input parameter*
-
-### row 97 - GTI READ MAX BW B CLK
-
-$$ \mathrm{GtiRdBW_{BpClk}^{max}} $$
-
-*input parameter*
-
-### row 98 - GTI WRITE MAX BW B CLK
-
-$$ \mathrm{GtiWrBW_{BpClk}^{max}} $$
-
-*input parameter*
-
-### row 124 - MAX POSSIBLE HBM BW GB S
-
-$$ \mathrm{MemBW_{GBps}^{max}} $$
-
-*input parameter*
-
-### row 3 - INPUT A DATA FORMAT
-
-$$ \mathrm{Fmt^{(matA)}} $$
-
-*input parameter*
-
-### row 4 - INPUT B DATA FORMAT
-
-$$ \mathrm{Fmt^{(matB)}} $$
-
-*input parameter*
-
-### row 5 - OUTPUT D DATA FORMAT
-
-$$ \mathrm{Fmt^{(matD\downarrow)}} $$
-
-*input parameter*
-
-### row 9 - M
-
-$$ \mathrm{M_{dim}} $$
-
-*input parameter*
-
-### row 10 - K
-
-$$ \mathrm{K_{dim}} $$
-
-*input parameter*
-
-### row 11 - N
-
-$$ \mathrm{N_{dim}} $$
-
-*input parameter*
-
-### row 24 - OUTPUT BYTES PER ELEMENT FP32
-
-$$ \mathrm{Byte_{perElement}^{(matD)}} $$
-
-*input parameter*
-
-### row 34 - MACHINE OCCUPANCY PCT
-
-$$ \mathrm{\rho_{GT}} $$
-
-*input parameter*
-
-### row 39 - M PER THREAD
-
-$$ \mathrm{M_{perThread}} $$
-
-*input parameter*
-
-### row 40 - K PER THREAD
-
-$$ \mathrm{K_{perThread}} $$
-
-*input parameter*
-
-### row 41 - N PER THREAD
-
-$$ \mathrm{N_{perThread}} $$
-
-*input parameter*
-
-### row 45 - TG WIDTH IN UNITS OF THREAD
-
-$$ \mathrm{W_{thread}^{(ThreadGroup)}} $$
-
-*input parameter*
-
-### row 46 - TG HEIGHT IN UNITS OF THREAD
-
-$$ \mathrm{H_{thread}^{(ThreadGroup)}} $$
-
-*input parameter*
-
-### row 50 - XECORE CLUSTER WIDTH IN UNITS OF TG KEEP THE CLUSTER
-### SIZE AS 4
-
-$$ \mathrm{W_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)}} $$
-
-*input parameter*
-
-### row 51 - XECORE CLUSTER HEIGHT IN UNITS OF TG KEEP THE CLUSTER
-### SIZE AS 4
-
-$$ \mathrm{H_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)}} $$
-
-*input parameter*
-
-### row 54 - XECU TILE WIDTH IN UNITS OF TG
-
-$$ \mathrm{W_{TG}^{(XECUTile)}} $$
-
-*input parameter*
-
-### row 55 - XECU TILE HEIGHT IN UNITS OF TG
-
-$$ \mathrm{H_{TG}^{(XECUTile)}} $$
-
-*input parameter*
-
-### row 58 - GPU TILE WIDTH IN XECU UNIT
-
-$$ \mathrm{W_{XeCU}^{(GPUTile)}} $$
-
-*input parameter*
+## Machine Parameters (Pre-Defined)
+
+$$\mathrm{f_{GHz}^{(GT)}}$$ : GT Freq (GHz)
+$$\mathrm{|XeCU|}$$ : XeCU count
+$$\mathrm{|XeCore|_{perXeCU}}$$ : XeCore per XeCU
+$$\mathrm{|EU|_{perXeCore}}$$ : EU per XeCore
+$$\mathrm{|L2Banks|_{perXeCU}}$$ : L2 banks per XeCU
+$$\mathrm{L2BankSize_{MB}}$$ : bank capacity (MB)
+$$\mathrm{D_{DPAS}}$$ : DPAS depth
+$$\mathrm{\eta_{systolic}}$$ : compute efficiency %
+$$\mathrm{L1RdBW_{Bp(Clk{\cdot}EU)}^{max}}$$ : L1 read max (B/EU/clk)
+$$\mathrm{L1WrBW_{Bp(Clk{\cdot}EU)}^{max}}$$ : L1 write max (B/EU/clk)
+$$\mathrm{GtiRdBW_{BpClk}^{max}}$$ : GTI read max BW (B/clk)
+$$\mathrm{GtiWrBW_{BpClk}^{max}}$$ : GTI write max BW (B/clk)
+$$\mathrm{MemBW_{GBps}^{max}}$$ : max possible HBM BW (GB/s)
+
+## Workload Parameters (Pre-Defined)
+
+$$\mathrm{Fmt^{(matA)}}$$ : input A data format (e.g. fp8)
+$$\mathrm{Fmt^{(matB)}}$$ : input B data format (e.g. fp4)
+$$\mathrm{Fmt^{(matD\downarrow)}}$$ : output D data format (e.g. fp8)
+$$\mathrm{M_{dim}}$$ : M dimension
+$$\mathrm{K_{dim}}$$ : K dimension
+$$\mathrm{N_{dim}}$$ : N dimension
+$$\mathrm{Byte_{perElement}^{(matD)}}$$ : output bytes per element (fp32)
+$$\mathrm{\rho_{GT}}$$ : machine occupancy %
+$$\mathrm{M_{perThread}}$$ : M per thread
+$$\mathrm{K_{perThread}}$$ : K per thread
+$$\mathrm{N_{perThread}}$$ : N per thread
+$$\mathrm{W_{thread}^{(ThreadGroup)}}$$ : TG width in units of thread
+$$\mathrm{H_{thread}^{(ThreadGroup)}}$$ : TG height in units of thread
+$$\mathrm{W_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)}}$$ : XeCore cluster width in units of TG (keep cluster size as 4)
+$$\mathrm{H_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)}}$$ : XeCore cluster height in units of TG (keep cluster size as 4)
+$$\mathrm{W_{TG}^{(XECUTile)}}$$ : XeCU tile width in units of TG
+$$\mathrm{H_{TG}^{(XECUTile)}}$$ : XeCU tile height in units of TG
+$$\mathrm{W_{XeCU}^{(GPUTile)}}$$ : GPU tile width in XeCU unit
+
+## Computed Equations
 
 ### row 22 - INPUT A BYTES PER ELEMENT
 
