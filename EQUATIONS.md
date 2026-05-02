@@ -50,33 +50,33 @@ $$ \mathrm{N_waves} = \mathrm{CEILING}(\mathrm{|Tiles|_{N}^{(GPU)}}, 1) \times \
 
 $$ \mathrm{|Tiles|_{N}^{(TG)}} = \frac{\mathrm{|Tiles|_{N}^{(TG)}}_{\mathrm{num}}}{\mathrm{|Tiles|_{N}^{(TG)}}_{\mathrm{den}}} $$
 
-$$ \mathrm{|Tiles|_{N}^{(TG)}}_{\mathrm{num}} = \mathrm{N_dim} $$
+$$ \mathrm{|Tiles|_{N}^{(TG)}}_{\mathrm{num}} = \mathrm{N_{dim}} $$
 
 $$ \mathrm{|Tiles|_{N}^{(TG)}}_{\mathrm{den}} = \mathrm{W_{element}^{(ThreadGroup, realized\ by\ multiple\ MMA\ iterations)}} $$
 
 ### row 15 - TG_TILES_IN_M
 
-$$ \mathrm{|Tiles|_{M}^{(TG)}} = \frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(ThreadGroup)}}} $$
+$$ \mathrm{|Tiles|_{M}^{(TG)}} = \frac{\mathrm{M_{dim}}}{\mathrm{H_{element}^{(ThreadGroup)}}} $$
 
 ### row 16 - TG_CLUSTER_TILES_IN_N
 
 $$ \mathrm{|Tiles|_{N}^{(TG\ Cluster)}} = \frac{\mathrm{|Tiles|_{N}^{(TG\ Cluster)}}_{\mathrm{num}}}{\mathrm{W_{element}^{(XeCoreCluster)}}} $$
 
-$$ \mathrm{|Tiles|_{N}^{(TG\ Cluster)}}_{\mathrm{num}} = \mathrm{N_dim} $$
+$$ \mathrm{|Tiles|_{N}^{(TG\ Cluster)}}_{\mathrm{num}} = \mathrm{N_{dim}} $$
 
 ### row 17 - TG_CLUSTER_TILES_IN_M
 
 $$ \mathrm{|Tiles|_{M}^{(TG\ Cluster)}} = \frac{\mathrm{|Tiles|_{M}^{(TG\ Cluster)}}_{\mathrm{num}}}{\mathrm{H_{element}^{(XeCoreCluster)}}} $$
 
-$$ \mathrm{|Tiles|_{M}^{(TG\ Cluster)}}_{\mathrm{num}} = \mathrm{M_dim} $$
+$$ \mathrm{|Tiles|_{M}^{(TG\ Cluster)}}_{\mathrm{num}} = \mathrm{M_{dim}} $$
 
 ### row 18 - XECU_TILES_IN_N
 
-$$ \mathrm{|Tiles|_{N}^{(XeCU)}} = \frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(XeCUTile)}}} $$
+$$ \mathrm{|Tiles|_{N}^{(XeCU)}} = \frac{\mathrm{N_{dim}}}{\mathrm{W_{element}^{(XeCUTile)}}} $$
 
 ### row 19 - XECU_TILES_IN_M
 
-$$ \mathrm{|Tiles|_{M}^{(XeCU)}} = \frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(XeCUTile)}}} $$
+$$ \mathrm{|Tiles|_{M}^{(XeCU)}} = \frac{\mathrm{M_{dim}}}{\mathrm{H_{element}^{(XeCUTile)}}} $$
 
 ### row 20 - GPU_TILES_IN_N
 
@@ -84,7 +84,7 @@ $$ \mathrm{|Tiles|_{N}^{(GPU)}} = \frac{\mathrm{|Tiles|_{N}^{(GPU)}}_{\mathrm{nu
 
 $$ \mathrm{|Tiles|_{N}^{(GPU)}}_{\mathrm{num}} = \frac{\mathrm{|Tiles|_{N}^{(GPU)}}_{\mathrm{num}}_{\mathrm{num}}}{\mathrm{W_{element}^{(XeCUTile)}}} $$
 
-$$ \mathrm{|Tiles|_{N}^{(GPU)}}_{\mathrm{num}}_{\mathrm{num}} = \mathrm{N_dim} $$
+$$ \mathrm{|Tiles|_{N}^{(GPU)}}_{\mathrm{num}}_{\mathrm{num}} = \mathrm{N_{dim}} $$
 
 ### row 21 - GPU_TILES_IN_M
 
@@ -92,7 +92,7 @@ $$ \mathrm{|Tiles|_{M}^{(GPU)}} = \frac{\mathrm{|Tiles|_{M}^{(GPU)}}_{\mathrm{nu
 
 $$ \mathrm{|Tiles|_{M}^{(GPU)}}_{\mathrm{num}} = \frac{\mathrm{|Tiles|_{M}^{(GPU)}}_{\mathrm{num}}_{\mathrm{num}}}{\mathrm{H_{element}^{(XeCUTile)}}} $$
 
-$$ \mathrm{|Tiles|_{M}^{(GPU)}}_{\mathrm{num}}_{\mathrm{num}} = \mathrm{M_dim} $$
+$$ \mathrm{|Tiles|_{M}^{(GPU)}}_{\mathrm{num}}_{\mathrm{num}} = \mathrm{M_{dim}} $$
 
 ### row 43 - THREAD_WIDTH_IN_UNITS_OF_ELEMENTS
 
@@ -140,23 +140,23 @@ $$ \mathrm{H_{element}^{(GPUTile)}} = \mathrm{H_{XeCU}^{(GPUTile)}} \times \math
 
 ### row 63 - MAT_A_INPUT_SIZE_B
 
-$$ \mathrm{Size_{B}^{(matA)}} = \mathrm{M_dim} \times \mathrm{K_dim} \times \mathrm{Bytes_{pElement}^{(matA)}} $$
+$$ \mathrm{Size_{B}^{(matA)}} = \mathrm{M_{dim}} \times \mathrm{K_{dim}} \times \mathrm{Bytes_{pElement}^{(matA)}} $$
 
 ### row 64 - MAT_B_INPUT_SIZE_B
 
-$$ \mathrm{Size_{B}^{(matB)}} = \mathrm{K_dim} \times \mathrm{N_dim} \times \mathrm{Bytes_{pElement}^{(matB)}} $$
+$$ \mathrm{Size_{B}^{(matB)}} = \mathrm{K_{dim}} \times \mathrm{N_{dim}} \times \mathrm{Bytes_{pElement}^{(matB)}} $$
 
 ### row 65 - MAT_C_INPUT_D_OUTPUT_SIZE_B
 
-$$ \mathrm{Size_{matB}^{(matC,matD)}} = \mathrm{M_dim} \times \mathrm{N_dim} \times \mathrm{Bytes_{pElement}^{(D\downarrow)}} $$
+$$ \mathrm{Size_{B}^{(matC,matD)}} = \mathrm{M_{dim}} \times \mathrm{N_{dim}} \times \mathrm{Bytes_{pElement}^{(D\downarrow)}} $$
 
 ### row 66 - MAT_D_INTERMEDIATE_SIZE_B
 
-$$ \mathrm{Size_{B}^{(matD\downarrow)}} = \mathrm{M_dim} \times \mathrm{N_dim} \times \mathrm{Byte_{pElement}^{(matD)}} $$
+$$ \mathrm{Size_{B}^{(matD\downarrow)}} = \mathrm{M_{dim}} \times \mathrm{N_{dim}} \times \mathrm{Byte_{pElement}^{(matD)}} $$
 
 ### row 103 - WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE
 
-$$ \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}} = \min(20000 \times \frac{\mathrm{K_{pThread}}}{\mathrm{CLKS_{DPAS}}}, \mathrm{K_dim}) $$
+$$ \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}} = \min(20000 \times \frac{\mathrm{K_{pThread}}}{\mathrm{CLKS_{DPAS}}}, \mathrm{K_{dim}}) $$
 
 ### row 104 - TOTAL_REQUIRED_L2_SIZE_FOR_IDEAL_HIT_RATE_B_FOR_A_SINGLE_INSTANCE_AND_SINGLE_WAVE
 
@@ -178,33 +178,33 @@ $$ \mathrm{T_{clk}^{(total)}}_{\mathrm{num}}_{\mathrm{num}} = \frac{\mathrm{T_{c
 
 $$ \mathrm{T_{clk}^{(total)}}_{\mathrm{num}}_{\mathrm{num}}_{\mathrm{num}} = \frac{\mathrm{T_{clk}^{(total)}}_{\mathrm{num}}_{\mathrm{num}}_{\mathrm{num}}_{\mathrm{num}}}{\mathrm{|XeCore|_{pXeCU}}} $$
 
-$$ \mathrm{T_{clk}^{(total)}}_{\mathrm{num}}_{\mathrm{num}}_{\mathrm{num}}_{\mathrm{num}} = \mathrm{M_dim} \times \mathrm{K_dim} \times \mathrm{N_dim} $$
+$$ \mathrm{T_{clk}^{(total)}}_{\mathrm{num}}_{\mathrm{num}}_{\mathrm{num}}_{\mathrm{num}} = \mathrm{M_{dim}} \times \mathrm{K_{dim}} \times \mathrm{N_{dim}} $$
 
 ### row 69 - TOTAL_L2_READ_B
 
 $$
 \begin{aligned}
-\mathrm{L2Rd_{B}^{(total)}} &= \mathrm{Size_{B}^{(matA)}} \times \mathrm{CEILING}(\frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(ThreadGroup, realized\ by\ multiple\ MMA\ iterations)}}}, 1) \\
-&\quad + \mathrm{Size_{B}^{(matB)}} \times \mathrm{CEILING}(\frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(ThreadGroup)}}}, 1)
+\mathrm{L2Rd_{B}^{(total)}} &= \mathrm{Size_{B}^{(matA)}} \times \mathrm{CEILING}(\frac{\mathrm{N_{dim}}}{\mathrm{W_{element}^{(ThreadGroup, realized\ by\ multiple\ MMA\ iterations)}}}, 1) \\
+&\quad + \mathrm{Size_{B}^{(matB)}} \times \mathrm{CEILING}(\frac{\mathrm{M_{dim}}}{\mathrm{H_{element}^{(ThreadGroup)}}}, 1)
 \end{aligned}
 $$
 
 ### row 70 - TOTAL_L2_WRITE_B
 
-$$ \mathrm{L2Wr_{B}^{(total)}} = \mathrm{Size_{matB}^{(matC,matD)}} $$
+$$ \mathrm{L2Wr_{B}^{(total)}} = \mathrm{Size_{B}^{(matC,matD)}} $$
 
 ### row 71 - TOTAL_L1_READ_B
 
 $$
 \begin{aligned}
-\mathrm{L1Rd_{B}^{(total)}} &= \mathrm{Size_{B}^{(matA)}} \times \mathrm{CEILING}(\frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(Thread)}}}, 1) \\
-&\quad + \mathrm{Size_{B}^{(matB)}} \times \mathrm{CEILING}(\frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(Thread)}}}, 1)
+\mathrm{L1Rd_{B}^{(total)}} &= \mathrm{Size_{B}^{(matA)}} \times \mathrm{CEILING}(\frac{\mathrm{N_{dim}}}{\mathrm{W_{element}^{(Thread)}}}, 1) \\
+&\quad + \mathrm{Size_{B}^{(matB)}} \times \mathrm{CEILING}(\frac{\mathrm{M_{dim}}}{\mathrm{H_{element}^{(Thread)}}}, 1)
 \end{aligned}
 $$
 
 ### row 72 - TOTAL_L1_WRITE_B
 
-$$ \mathrm{L1Wr_{B}^{(total)}} = \mathrm{Size_{matB}^{(matC,matD)}} $$
+$$ \mathrm{L1Wr_{B}^{(total)}} = \mathrm{Size_{B}^{(matC,matD)}} $$
 
 ### row 74 - L2_READ_B_XECORE_CLK
 
@@ -317,8 +317,8 @@ $$
 \begin{aligned}
 \mathrm{P_{L2Hit, after 1st wave}^{(matA)}} &= \mathrm{IF}(\mathrm{Size_{B}^{(matA)}} \\
 &\quad + \mathrm{Size_{B}^{(matB)}} \\
-&\quad + \mathrm{Size_{matB}^{(matC,matD)}} \le \mathrm{|L2Bytes|}, 1.0, \mathrm{IF}(\mathrm{K_dim} > 2 \times \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}, 0.0, 1 \\
-&\quad - \frac{\mathrm{K_dim} - \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}}{\mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}}))
+&\quad + \mathrm{Size_{B}^{(matC,matD)}} \le \mathrm{|L2Bytes|}, 1.0, \mathrm{IF}(\mathrm{K_{dim}} > 2 \times \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}, 0.0, 1 \\
+&\quad - \frac{\mathrm{K_{dim}} - \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}}{\mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}}))
 \end{aligned}
 $$
 
@@ -328,7 +328,7 @@ $$
 \begin{aligned}
 \mathrm{P_{L2Hit, after 1st wave}^{(matB)}} &= \mathrm{IF}(\mathrm{Size_{B}^{(matA)}} \\
 &\quad + \mathrm{Size_{B}^{(matB)}} \\
-&\quad + \mathrm{Size_{matB}^{(matC,matD)}} \le \mathrm{|L2Bytes|}, 1.0, 0.0)
+&\quad + \mathrm{Size_{B}^{(matC,matD)}} \le \mathrm{|L2Bytes|}, 1.0, 0.0)
 \end{aligned}
 $$
 
@@ -347,16 +347,32 @@ $$ \mathrm{MemRdB_{cold start}^{(wave)}} = \frac{\mathrm{MemRdB_{cold start}^{(w
 $$
 \begin{aligned}
 \mathrm{MemRdB_{cold start}^{(wave)}}_{\mathrm{num}} &= \mathrm{Size_{B}^{(matA)}} \\
-&\quad + \mathrm{Size_{B}^{(matA)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matA)}} \\
+&\quad + \mathrm{Size_{B}^{(matA)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{N_{dim}}}{\mathrm{W_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matA)}} \\
 &\quad + \mathrm{Size_{B}^{(matB)}} \\
-&\quad + \mathrm{Size_{B}^{(matB)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matB)}} \\
-&\quad + \left(\mathrm{L2RdB_{total}} - \left(\mathrm{Size_{B}^{(matA)}} + \mathrm{Size_{B}^{(matA)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{N_dim}}{\mathrm{W_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matA)}} + \mathrm{Size_{B}^{(matB)}} + \mathrm{Size_{B}^{(matB)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{M_dim}}{\mathrm{H_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matB)}}\right)\right) \times \mathrm{L2MissRate}
+&\quad + \mathrm{Size_{B}^{(matB)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{M_{dim}}}{\mathrm{H_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matB)}} \\
+&\quad + \mathrm{MemRdB_{cold start}^{(wave)}}_{\mathrm{num}}_{\mathrm{aux4}} \times \mathrm{L2MissRate}
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\mathrm{MemRdB_{cold start}^{(wave)}}_{\mathrm{num}}_{\mathrm{aux4}} &= \mathrm{L2RdB_{total}} \\
+&\quad - \mathrm{MemRdB_{cold start}^{(wave)}}_{\mathrm{num}}_{\mathrm{aux4}}_{\mathrm{aux1}}
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\mathrm{MemRdB_{cold start}^{(wave)}}_{\mathrm{num}}_{\mathrm{aux4}}_{\mathrm{aux1}} &= \mathrm{Size_{B}^{(matA)}} \\
+&\quad + \mathrm{Size_{B}^{(matA)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{N_{dim}}}{\mathrm{W_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matA)}} \\
+&\quad + \mathrm{Size_{B}^{(matB)}} \\
+&\quad + \mathrm{Size_{B}^{(matB)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{M_{dim}}}{\mathrm{H_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matB)}}
 \end{aligned}
 $$
 
 ### row 117 - TOTAL_HBM_WRITE_B
 
-$$ \mathrm{MemWrB^{(total)}} = \mathrm{Size_{matB}^{(matC,matD)}} $$
+$$ \mathrm{MemWrB^{(total)}} = \mathrm{Size_{B}^{(matC,matD)}} $$
 
 ### row 118 - TOTAL_HBM_B
 

@@ -599,9 +599,9 @@ LATEX_SYMBOL_OVERRIDES = {
     'INPUT_A_DATA_FORMAT': r'\mathrm{Fmt^{(matA)}}',
     'INPUT_B_DATA_FORMAT': r'\mathrm{Fmt^{(matB)}}',
     'OUTPUT_D_DATA_FORMAT': r'\mathrm{Fmt^{(matD\downarrow)}}',
-    'M': r'\mathrm{M_dim}',
-    'K': r'\mathrm{K_dim}',
-    'N': r'\mathrm{N_dim}',
+    'M': r'\mathrm{M_{dim}}',
+    'K': r'\mathrm{K_{dim}}',
+    'N': r'\mathrm{N_{dim}}',
     'OUTPUT_BYTES_PER_ELEMENT_FP32': r'\mathrm{Byte_{pElement}^{(matD)}}',
     'MACHINE_OCCUPANCY_PCT': r'\mathrm{\rho_{GT}}',
     'M_PER_THREAD': r'\mathrm{M_{pThread}}',
@@ -641,7 +641,7 @@ LATEX_SYMBOL_OVERRIDES = {
     'GPU_TILE_HEIGHT_IN_UNITS_OF_ELEMETNS': r'\mathrm{H_{element}^{(GPUTile)}}',
     'MAT_A_INPUT_SIZE_B': r'\mathrm{Size_{B}^{(matA)}}',
     'MAT_B_INPUT_SIZE_B': r'\mathrm{Size_{B}^{(matB)}}',
-    'MAT_C_INPUT_D_OUTPUT_SIZE_B': r'\mathrm{Size_{matB}^{(matC,matD)}}',
+    'MAT_C_INPUT_D_OUTPUT_SIZE_B': r'\mathrm{Size_{B}^{(matC,matD)}}',
     'MAT_D_INTERMEDIATE_SIZE_B': r'\mathrm{Size_{B}^{(matD\downarrow)}}',
     'WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE': r'\mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}',
     'TOTAL_REQUIRED_L2_SIZE_FOR_IDEAL_HIT_RATE_B_FOR_A_SINGLE_INSTANCE_AND_SINGLE_WAVE': r'\mathrm{TotalRequiredL2Size_{matB\ always hit}^{1\ instance,\ 1\ wave}}',
@@ -886,6 +886,29 @@ def _make_aux_symbol(lhs: str, suffix: str) -> str:
     return f'{lhs}_{{{suffix}}}'
 
 
+def _extract_leading_left_right_group(s: str) -> tuple[str, str] | None:
+    r"""If s starts with \left( ... \right), return (inside, trailing_suffix)."""
+    if not s.startswith(r'\left('):
+        return None
+    depth = 0
+    i = 0
+    while i < len(s):
+        if s[i:i + 6] == r'\left(':
+            depth += 1
+            i += 6
+            continue
+        if s[i:i + 7] == r'\right)':
+            depth -= 1
+            i += 7
+            if depth == 0:
+                inner = s[6:i - 7]
+                suffix = s[i:]
+                return inner, suffix
+            continue
+        i += 1
+    return None
+
+
 def _equation_block(lhs: str, rhs: str, threshold: int = 100) -> str:
     """Return one or more markdown display-math blocks.
 
@@ -902,10 +925,39 @@ def _equation_block(lhs: str, rhs: str, threshold: int = 100) -> str:
     # Case 1: top-level additive — split on + / -
     parts = _split_top_level_additive(rhs)
     if len(parts) > 1:
-        inner = f'{lhs} &= {parts[0]}'
-        for p in parts[1:]:
+        extra_blocks: list[str] = []
+        display_parts: list[str] = [parts[0]]
+
+        for i, p in enumerate(parts[1:], start=1):
+            sign = ''
+            body = p
+            if p.startswith('+ ') or p.startswith('- '):
+                sign = p[:2]
+                body = p[2:]
+
+            # If a single additive term is still very long, extract a leading
+            # parenthesized chunk into an auxiliary symbol and render it below.
+            # This avoids overly wide lines like: +(A - (B + C + ...)) * R.
+            group = _extract_leading_left_right_group(body) if len(p) > threshold else None
+            if group:
+                group_inner, group_suffix = group
+                group_parts = _split_top_level_additive(group_inner)
+                if len(group_parts) > 1:
+                    aux = _make_aux_symbol(lhs, rf'\mathrm{{aux{i}}}')
+                    display_parts.append(f'{sign}{aux}{group_suffix}')
+                    extra_blocks.append(_equation_block(aux, group_inner, threshold))
+                    continue
+
+            display_parts.append(p)
+
+        inner = f'{lhs} &= {display_parts[0]}'
+        for p in display_parts[1:]:
             inner += f' \\\\\n&\\quad {p}'
-        return f'$$\n\\begin{{aligned}}\n{inner}\n\\end{{aligned}}\n$$'
+
+        main_block = f'$$\n\\begin{{aligned}}\n{inner}\n\\end{{aligned}}\n$$'
+        if not extra_blocks:
+            return main_block
+        return main_block + '\n\n' + '\n\n'.join(extra_blocks)
 
     # Case 2: single top-level \frac — decompose into 2 or 3 sub-equations
     frac = _extract_top_frac(rhs)
