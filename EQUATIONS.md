@@ -14,19 +14,11 @@ $$ \mathrm{Bytes_{pElement}^{(matB)}} = \mathrm{DataFormatToBytes}[\mathrm{Fmt^{
 
 ### row 25 - OUTPUT BYTES PER ELEMENT AFTER DOWN CONVERSION
 
-$$ \mathrm{Bytes_{pElement}^{(D\downarrow)}} = \mathrm{DataFormatToBytes}[\mathrm{Fmt^{(matD\downarrow)}}] $$
+$$ \mathrm{Bytes_{pElement}^{(matD\downarrow)}} = \mathrm{DataFormatToBytes}[\mathrm{Fmt^{(matD\downarrow)}}] $$
 
 ### row 33 - EU COUNT
 
 $$ \mathrm{|EU|} = \mathrm{|XeCore|_{pXeCU}} \times \mathrm{|EU|_{pXeCore}} \times \mathrm{|XeCU|} $$
-
-### row 102 - TOTAL L2 SIZE B FOR A SINGLE INSTANCE
-
-$$ \mathrm{|L2|_{B}} = \mathrm{L2BankSize_{MB}} \times \mathrm{|L2Banks|_{pXeCU}} \times 1024 \times 1024 $$
-
-### row 125 - MAX POSSIBLE HBM BW FREQ B CLK
-
-$$ \mathrm{MemBW_{BpClk}^{max}} = \frac{\mathrm{MemBW_{GBps}^{max}}}{\mathrm{f_{GHz}^{(GT)}}} $$
 
 ### row 36 - MMA MAC THROUGHPUT PER XECORE
 
@@ -35,42 +27,6 @@ $$ \mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}} = \min(\frac{4}{\frac{\mathrm{
 ### row 42 - CLKS PER DPAS
 
 $$ \mathrm{CLKS_{DPAS}} = \frac{\mathrm{M_{pThread}} \times \mathrm{K_{pThread}} \times \mathrm{N_{pThread}}}{\frac{\mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}}}{\mathrm{|EU|_{pXeCore}}}} $$
-
-### row 13 - WAVES
-
-$$ \mathrm{N_{waves}} = \mathrm{CEILING}(\mathrm{|Tiles|_{N}^{(GPU)}}, 1) \times \mathrm{CEILING}(\mathrm{|Tiles|_{M}^{(GPU)}}, 1) $$
-
-### row 14 - TG TILES IN N
-
-$$ \mathrm{|Tiles|_{N}^{(TG)}} = \frac{\mathrm{N_{dim}}}{\mathrm{W_{element}^{(ThreadGroup, realized\ by\ multiple\ MMA\ iterations)}}} $$
-
-### row 15 - TG TILES IN M
-
-$$ \mathrm{|Tiles|_{M}^{(TG)}} = \frac{\mathrm{M_{dim}}}{\mathrm{H_{element}^{(ThreadGroup)}}} $$
-
-### row 16 - TG CLUSTER TILES IN N
-
-$$ \mathrm{|Tiles|_{N}^{(TG\ Cluster)}} = \frac{\mathrm{N_{dim}}}{\mathrm{W_{element}^{(XeCoreCluster)}}} $$
-
-### row 17 - TG CLUSTER TILES IN M
-
-$$ \mathrm{|Tiles|_{M}^{(TG\ Cluster)}} = \frac{\mathrm{M_{dim}}}{\mathrm{H_{element}^{(XeCoreCluster)}}} $$
-
-### row 18 - XECU TILES IN N
-
-$$ \mathrm{|Tiles|_{N}^{(XeCU)}} = \frac{\mathrm{N_{dim}}}{\mathrm{W_{element}^{(XeCUTile)}}} $$
-
-### row 19 - XECU TILES IN M
-
-$$ \mathrm{|Tiles|_{M}^{(XeCU)}} = \frac{\mathrm{M_{dim}}}{\mathrm{H_{element}^{(XeCUTile)}}} $$
-
-### row 20 - GPU TILES IN N
-
-$$ \mathrm{|Tiles|_{N}^{(GPU)}} = \frac{\frac{\mathrm{N_{dim}}}{\mathrm{W_{element}^{(XeCUTile)}}}}{\mathrm{W_{XeCU}^{(GPUTile)}}} $$
-
-### row 21 - GPU TILES IN M
-
-$$ \mathrm{|Tiles|_{M}^{(GPU)}} = \frac{\frac{\mathrm{M_{dim}}}{\mathrm{H_{element}^{(XeCUTile)}}}}{\mathrm{H_{XeCU}^{(GPUTile)}}} $$
 
 ### row 43 - THREAD WIDTH IN UNITS OF ELEMENTS
 
@@ -85,29 +41,65 @@ $$ \mathrm{H_{element}^{(Thread)}} = \mathrm{M_{pThread}} $$
 
 $$ \mathrm{W_{element}^{(ThreadGroup, realized\ by\ multiple\ MMA\ iterations)}} = \mathrm{W_{thread}^{(ThreadGroup)}} \times \mathrm{W_{element}^{(Thread)}} $$
 
+### row 14 - TG TILES IN N
+
+$$ \mathrm{|Tiles|_{N}^{(TG)}} = \frac{\mathrm{N_{dim}}}{\mathrm{W_{element}^{(ThreadGroup, realized\ by\ multiple\ MMA\ iterations)}}} $$
+
 ### row 48 - TG HEIGHT IN UNITS OF ELEMENT
 
 $$ \mathrm{H_{element}^{(ThreadGroup)}} = \mathrm{H_{thread}^{(ThreadGroup)}} \times \mathrm{H_{element}^{(Thread)}} $$
+
+### row 15 - TG TILES IN M
+
+$$ \mathrm{|Tiles|_{M}^{(TG)}} = \frac{\mathrm{M_{dim}}}{\mathrm{H_{element}^{(ThreadGroup)}}} $$
 
 ### row 52 - XECORE CLUSTER WIDTH IN UNITS OF ELEMENT
 
 $$ \mathrm{W_{element}^{(XeCoreCluster)}} = \mathrm{W_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)}} \times \mathrm{W_{element}^{(ThreadGroup, realized\ by\ multiple\ MMA\ iterations)}} $$
 
+### row 16 - TG CLUSTER TILES IN N
+
+$$ \mathrm{|Tiles|_{N}^{(TG\ Cluster)}} = \frac{\mathrm{N_{dim}}}{\mathrm{W_{element}^{(XeCoreCluster)}}} $$
+
 ### row 53 - XECORE CLUSTER HEIGHT IN UNITS OF ELEMENT
 
 $$ \mathrm{H_{element}^{(XeCoreCluster)}} = \mathrm{H_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)}} \times \mathrm{H_{element}^{(ThreadGroup)}} $$
+
+### row 17 - TG CLUSTER TILES IN M
+
+$$ \mathrm{|Tiles|_{M}^{(TG\ Cluster)}} = \frac{\mathrm{M_{dim}}}{\mathrm{H_{element}^{(XeCoreCluster)}}} $$
 
 ### row 56 - XECU TILE WIDTH IN UNITS OF ELEMENT
 
 $$ \mathrm{W_{element}^{(XeCUTile)}} = \mathrm{W_{TG}^{(XECUTile)}} \times \mathrm{W_{element}^{(ThreadGroup, realized\ by\ multiple\ MMA\ iterations)}} $$
 
+### row 18 - XECU TILES IN N
+
+$$ \mathrm{|Tiles|_{N}^{(XeCU)}} = \frac{\mathrm{N_{dim}}}{\mathrm{W_{element}^{(XeCUTile)}}} $$
+
+### row 20 - GPU TILES IN N
+
+$$ \mathrm{|Tiles|_{N}^{(GPU)}} = \frac{\frac{\mathrm{N_{dim}}}{\mathrm{W_{element}^{(XeCUTile)}}}}{\mathrm{W_{XeCU}^{(GPUTile)}}} $$
+
 ### row 57 - XECU TILE HEIGHT IN UNITS OF ELEMENT
 
 $$ \mathrm{H_{element}^{(XeCUTile)}} = \mathrm{H_{TG}^{(XECUTile)}} \times \mathrm{H_{element}^{(ThreadGroup)}} $$
 
+### row 19 - XECU TILES IN M
+
+$$ \mathrm{|Tiles|_{M}^{(XeCU)}} = \frac{\mathrm{M_{dim}}}{\mathrm{H_{element}^{(XeCUTile)}}} $$
+
 ### row 59 - GPU TILE HEIGHT IN XECU UINT
 
 $$ \mathrm{H_{XeCU}^{(GPUTile)}} = \frac{\mathrm{|XeCU|}}{\mathrm{W_{XeCU}^{(GPUTile)}}} $$
+
+### row 21 - GPU TILES IN M
+
+$$ \mathrm{|Tiles|_{M}^{(GPU)}} = \frac{\frac{\mathrm{M_{dim}}}{\mathrm{H_{element}^{(XeCUTile)}}}}{\mathrm{H_{XeCU}^{(GPUTile)}}} $$
+
+### row 13 - WAVES
+
+$$ \mathrm{N_{waves}} = \mathrm{CEILING}(\mathrm{|Tiles|_{N}^{(GPU)}}, 1) \times \mathrm{CEILING}(\mathrm{|Tiles|_{M}^{(GPU)}}, 1) $$
 
 ### row 60 - GPU TILE WIDTH IN UNITS OF ELEMETNS
 
@@ -127,11 +119,15 @@ $$ \mathrm{Size_{B}^{(matB)}} = \mathrm{K_{dim}} \times \mathrm{N_{dim}} \times 
 
 ### row 65 - MAT C INPUT D OUTPUT SIZE B
 
-$$ \mathrm{Size_{B}^{(matC,matD)}} = \mathrm{M_{dim}} \times \mathrm{N_{dim}} \times \mathrm{Bytes_{pElement}^{(D\downarrow)}} $$
+$$ \mathrm{Size_{B}^{(matC,matD)}} = \mathrm{M_{dim}} \times \mathrm{N_{dim}} \times \mathrm{Bytes_{pElement}^{(matD\downarrow)}} $$
 
 ### row 66 - MAT D INTERMEDIATE SIZE B
 
 $$ \mathrm{Size_{B}^{(matD\downarrow)}} = \mathrm{M_{dim}} \times \mathrm{N_{dim}} \times \mathrm{Byte_{pElement}^{(matD)}} $$
+
+### row 102 - TOTAL L2 SIZE B FOR A SINGLE INSTANCE
+
+$$ \mathrm{|L2|_{B}} = \mathrm{L2BankSize_{MB}} \times \mathrm{|L2Banks|_{pXeCU}} \times 1024 \times 1024 $$
 
 ### row 103 - WORKING DATA SET SIZE OF K IN L2 CORRESP 20K CLOCKS OF
 ### THREAD DIVERGENCE
@@ -145,9 +141,13 @@ $$
 \begin{aligned}
 \mathrm{TotalRequiredL2Size_{matB\ always hit}^{1\ instance,\ 1\ wave}} &= \mathrm{H_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(matA)}} \times \mathrm{|WorkingSet|_{20K\ clks\ of\ thread\ divergence}^{(K\ in\ L2)}} \\
 &\quad + \mathrm{W_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(matB)}} \times \mathrm{|WorkingSet|_{20K\ clks\ of\ thread\ divergence}^{(K\ in\ L2)}} \\
-&\quad + \mathrm{W_{element}^{(XeCUTile)}} \times \mathrm{H_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(D\downarrow)}}
+&\quad + \mathrm{W_{element}^{(XeCUTile)}} \times \mathrm{H_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(matD\downarrow)}}
 \end{aligned}
 $$
+
+### row 125 - MAX POSSIBLE HBM BW FREQ B CLK
+
+$$ \mathrm{MemBW_{BpClk}^{max}} = \frac{\mathrm{MemBW_{GBps}^{max}}}{\mathrm{f_{GHz}^{(GT)}}} $$
 
 ### row 37 - CLK SPECIFIED EFFICIENCY
 
@@ -200,21 +200,21 @@ $$
 \end{aligned}
 $$
 
-### row 77 - L1 READ B XECORE CLK
-
-$$ \mathrm{L1RdBW_{Bp(Clk{\cdot}XeCore)}} = \mathrm{L1RdBW_{Bp(Clk{\cdot}EU)}} \times \mathrm{|EU|_{pXeCore}} $$
-
-### row 78 - L1 WRITE B XECORECLK
-
-$$ \mathrm{L1WrBW_{Bp(Clk{\cdot}XeCore)}} = \mathrm{L1WrBW_{Bp(Clk{\cdot}EU)}} \times \mathrm{|EU|_{pXeCore}} $$
-
 ### row 79 - L1 READ B EU CLK
 
 $$ \mathrm{L1RdBW_{Bp(Clk{\cdot}EU)}} = \frac{\frac{\mathrm{L1Rd_{B}^{(total)}}}{\mathrm{|EU|}}}{\mathrm{T_{clk}^{(total)}}} $$
 
+### row 77 - L1 READ B XECORE CLK
+
+$$ \mathrm{L1RdBW_{Bp(Clk{\cdot}XeCore)}} = \mathrm{L1RdBW_{Bp(Clk{\cdot}EU)}} \times \mathrm{|EU|_{pXeCore}} $$
+
 ### row 80 - L1 WRITE B EU CLK
 
 $$ \mathrm{L1WrBW_{Bp(Clk{\cdot}EU)}} = \frac{\frac{\mathrm{L1Wr_{B}^{(total)}}}{\mathrm{|EU|}}}{\mathrm{T_{clk}^{(total)}}} $$
+
+### row 78 - L1 WRITE B XECORECLK
+
+$$ \mathrm{L1WrBW_{Bp(Clk{\cdot}XeCore)}} = \mathrm{L1WrBW_{Bp(Clk{\cdot}EU)}} \times \mathrm{|EU|_{pXeCore}} $$
 
 ### row 83 - L2 READ MAX B XECORE CLK
 
