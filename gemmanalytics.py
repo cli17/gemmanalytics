@@ -592,10 +592,10 @@ LATEX_SYMBOL_OVERRIDES = {
     'BANK_CAPACITY_MB': r'\mathrm{L2BankSize_{MB}}',
     'DPAS_DEPTH': r'\mathrm{D_{DPAS}}',
     'COMPUTE_EFFICIENCY_PCT': r'\mathrm{\eta_{systolic}}',
-    'L1_READ_MAX_B_EU_CLK': r'\mathrm{L1RdB_{BpClk{\cdot}EU}^{max}}',
-    'L1_WRITE_MAX_B_EU_CLK': r'\mathrm{L1WrB_{BpClk{\cdot}EU}^{max}}',
-    'GTI_READ_MAX_B_EU_CLK': r'\mathrm{GtiRdB_{BpClk}^{max}}',
-    'GTI_WRITE_MAX_B_EU_CLK': r'\mathrm{GtiWrB_{BpClk}^{max}}',
+    'L1_READ_MAX_B_EU_CLK': r'\mathrm{L1RdBW_{BpClk{\cdot}EU}^{max}}',
+    'L1_WRITE_MAX_B_EU_CLK': r'\mathrm{L1WrBW_{BpClk{\cdot}EU}^{max}}',
+    'GTI_READ_MAX_B_EU_CLK': r'\mathrm{GtiRdBW_{BpClk}^{max}}',
+    'GTI_WRITE_MAX_B_EU_CLK': r'\mathrm{GtiWrBW_{BpClk}^{max}}',
     'MAX_POSSIBLE_HBM_BW_GB_S': r'\mathrm{MemBW_{GBps}^{max}}',
 
     # ---- Workload format keys + pre-defined ----

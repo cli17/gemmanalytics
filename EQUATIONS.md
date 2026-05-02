@@ -242,11 +242,11 @@ $$ \mathrm{\eta_{L2RdWrBWpXeCore}} = \frac{\mathrm{L2RdWrBW_{Bp(Clk{\cdot}XeCore
 
 ### row 93 - L1 READ B EU CLK PCT
 
-$$ \mathrm{\eta_{L1RdBWpEU}} = \frac{\mathrm{L1RdBW_{Bp(Clk{\cdot}EU)}}}{\mathrm{L1RdB_{BpClk{\cdot}EU}^{max}}} $$
+$$ \mathrm{\eta_{L1RdBWpEU}} = \frac{\mathrm{L1RdBW_{Bp(Clk{\cdot}EU)}}}{\mathrm{L1RdBW_{BpClk{\cdot}EU}^{max}}} $$
 
 ### row 94 - L1 WRITE B EU CLK PCT
 
-$$ \mathrm{\eta_{L1WrBWpEU}} = \frac{\mathrm{L1WrBW_{Bp(Clk{\cdot}EU)}}}{\mathrm{L1WrB_{BpClk{\cdot}EU}^{max}}} $$
+$$ \mathrm{\eta_{L1WrBWpEU}} = \frac{\mathrm{L1WrBW_{Bp(Clk{\cdot}EU)}}}{\mathrm{L1WrBW_{BpClk{\cdot}EU}^{max}}} $$
 
 ### row 106 - L2 HIT RATE ASSUMED RANDOM ACCESS WITHIN THE WORKING
 ### DATA SET PCT
