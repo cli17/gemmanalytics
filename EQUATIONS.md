@@ -22,7 +22,7 @@ $$ \mathrm{|EU|} = \mathrm{|XeCore|_{pXeCU}} \times \mathrm{|EU|_{pXeCore}} \tim
 
 ### row 102 - TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE
 
-$$ \mathrm{|L2Bytes|} = \mathrm{L2BankSize_{MB}} \times \mathrm{|L2Banks|_{pXeCU}} \times 1024 \times 1024 $$
+$$ \mathrm{|L2|_{B}} = \mathrm{L2BankSize_{MB}} \times \mathrm{|L2Banks|_{pXeCU}} \times 1024 \times 1024 $$
 
 ### row 125 - MAX_POSSIBLE_HBM_BW_FREQ_B_CLK
 
@@ -301,7 +301,7 @@ $$ \mathrm{\eta_{L1WrB/p(Clk{\cdot}EU)}}_{\mathrm{num}} = \mathrm{L1WrB_{p(Clk{\
 
 ### row 106 - L2_HIT_RATE_ASSUMED_RANDOM_ACCESS_WITHIN_THE_WORKING_DATA_SET_PCT
 
-$$ \mathrm{L2HitRate_{random\ WS\ access}} = \min(\frac{\mathrm{|L2Bytes|}}{\mathrm{TotalRequiredL2Size_{matB\ always hit}^{1\ instance,\ 1\ wave}}}, 1) $$
+$$ \mathrm{L2HitRate_{random\ WS\ access}} = \min(\frac{\mathrm{|L2|_{B}}}{\mathrm{TotalRequiredL2Size_{matB\ always hit}^{1\ instance,\ 1\ wave}}}, 1) $$
 
 ### row 107 - L2_MISS_RATE_PCT
 
@@ -317,7 +317,7 @@ $$
 \begin{aligned}
 \mathrm{P_{L2Hit, after 1st wave}^{(matA)}} &= \mathrm{IF}(\mathrm{Size_{B}^{(matA)}} \\
 &\quad + \mathrm{Size_{B}^{(matB)}} \\
-&\quad + \mathrm{Size_{B}^{(matC,matD)}} \le \mathrm{|L2Bytes|}, 1.0, \mathrm{IF}(\mathrm{K_{dim}} > 2 \times \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}, 0.0, 1 \\
+&\quad + \mathrm{Size_{B}^{(matC,matD)}} \le \mathrm{|L2|_{B}}, 1.0, \mathrm{IF}(\mathrm{K_{dim}} > 2 \times \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}, 0.0, 1 \\
 &\quad - \frac{\mathrm{K_{dim}} - \mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}}{\mathrm{|WorkingSet|_{20K clks of thread divergence}^{(K in L2)}}}))
 \end{aligned}
 $$
@@ -328,7 +328,7 @@ $$
 \begin{aligned}
 \mathrm{P_{L2Hit, after 1st wave}^{(matB)}} &= \mathrm{IF}(\mathrm{Size_{B}^{(matA)}} \\
 &\quad + \mathrm{Size_{B}^{(matB)}} \\
-&\quad + \mathrm{Size_{B}^{(matC,matD)}} \le \mathrm{|L2Bytes|}, 1.0, 0.0)
+&\quad + \mathrm{Size_{B}^{(matC,matD)}} \le \mathrm{|L2|_{B}}, 1.0, 0.0)
 \end{aligned}
 $$
 
