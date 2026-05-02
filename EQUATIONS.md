@@ -6,70 +6,70 @@ Output order: execution
 
 ## Machine Parameters (Pre-Defined)
 
-$$ {\mathrm{f}}_{GHz}^{(GT)} \;:\; \text{GT Freq (GHz)} $$
+$$ {\mathrm{f}}_{GHz}^{(GT)} \;:\; \text{row 8: GT Freq (GHz)} $$
 
-$$ \mathrm{|XeCU|} \;:\; \text{XeCU count} $$
+$$ \mathrm{|XeCU|} \;:\; \text{row 26: XeCU count} $$
 
-$$ {\mathrm{|XeCore|}}_{perXeCU} \;:\; \text{XeCore per XeCU} $$
+$$ {\mathrm{|XeCore|}}_{perXeCU} \;:\; \text{row 27: XeCore per XeCU} $$
 
-$$ {\mathrm{|EU|}}_{perXeCore} \;:\; \text{EU per XeCore} $$
+$$ {\mathrm{|EU|}}_{perXeCore} \;:\; \text{row 28: EU per XeCore} $$
 
-$$ {\mathrm{|L2Banks|}}_{perXeCU} \;:\; \text{L2 banks per XeCU} $$
+$$ {\mathrm{|L2Banks|}}_{perXeCU} \;:\; \text{row 29: L2 banks per XeCU} $$
 
-$$ {\mathrm{L2BankSize}}_{MB} \;:\; \text{bank capacity (MB)} $$
+$$ {\mathrm{L2BankSize}}_{MB} \;:\; \text{row 30: bank capacity (MB)} $$
 
-$$ {\mathrm{D}}_{DPAS} \;:\; \text{DPAS depth} $$
+$$ {\mathrm{D}}_{DPAS} \;:\; \text{row 32: DPAS depth} $$
 
-$$ {\mathrm{\eta}}_{systolic} \;:\; \text{compute efficiency \%} $$
+$$ {\mathrm{\eta}}_{systolic} \;:\; \text{row 35: compute efficiency \%} $$
 
-$$ {\mathrm{L1RdBW}}_{Bp(Clk{\cdot}EU)}^{max} \;:\; \text{L1 read max (B/EU/clk)} $$
+$$ {\mathrm{L1RdBW}}_{Bp(Clk{\cdot}EU)}^{max} \;:\; \text{row 86: L1 read max (B/EU/clk)} $$
 
-$$ {\mathrm{L1WrBW}}_{Bp(Clk{\cdot}EU)}^{max} \;:\; \text{L1 write max (B/EU/clk)} $$
+$$ {\mathrm{L1WrBW}}_{Bp(Clk{\cdot}EU)}^{max} \;:\; \text{row 87: L1 write max (B/EU/clk)} $$
 
-$$ {\mathrm{GtiRdBW}}_{BpClk}^{max} \;:\; \text{GTI read max BW (B/clk)} $$
+$$ {\mathrm{GtiRdBW}}_{BpClk}^{max} \;:\; \text{row 97: GTI read max BW (B/clk)} $$
 
-$$ {\mathrm{GtiWrBW}}_{BpClk}^{max} \;:\; \text{GTI write max BW (B/clk)} $$
+$$ {\mathrm{GtiWrBW}}_{BpClk}^{max} \;:\; \text{row 98: GTI write max BW (B/clk)} $$
 
-$$ {\mathrm{MemBW}}_{GBps}^{max} \;:\; \text{max possible HBM BW (GB/s)} $$
+$$ {\mathrm{MemBW}}_{GBps}^{max} \;:\; \text{row 124: max possible HBM BW (GB/s)} $$
 
 
 ## Workload Parameters (Pre-Defined)
 
-$$ {\mathrm{Fmt}}^{(matA)} \;:\; \text{input A data format (e.g. fp8)} $$
+$$ {\mathrm{Fmt}}^{(matA)} \;:\; \text{row 3: input A data format (e.g. fp8)} $$
 
-$$ {\mathrm{Fmt}}^{(matB)} \;:\; \text{input B data format (e.g. fp4)} $$
+$$ {\mathrm{Fmt}}^{(matB)} \;:\; \text{row 4: input B data format (e.g. fp4)} $$
 
-$$ {\mathrm{Fmt}}^{(matD\downarrow)} \;:\; \text{output D data format (e.g. fp8)} $$
+$$ {\mathrm{Fmt}}^{(matD\downarrow)} \;:\; \text{row 5: output D data format (e.g. fp8)} $$
 
-$$ {\mathrm{M}}_{dim} \;:\; \text{M dimension} $$
+$$ {\mathrm{M}}_{dim} \;:\; \text{row 9: M dimension} $$
 
-$$ {\mathrm{K}}_{dim} \;:\; \text{K dimension} $$
+$$ {\mathrm{K}}_{dim} \;:\; \text{row 10: K dimension} $$
 
-$$ {\mathrm{N}}_{dim} \;:\; \text{N dimension} $$
+$$ {\mathrm{N}}_{dim} \;:\; \text{row 11: N dimension} $$
 
-$$ {\mathrm{Byte}}_{perElement}^{(matD)} \;:\; \text{output bytes per element (fp32)} $$
+$$ {\mathrm{Byte}}_{perElement}^{(matD)} \;:\; \text{row 24: output bytes per element (fp32)} $$
 
-$$ {\mathrm{\rho}}_{GT} \;:\; \text{machine occupancy \%} $$
+$$ {\mathrm{\rho}}_{GT} \;:\; \text{row 34: machine occupancy \%} $$
 
-$$ {\mathrm{M}}_{perThread} \;:\; \text{M per thread} $$
+$$ {\mathrm{M}}_{perThread} \;:\; \text{row 39: M per thread} $$
 
-$$ {\mathrm{K}}_{perThread} \;:\; \text{K per thread} $$
+$$ {\mathrm{K}}_{perThread} \;:\; \text{row 40: K per thread} $$
 
-$$ {\mathrm{N}}_{perThread} \;:\; \text{N per thread} $$
+$$ {\mathrm{N}}_{perThread} \;:\; \text{row 41: N per thread} $$
 
-$$ {\mathrm{W}}_{thread}^{(ThreadGroup)} \;:\; \text{TG width in units of thread} $$
+$$ {\mathrm{W}}_{thread}^{(ThreadGroup)} \;:\; \text{row 45: TG width in units of thread} $$
 
-$$ {\mathrm{H}}_{thread}^{(ThreadGroup)} \;:\; \text{TG height in units of thread} $$
+$$ {\mathrm{H}}_{thread}^{(ThreadGroup)} \;:\; \text{row 46: TG height in units of thread} $$
 
-$$ {\mathrm{W}}_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)} \;:\; \text{XeCore cluster width in units of TG (keep cluster size as 4)} $$
+$$ {\mathrm{W}}_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)} \;:\; \text{row 50: XeCore cluster width in units of TG (keep cluster size as 4)} $$
 
-$$ {\mathrm{H}}_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)} \;:\; \text{XeCore cluster height in units of TG (keep cluster size as 4)} $$
+$$ {\mathrm{H}}_{TG,keep\ cluster\ size\ as\ 4}^{(XeCoreCluster)} \;:\; \text{row 51: XeCore cluster height in units of TG (keep cluster size as 4)} $$
 
-$$ {\mathrm{W}}_{TG}^{(XECUTile)} \;:\; \text{XeCU tile width in units of TG} $$
+$$ {\mathrm{W}}_{TG}^{(XECUTile)} \;:\; \text{row 54: XeCU tile width in units of TG} $$
 
-$$ {\mathrm{H}}_{TG}^{(XECUTile)} \;:\; \text{XeCU tile height in units of TG} $$
+$$ {\mathrm{H}}_{TG}^{(XECUTile)} \;:\; \text{row 55: XeCU tile height in units of TG} $$
 
-$$ {\mathrm{W}}_{XeCU}^{(GPUTile)} \;:\; \text{GPU tile width in XeCU unit} $$
+$$ {\mathrm{W}}_{XeCU}^{(GPUTile)} \;:\; \text{row 58: GPU tile width in XeCU unit} $$
 
 
 ## Computed Equations

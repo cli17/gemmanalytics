@@ -1131,7 +1131,9 @@ def build_equations_markdown(output_order: str = 'execution') -> str:
     lines.append('')
     for name in MACHINE_PRE_NAMES:
         sym = latex_symbol_for(name)
-        desc = PARAM_DESCRIPTIONS.get(name, name)
+        row = ROW_INDEX.get(name, '?')
+        base_desc = PARAM_DESCRIPTIONS.get(name, name)
+        desc = f'row {row}: {base_desc}'
         lines.append(f'$$ {sym} \\;:\\; \\text{{{_latex_text_escape(desc)}}} $$')
         lines.append('')
     lines.append('')
@@ -1141,7 +1143,9 @@ def build_equations_markdown(output_order: str = 'execution') -> str:
     lines.append('')
     for name in FORMAT_KEY_NAMES + WORKLOAD_PRE_NAMES:
         sym = latex_symbol_for(name)
-        desc = PARAM_DESCRIPTIONS.get(name, name)
+        row = ROW_INDEX.get(name, '?')
+        base_desc = PARAM_DESCRIPTIONS.get(name, name)
+        desc = f'row {row}: {base_desc}'
         lines.append(f'$$ {sym} \\;:\\; \\text{{{_latex_text_escape(desc)}}} $$')
         lines.append('')
     lines.append('')
