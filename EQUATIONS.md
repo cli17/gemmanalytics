@@ -345,24 +345,24 @@ $$ \mathrm{MemRdWrB^{(total)}} = \mathrm{MemWrB^{(total)}} + \mathrm{MemRdB_{col
 
 ### row 121 - HBM READ B CLK
 
-$$ \mathrm{MemRdB_{pClk}} = \frac{\mathrm{MemRdB_{cold\ start}^{(wave)}}}{\mathrm{T_{clk}^{(total)}}} $$
+$$ \mathrm{MemRdBW_{BpClk}} = \frac{\mathrm{MemRdB_{cold\ start}^{(wave)}}}{\mathrm{T_{clk}^{(total)}}} $$
 
 ### row 122 - HBM WRITE B CLK
 
-$$ \mathrm{MemWrB_{pClk}} = \frac{\mathrm{MemWrB^{(total)}}}{\mathrm{T_{clk}^{(total)}}} $$
+$$ \mathrm{MemWrBW_{BpClk}} = \frac{\mathrm{MemWrB^{(total)}}}{\mathrm{T_{clk}^{(total)}}} $$
 
 ### row 123 - HBM TOTAL B CLK
 
-$$ \mathrm{MemRdWrB_{pClk}} = \frac{\mathrm{MemRdWrB^{(total)}}}{\mathrm{T_{clk}^{(total)}}} $$
+$$ \mathrm{MemRdWrBW_{BpClk}} = \frac{\mathrm{MemRdWrB^{(total)}}}{\mathrm{T_{clk}^{(total)}}} $$
 
 ### row 126 - HBM BW PCT
 
-$$ \mathrm{\eta_{MemBW}} = \frac{\mathrm{MemRdWrB_{pClk}}}{\mathrm{MemBW_{BpClk}^{max}}} $$
+$$ \mathrm{\eta_{MemBW}} = \frac{\mathrm{MemRdWrBW_{BpClk}}}{\mathrm{MemBW_{BpClk}^{max}}} $$
 
 ### row 127 - GTI READ BW PCT
 
-$$ \mathrm{\eta_{GTIRdBW}} = \frac{\mathrm{MemRdB_{pClk}}}{\mathrm{GTI-READ-MAX-BW-B-CLK}} $$
+$$ \mathrm{\eta_{GTIRdBW}} = \frac{\mathrm{MemRdBW_{BpClk}}}{\mathrm{GtiRdBW_{BpClk}^{max}}} $$
 
 ### row 128 - GTI WRITE BW PCT
 
-$$ \mathrm{\eta_{GTIWrBW}} = \frac{\mathrm{MemWrB_{pClk}}}{\mathrm{GTI-WRITE-MAX-BW-B-CLK}} $$
+$$ \mathrm{\eta_{GTIWrBW}} = \frac{\mathrm{MemWrBW_{BpClk}}}{\mathrm{GtiWrBW_{BpClk}^{max}}} $$

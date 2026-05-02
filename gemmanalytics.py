@@ -594,8 +594,8 @@ LATEX_SYMBOL_OVERRIDES = {
     'COMPUTE_EFFICIENCY_PCT': r'\mathrm{\eta_{systolic}}',
     'L1_READ_MAX_B_EU_CLK': r'\mathrm{L1RdBW_{BpClk{\cdot}EU}^{max}}',
     'L1_WRITE_MAX_B_EU_CLK': r'\mathrm{L1WrBW_{BpClk{\cdot}EU}^{max}}',
-    'GTI_READ_MAX_B_EU_CLK': r'\mathrm{GtiRdBW_{BpClk}^{max}}',
-    'GTI_WRITE_MAX_B_EU_CLK': r'\mathrm{GtiWrBW_{BpClk}^{max}}',
+    'GTI_READ_MAX_BW_B_CLK': r'\mathrm{GtiRdBW_{BpClk}^{max}}',
+    'GTI_WRITE_MAX_BW_B_CLK': r'\mathrm{GtiWrBW_{BpClk}^{max}}',
     'MAX_POSSIBLE_HBM_BW_GB_S': r'\mathrm{MemBW_{GBps}^{max}}',
 
     # ---- Workload format keys + pre-defined ----
@@ -687,9 +687,9 @@ LATEX_SYMBOL_OVERRIDES = {
     'TOTAL_HBM_READ_B_AFTER_A_COMPLETION_OF_A_WAVE_CONSIDER_COLD_CACHE': r'\mathrm{MemRdB_{cold\ start}^{(wave)}}',
     'TOTAL_HBM_WRITE_B': r'\mathrm{MemWrB^{(total)}}',
     'TOTAL_HBM_B': r'\mathrm{MemRdWrB^{(total)}}',
-    'HBM_READ_B_CLK': r'\mathrm{MemRdB_{pClk}}',
-    'HBM_WRITE_B_CLK': r'\mathrm{MemWrB_{pClk}}',
-    'HBM_TOTAL_B_CLK': r'\mathrm{MemRdWrB_{pClk}}',
+    'HBM_READ_B_CLK': r'\mathrm{MemRdBW_{BpClk}}',
+    'HBM_WRITE_B_CLK': r'\mathrm{MemWrBW_{BpClk}}',
+    'HBM_TOTAL_B_CLK': r'\mathrm{MemRdWrBW_{BpClk}}',
     'HBM_BW_PCT': r'\mathrm{\eta_{MemBW}}',
     'GTI_READ_BW_PCT': r'\mathrm{\eta_{GTIRdBW}}',
     'GTI_WRITE_BW_PCT': r'\mathrm{\eta_{GTIWrBW}}',
