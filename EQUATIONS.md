@@ -151,11 +151,11 @@ $$
 
 ### row 37 - CLK SPECIFIED EFFICIENCY
 
-$$ \mathrm{T_{clk}^{(total)}} = \frac{\mathrm{T_{clk}^{(total)}}_{\mathrm{num}}}{\mathrm{\eta_{systolic}}} $$
+$$ \mathrm{T_{clk}^{(total)}} = \frac{\left(\mathrm{T_{clk}^{(total)}}\right)_{\mathrm{num}}}{\mathrm{\eta_{systolic}}} $$
 
-$$ \mathrm{T_{clk}^{(total)}}_{\mathrm{num}} = \frac{\mathrm{T_{clk}^{(total)}}_{\mathrm{num}}_{\mathrm{num}}}{\mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}}} $$
+$$ \left(\mathrm{T_{clk}^{(total)}}\right)_{\mathrm{num}} = \frac{\left(\left(\mathrm{T_{clk}^{(total)}}\right)_{\mathrm{num}}\right)_{\mathrm{num}}}{\mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}}} $$
 
-$$ \mathrm{T_{clk}^{(total)}}_{\mathrm{num}}_{\mathrm{num}} = \frac{\frac{\mathrm{M_{dim}} \times \mathrm{K_{dim}} \times \mathrm{N_{dim}}}{\mathrm{|XeCore|_{pXeCU}}}}{\mathrm{|XeCU|}} $$
+$$ \left(\left(\mathrm{T_{clk}^{(total)}}\right)_{\mathrm{num}}\right)_{\mathrm{num}} = \frac{\frac{\mathrm{M_{dim}} \times \mathrm{K_{dim}} \times \mathrm{N_{dim}}}{\mathrm{|XeCore|_{pXeCU}}}}{\mathrm{|XeCU|}} $$
 
 ### row 69 - TOTAL L2 READ B
 
@@ -297,28 +297,28 @@ $$ \mathrm{P_{L2Miss, after 1st wave}^{(matB)}} = 1 - \mathrm{P_{L2Hit, after 1s
 ### row 116 - TOTAL HBM READ B AFTER A COMPLETION OF A WAVE CONSIDER
 ### COLD CACHE
 
-$$ \mathrm{MemRdB_{cold start}^{(wave)}} = \frac{\mathrm{MemRdB_{cold start}^{(wave)}}_{\mathrm{num}}}{2} $$
+$$ \mathrm{MemRdB_{cold start}^{(wave)}} = \frac{\left(\mathrm{MemRdB_{cold start}^{(wave)}}\right)_{\mathrm{num}}}{2} $$
 
 $$
 \begin{aligned}
-\mathrm{MemRdB_{cold start}^{(wave)}}_{\mathrm{num}} &= \mathrm{Size_{B}^{(matA)}} \\
+\left(\mathrm{MemRdB_{cold start}^{(wave)}}\right)_{\mathrm{num}} &= \mathrm{Size_{B}^{(matA)}} \\
 &\quad + \mathrm{Size_{B}^{(matA)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{N_{dim}}}{\mathrm{W_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matA)}} \\
 &\quad + \mathrm{Size_{B}^{(matB)}} \\
 &\quad + \mathrm{Size_{B}^{(matB)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{M_{dim}}}{\mathrm{H_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matB)}} \\
-&\quad + \mathrm{MemRdB_{cold start}^{(wave)}}_{\mathrm{num}}_{\mathrm{aux4}} \times \mathrm{L2MissRate}
+&\quad + \left(\left(\mathrm{MemRdB_{cold start}^{(wave)}}\right)_{\mathrm{num}}\right)_{\mathrm{aux4}} \times \mathrm{L2MissRate}
 \end{aligned}
 $$
 
 $$
 \begin{aligned}
-\mathrm{MemRdB_{cold start}^{(wave)}}_{\mathrm{num}}_{\mathrm{aux4}} &= \mathrm{L2RdB_{total}} \\
-&\quad - \mathrm{MemRdB_{cold start}^{(wave)}}_{\mathrm{num}}_{\mathrm{aux4}}_{\mathrm{aux1}}
+\left(\left(\mathrm{MemRdB_{cold start}^{(wave)}}\right)_{\mathrm{num}}\right)_{\mathrm{aux4}} &= \mathrm{L2RdB_{total}} \\
+&\quad - \left(\left(\left(\mathrm{MemRdB_{cold start}^{(wave)}}\right)_{\mathrm{num}}\right)_{\mathrm{aux4}}\right)_{\mathrm{aux1}}
 \end{aligned}
 $$
 
 $$
 \begin{aligned}
-\mathrm{MemRdB_{cold start}^{(wave)}}_{\mathrm{num}}_{\mathrm{aux4}}_{\mathrm{aux1}} &= \mathrm{Size_{B}^{(matA)}} \\
+\left(\left(\left(\mathrm{MemRdB_{cold start}^{(wave)}}\right)_{\mathrm{num}}\right)_{\mathrm{aux4}}\right)_{\mathrm{aux1}} &= \mathrm{Size_{B}^{(matA)}} \\
 &\quad + \mathrm{Size_{B}^{(matA)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{N_{dim}}}{\mathrm{W_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matA)}} \\
 &\quad + \mathrm{Size_{B}^{(matB)}} \\
 &\quad + \mathrm{Size_{B}^{(matB)}} \times \left(\mathrm{CEILING}(\frac{\mathrm{M_{dim}}}{\mathrm{H_{element}^{(XeCUTile)}}}, 1) - 1\right) \times \mathrm{P_{L2Miss, after 1st wave}^{(matB)}}

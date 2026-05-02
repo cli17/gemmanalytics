@@ -885,8 +885,8 @@ def _extract_top_frac(s: str) -> tuple[str, str] | None:
 
 
 def _make_aux_symbol(lhs: str, suffix: str) -> str:
-    """Append _{suffix} as a subscript to a LaTeX symbol."""
-    return f'{lhs}_{{{suffix}}}'
+    """Return a parenthesized symbol with subscript for recursive decomposition."""
+    return f'\\left({lhs}\\right)_{{{suffix}}}'
 
 
 def _extract_leading_left_right_group(s: str) -> tuple[str, str] | None:
