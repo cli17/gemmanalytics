@@ -6,35 +6,39 @@ Output order: execution
 
 ### row 22 - INPUT A BYTES PER ELEMENT
 
-$$ \mathrm{Bytes_{pElement}^{(matA)}} = \mathrm{DataFormatToBytes}[\mathrm{Fmt^{(matA)}}] $$
+$$ \mathrm{Bytes_{perElement}^{(matA)}} = \mathrm{DataFormatToBytes}[\mathrm{Fmt^{(matA)}}] $$
 
 ### row 23 - INPUT B BYTES PER ELEMENT
 
-$$ \mathrm{Bytes_{pElement}^{(matB)}} = \mathrm{DataFormatToBytes}[\mathrm{Fmt^{(matB)}}] $$
+$$ \mathrm{Bytes_{perElement}^{(matB)}} = \mathrm{DataFormatToBytes}[\mathrm{Fmt^{(matB)}}] $$
 
 ### row 25 - OUTPUT BYTES PER ELEMENT AFTER DOWN CONVERSION
 
-$$ \mathrm{Bytes_{pElement}^{(matD\downarrow)}} = \mathrm{DataFormatToBytes}[\mathrm{Fmt^{(matD\downarrow)}}] $$
+$$ \mathrm{Bytes_{perElement}^{(matD\downarrow)}} = \mathrm{DataFormatToBytes}[\mathrm{Fmt^{(matD\downarrow)}}] $$
 
 ### row 33 - EU COUNT
 
-$$ \mathrm{|EU|} = \mathrm{|XeCore|_{pXeCU}} \times \mathrm{|EU|_{pXeCore}} \times \mathrm{|XeCU|} $$
+$$ \mathrm{|EU|} = \mathrm{|XeCore|_{perXeCU}} \times \mathrm{|EU|_{perXeCore}} \times \mathrm{|XeCU|} $$
+
+### row ? - MMA MAC THROUGHPUT PER EU
+
+$$ \mathrm{\tau_{mMACpClk{\cdot}EU}^{(peak)}} = \frac{4}{max(\mathrm{Bytes_{perElement}^{(matA)}}, \mathrm{Bytes_{perElement}^{(matB)}})} \times \mathrm{D_{DPAS}} \times 16 $$
 
 ### row 36 - MMA MAC THROUGHPUT PER XECORE
 
-$$ \mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}} = \min(\frac{4}{\frac{\mathrm{FLOOR}(\mathrm{Bytes_{pElement}^{(matA)}} \times 2, 1)}{2}}, \frac{4}{\frac{\mathrm{FLOOR}(\mathrm{Bytes_{pElement}^{(matB)}} \times 2, 1)}{2}}) \times \mathrm{D_{DPAS}} \times 16 \times \mathrm{|EU|_{pXeCore}} $$
+$$ \mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}} = \mathrm{\tau_{mMACpClk{\cdot}EU}^{(peak)}} \times \mathrm{|EU|_{perXeCore}} $$
 
 ### row 42 - CLKS PER DPAS
 
-$$ \mathrm{CLKS_{DPAS}} = \frac{\mathrm{M_{pThread}} \times \mathrm{K_{pThread}} \times \mathrm{N_{pThread}}}{\frac{\mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}}}{\mathrm{|EU|_{pXeCore}}}} $$
+$$ \mathrm{CLKS_{DPAS}} = \frac{\mathrm{M_{perThread}} \times \mathrm{K_{perThread}} \times \mathrm{N_{perThread}}}{\frac{\mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}}}{\mathrm{|EU|_{perXeCore}}}} $$
 
 ### row 43 - THREAD WIDTH IN UNITS OF ELEMENTS
 
-$$ \mathrm{W_{element}^{(Thread)}} = \mathrm{N_{pThread}} $$
+$$ \mathrm{W_{element}^{(Thread)}} = \mathrm{N_{perThread}} $$
 
 ### row 44 - THREAD HEIGHT IN UNITS OF ELEMENTS
 
-$$ \mathrm{H_{element}^{(Thread)}} = \mathrm{M_{pThread}} $$
+$$ \mathrm{H_{element}^{(Thread)}} = \mathrm{M_{perThread}} $$
 
 ### row 47 - TG WIDTH IN UNITS OF ELEMENT REALIZED BY MULTIPLE MMA
 ### ITERATIONS
@@ -111,37 +115,37 @@ $$ \mathrm{H_{element}^{(GPUTile)}} = \mathrm{H_{XeCU}^{(GPUTile)}} \times \math
 
 ### row 63 - MAT A INPUT SIZE B
 
-$$ \mathrm{Size_{B}^{(matA)}} = \mathrm{M_{dim}} \times \mathrm{K_{dim}} \times \mathrm{Bytes_{pElement}^{(matA)}} $$
+$$ \mathrm{Size_{B}^{(matA)}} = \mathrm{M_{dim}} \times \mathrm{K_{dim}} \times \mathrm{Bytes_{perElement}^{(matA)}} $$
 
 ### row 64 - MAT B INPUT SIZE B
 
-$$ \mathrm{Size_{B}^{(matB)}} = \mathrm{K_{dim}} \times \mathrm{N_{dim}} \times \mathrm{Bytes_{pElement}^{(matB)}} $$
+$$ \mathrm{Size_{B}^{(matB)}} = \mathrm{K_{dim}} \times \mathrm{N_{dim}} \times \mathrm{Bytes_{perElement}^{(matB)}} $$
 
 ### row 65 - MAT C INPUT D OUTPUT SIZE B
 
-$$ \mathrm{Size_{B}^{(matC,matD)}} = \mathrm{M_{dim}} \times \mathrm{N_{dim}} \times \mathrm{Bytes_{pElement}^{(matD\downarrow)}} $$
+$$ \mathrm{Size_{B}^{(matC,matD)}} = \mathrm{M_{dim}} \times \mathrm{N_{dim}} \times \mathrm{Bytes_{perElement}^{(matD\downarrow)}} $$
 
 ### row 66 - MAT D INTERMEDIATE SIZE B
 
-$$ \mathrm{Size_{B}^{(matD\downarrow)}} = \mathrm{M_{dim}} \times \mathrm{N_{dim}} \times \mathrm{Byte_{pElement}^{(matD)}} $$
+$$ \mathrm{Size_{B}^{(matD\downarrow)}} = \mathrm{M_{dim}} \times \mathrm{N_{dim}} \times \mathrm{Byte_{perElement}^{(matD)}} $$
 
 ### row 102 - TOTAL L2 SIZE B FOR A SINGLE INSTANCE
 
-$$ \mathrm{|L2|_{B}} = \mathrm{L2BankSize_{MB}} \times \mathrm{|L2Banks|_{pXeCU}} \times 1024 \times 1024 $$
+$$ \mathrm{L2Size_{B}} = \mathrm{L2BankSize_{MB}} \times \mathrm{|L2Banks|_{perXeCU}} \times 1024 \times 1024 $$
 
 ### row 103 - WORKING DATA SET SIZE OF K IN L2 CORRESP 20K CLOCKS OF
 ### THREAD DIVERGENCE
 
-$$ \mathrm{|WorkingSet|_{20K\ clks\ of\ thread\ divergence}^{(K\ in\ L2)}} = \min(20000 \times \frac{\mathrm{K_{pThread}}}{\mathrm{CLKS_{DPAS}}}, \mathrm{K_{dim}}) $$
+$$ \mathrm{|WorkingSet|_{20K\ clks\ of\ thread\ divergence}^{(K\ in\ L2)}} = \min(20000 \times \frac{\mathrm{K_{perThread}}}{\mathrm{CLKS_{DPAS}}}, \mathrm{K_{dim}}) $$
 
 ### row 104 - TOTAL REQUIRED L2 SIZE FOR IDEAL HIT RATE B FOR A SINGLE
 ### INSTANCE AND SINGLE WAVE
 
 $$
 \begin{aligned}
-\mathrm{TotalRequiredL2Size_{matB\ always hit}^{1\ instance,\ 1\ wave}} &= \mathrm{H_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(matA)}} \times \mathrm{|WorkingSet|_{20K\ clks\ of\ thread\ divergence}^{(K\ in\ L2)}} \\
-&\quad + \mathrm{W_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(matB)}} \times \mathrm{|WorkingSet|_{20K\ clks\ of\ thread\ divergence}^{(K\ in\ L2)}} \\
-&\quad + \mathrm{W_{element}^{(XeCUTile)}} \times \mathrm{H_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{pElement}^{(matD\downarrow)}}
+\mathrm{TotalRequiredL2Size_{matB\ always hit}^{1\ instance,\ 1\ wave}} &= \mathrm{H_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{perElement}^{(matA)}} \times \mathrm{|WorkingSet|_{20K\ clks\ of\ thread\ divergence}^{(K\ in\ L2)}} \\
+&\quad + \mathrm{W_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{perElement}^{(matB)}} \times \mathrm{|WorkingSet|_{20K\ clks\ of\ thread\ divergence}^{(K\ in\ L2)}} \\
+&\quad + \mathrm{W_{element}^{(XeCUTile)}} \times \mathrm{H_{element}^{(XeCUTile)}} \times \mathrm{Bytes_{perElement}^{(matD\downarrow)}}
 \end{aligned}
 $$
 
@@ -149,13 +153,13 @@ $$
 
 $$ \mathrm{MemBW_{BpClk}^{max}} = \frac{\mathrm{MemBW_{GBps}^{max}}}{\mathrm{f_{GHz}^{(GT)}}} $$
 
+### row 37a - WORKLOAD MAC PER XECORE
+
+$$ \mathrm{WL_{MAC}^{(XeCore)}} = \frac{\mathrm{M_{dim}} \times \mathrm{K_{dim}} \times \mathrm{N_{dim}}}{\mathrm{|XeCore|_{perXeCU}} \times \mathrm{|XeCU|}} $$
+
 ### row 37 - CLK SPECIFIED EFFICIENCY
 
-$$ \mathrm{T_{clk}^{(total)}} = \frac{\left(\mathrm{T_{clk}^{(total)}}\right)_{\mathrm{num}}}{\mathrm{\eta_{systolic}}} $$
-
-$$ \left(\mathrm{T_{clk}^{(total)}}\right)_{\mathrm{num}} = \frac{\left(\left(\mathrm{T_{clk}^{(total)}}\right)_{\mathrm{num}}\right)_{\mathrm{num}}}{\mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}}} $$
-
-$$ \left(\left(\mathrm{T_{clk}^{(total)}}\right)_{\mathrm{num}}\right)_{\mathrm{num}} = \frac{\frac{\mathrm{M_{dim}} \times \mathrm{K_{dim}} \times \mathrm{N_{dim}}}{\mathrm{|XeCore|_{pXeCU}}}}{\mathrm{|XeCU|}} $$
+$$ \mathrm{T_{clk}^{(total)}} = \frac{\mathrm{WL_{MAC}^{(XeCore)}}}{\mathrm{\tau_{mMACpClk{\cdot}XeCore}^{(peak)}} \times \mathrm{\eta_{systolic}}} $$
 
 ### row 69 - TOTAL L2 READ B
 
@@ -185,11 +189,11 @@ $$ \mathrm{L1Wr_{B}^{(total)}} = \mathrm{Size_{B}^{(matC,matD)}} $$
 
 ### row 74 - L2 READ B XECORE CLK
 
-$$ \mathrm{L2RdBW_{Bp(Clk{\cdot}XeCore)}} = \frac{\frac{\mathrm{L2Rd_{B}^{(total)}}}{\mathrm{|XeCU|} \times \mathrm{|XeCore|_{pXeCU}}}}{\mathrm{T_{clk}^{(total)}}} $$
+$$ \mathrm{L2RdBW_{Bp(Clk{\cdot}XeCore)}} = \frac{\frac{\mathrm{L2Rd_{B}^{(total)}}}{\mathrm{|XeCU|} \times \mathrm{|XeCore|_{perXeCU}}}}{\mathrm{T_{clk}^{(total)}}} $$
 
 ### row 75 - L2 WRITE B XECORE CLK
 
-$$ \mathrm{L2WrBW_{Bp(Clk{\cdot}XeCore)}} = \frac{\frac{\mathrm{L2Wr_{B}^{(total)}}}{\mathrm{|XeCU|} \times \mathrm{|XeCore|_{pXeCU}}}}{\mathrm{T_{clk}^{(total)}}} $$
+$$ \mathrm{L2WrBW_{Bp(Clk{\cdot}XeCore)}} = \frac{\frac{\mathrm{L2Wr_{B}^{(total)}}}{\mathrm{|XeCU|} \times \mathrm{|XeCore|_{perXeCU}}}}{\mathrm{T_{clk}^{(total)}}} $$
 
 ### row 76 - L2 READ WRITE B XECORE CLK
 
@@ -206,7 +210,7 @@ $$ \mathrm{L1RdBW_{Bp(Clk{\cdot}EU)}} = \frac{\frac{\mathrm{L1Rd_{B}^{(total)}}}
 
 ### row 77 - L1 READ B XECORE CLK
 
-$$ \mathrm{L1RdBW_{Bp(Clk{\cdot}XeCore)}} = \mathrm{L1RdBW_{Bp(Clk{\cdot}EU)}} \times \mathrm{|EU|_{pXeCore}} $$
+$$ \mathrm{L1RdBW_{Bp(Clk{\cdot}XeCore)}} = \mathrm{L1RdBW_{Bp(Clk{\cdot}EU)}} \times \mathrm{|EU|_{perXeCore}} $$
 
 ### row 80 - L1 WRITE B EU CLK
 
@@ -214,11 +218,11 @@ $$ \mathrm{L1WrBW_{Bp(Clk{\cdot}EU)}} = \frac{\frac{\mathrm{L1Wr_{B}^{(total)}}}
 
 ### row 78 - L1 WRITE B XECORECLK
 
-$$ \mathrm{L1WrBW_{Bp(Clk{\cdot}XeCore)}} = \mathrm{L1WrBW_{Bp(Clk{\cdot}EU)}} \times \mathrm{|EU|_{pXeCore}} $$
+$$ \mathrm{L1WrBW_{Bp(Clk{\cdot}XeCore)}} = \mathrm{L1WrBW_{Bp(Clk{\cdot}EU)}} \times \mathrm{|EU|_{perXeCore}} $$
 
 ### row 83 - L2 READ MAX B XECORE CLK
 
-$$ \mathrm{L2RdBW_{Bp(Clk{\cdot}XeCore)}^{(max)}} = \frac{\mathrm{|XeCore|_{pXeCU}} \times 64}{\mathrm{|XeCore|_{pXeCU}}} $$
+$$ \mathrm{L2RdBW_{Bp(Clk{\cdot}XeCore)}^{(max)}} = \frac{\mathrm{|XeCore|_{perXeCU}} \times 64}{\mathrm{|XeCore|_{perXeCU}}} $$
 
 ### row 84 - L2 WRITE MAX B XECORE CLK
 
@@ -242,16 +246,16 @@ $$ \mathrm{\eta_{L2RdWrBWpXeCore}} = \frac{\mathrm{L2RdWrBW_{Bp(Clk{\cdot}XeCore
 
 ### row 93 - L1 READ B EU CLK PCT
 
-$$ \mathrm{\eta_{L1RdBWpEU}} = \frac{\mathrm{L1RdBW_{Bp(Clk{\cdot}EU)}}}{\mathrm{L1RdBW_{BpClk{\cdot}EU}^{max}}} $$
+$$ \mathrm{\eta_{L1RdBWpEU}} = \frac{\mathrm{L1RdBW_{Bp(Clk{\cdot}EU)}}}{\mathrm{L1RdBW_{Bp(Clk{\cdot}EU)}^{max}}} $$
 
 ### row 94 - L1 WRITE B EU CLK PCT
 
-$$ \mathrm{\eta_{L1WrBWpEU}} = \frac{\mathrm{L1WrBW_{Bp(Clk{\cdot}EU)}}}{\mathrm{L1WrBW_{BpClk{\cdot}EU}^{max}}} $$
+$$ \mathrm{\eta_{L1WrBWpEU}} = \frac{\mathrm{L1WrBW_{Bp(Clk{\cdot}EU)}}}{\mathrm{L1WrBW_{Bp(Clk{\cdot}EU)}^{max}}} $$
 
 ### row 106 - L2 HIT RATE ASSUMED RANDOM ACCESS WITHIN THE WORKING
 ### DATA SET PCT
 
-$$ \mathrm{L2HitRate_{random\ WS\ access}} = \min(\frac{\mathrm{|L2|_{B}}}{\mathrm{TotalRequiredL2Size_{matB\ always hit}^{1\ instance,\ 1\ wave}}}, 1) $$
+$$ \mathrm{L2HitRate_{random\ WS\ access}} = \min(\frac{\mathrm{L2Size_{B}}}{\mathrm{TotalRequiredL2Size_{matB\ always hit}^{1\ instance,\ 1\ wave}}}, 1) $$
 
 ### row 107 - L2 MISS RATE PCT
 
@@ -268,7 +272,7 @@ $$
 \begin{aligned}
 \mathrm{P_{L2Hit,\ after\ 1st\ wave}^{(matA)}} &= \mathrm{IF}(\mathrm{Size_{B}^{(matA)}} \\
 &\quad + \mathrm{Size_{B}^{(matB)}} \\
-&\quad + \mathrm{Size_{B}^{(matC,matD)}} \le \mathrm{|L2|_{B}}, 1.0, \mathrm{IF}(\mathrm{K_{dim}} > 2 \times \mathrm{|WorkingSet|_{20K\ clks\ of\ thread\ divergence}^{(K\ in\ L2)}}, 0.0, 1 \\
+&\quad + \mathrm{Size_{B}^{(matC,matD)}} \le \mathrm{L2Size_{B}}, 1.0, \mathrm{IF}(\mathrm{K_{dim}} > 2 \times \mathrm{|WorkingSet|_{20K\ clks\ of\ thread\ divergence}^{(K\ in\ L2)}}, 0.0, 1 \\
 &\quad - \frac{\mathrm{K_{dim}} - \mathrm{|WorkingSet|_{20K\ clks\ of\ thread\ divergence}^{(K\ in\ L2)}}}{\mathrm{|WorkingSet|_{20K\ clks\ of\ thread\ divergence}^{(K\ in\ L2)}}}))
 \end{aligned}
 $$
@@ -280,7 +284,7 @@ $$
 \begin{aligned}
 \mathrm{P_{L2Hit,\ after\ 1st\ wave}^{(matB)}} &= \mathrm{IF}(\mathrm{Size_{B}^{(matA)}} \\
 &\quad + \mathrm{Size_{B}^{(matB)}} \\
-&\quad + \mathrm{Size_{B}^{(matC,matD)}} \le \mathrm{|L2|_{B}}, 1.0, 0.0)
+&\quad + \mathrm{Size_{B}^{(matC,matD)}} \le \mathrm{L2Size_{B}}, 1.0, 0.0)
 \end{aligned}
 $$
 
