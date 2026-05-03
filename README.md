@@ -2,6 +2,22 @@
 
 Standalone GEMM analytics model runner.
 
+## TL;DR (Windows)
+
+Already cloned?
+
+```bash
+bootstrap_gemmanalytics.bat
+```
+
+New machine?
+
+```bash
+git clone https://github.com/cli17/gemmanalytics.git
+cd gemmanalytics
+bootstrap_gemmanalytics.bat
+```
+
 ## Quick Start (Windows)
 
 From a fresh machine:
