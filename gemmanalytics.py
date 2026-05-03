@@ -9,6 +9,9 @@ import sys
 import re
 
 import math
+import openpyxl
+from openpyxl.styles import Font, PatternFill, Alignment
+from openpyxl.utils import get_column_letter
 
 
 def CEILING(x, significance=1):
@@ -1737,7 +1740,7 @@ def export_to_csv(values_by_column: dict, csv_path: str, output_order: str = 'ex
         return value
 
     with open(csv_path, 'w', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
+        writer = csv.writer(f)  # noqa: using module-level _format_csv_value below
         writer.writerow(['Name', 'Category', 'RowID', 'Description'] + column_names)
         # Use the first column's values dict to determine which names are present.
         first_values = next(iter(values_by_column.values()))
@@ -1754,6 +1757,75 @@ def export_to_csv(values_by_column: dict, csv_path: str, output_order: str = 'ex
                 row.append(_format_csv_value(name, values_by_column[col].get(name, '')))
             writer.writerow(row)
 
+
+def _format_csv_value(name: str, value):
+    """Format a single output value for CSV/XLSX export.
+
+    - *PCT fields: percentage string '00.00%'
+    - Integral numeric: grouped integer '0,0'
+    - Non-integral numeric: grouped two-decimal '0,0.00'
+    - All other values (strings, empty): returned as-is
+    """
+    if isinstance(value, bool):
+        value = int(value)
+    if name.endswith('PCT') and isinstance(value, (int, float)):
+        return format(value, '.2%')
+    if isinstance(value, (int, float)):
+        if float(value).is_integer():
+            return format(value, ',.0f')
+        return format(value, ',.2f')
+    return value
+
+
+def export_to_xlsx(values_by_column: dict, xlsx_path: str, output_order: str = 'execution') -> None:
+    """Export model values to Excel workbook with frozen header row and autofilter.
+
+    Uses the same row order and value formatting as export_to_csv.
+    The header row is bold, light-grey-filled, frozen, and has autofilter applied.
+    """
+    internal_order = _resolve_output_order(output_order)
+    item_order = COMPUTE_ORDER if internal_order == 'compute' else ROW_ORDER
+    column_names = list(values_by_column.keys())
+    first_values = next(iter(values_by_column.values()))
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = 'Results'
+
+    header = ['Name', 'Category', 'RowID', 'Description'] + column_names
+    ws.append(header)
+
+    header_font = Font(bold=True)
+    header_fill = PatternFill(fill_type='solid', fgColor='D9D9D9')
+    center_align = Alignment(horizontal='center')
+    for col_idx, cell in enumerate(ws[1], start=1):
+        cell.font = header_font
+        cell.fill = header_fill
+        if col_idx > 4:
+            cell.alignment = center_align
+
+    for name in item_order:
+        if name not in first_values:
+            continue
+        row = [
+            name,
+            CATEGORY_MAP.get(name, ''),
+            ACTIVE_ROW_INDEX.get(name, ''),
+            PARAM_DESCRIPTIONS.get(name, ''),
+        ]
+        for col in column_names:
+            row.append(_format_csv_value(name, values_by_column[col].get(name, '')))
+        ws.append(row)
+
+    ws.freeze_panes = 'A2'
+    ws.auto_filter.ref = f'A1:{get_column_letter(len(header))}1'
+
+    for col_idx, col_cells in enumerate(ws.columns, start=1):
+        max_len = max((len(str(c.value)) if c.value is not None else 0) for c in col_cells)
+        ws.column_dimensions[get_column_letter(col_idx)].width = min(max_len + 2, 60)
+
+    wb.save(xlsx_path)
+
 def parse_cli_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Run GEMM model with workload and machine parameters.')
     parser.add_argument('--workload-params', required=True, metavar='CSV', help='Workload parameters CSV (RowID,Name,Label,Value) or (RowID,Name,Label,<workload1>,<workload2>,...) where RowID is required and must be a positive integer')
@@ -1763,6 +1835,7 @@ def parse_cli_args() -> argparse.Namespace:
     parser.add_argument('--output-order', choices=['execution', 'row_tracking'], default='execution', help="output order: 'execution' for 4-section compute order (default), 'row_tracking' for original xlsx row order")
     parser.add_argument('--output-txt', default=None, help='(Optional) also write text report to file')
     parser.add_argument('--output-csv', default=None, help='(Optional) also export model values to CSV')
+    parser.add_argument('--output-xlsx', default=None, metavar='XLSX', help='(Optional) also export model values to Excel workbook with frozen header and autofilter')
     parser.add_argument('--output-equations-md', default=None, metavar='MD', help='(Optional) export equations markdown using LaTeX symbol mapping')
     parser.add_argument('--no-stdout', action='store_true', help='Suppress stdout output')
     return parser.parse_args()
@@ -1816,6 +1889,8 @@ def main() -> None:
             f.write(report)
     if args.output_csv:
         export_to_csv(values_by_column, args.output_csv, output_order=args.output_order)
+    if args.output_xlsx:
+        export_to_xlsx(values_by_column, args.output_xlsx, output_order=args.output_order)
     if args.output_equations_md:
         export_equations_markdown(args.output_equations_md, output_order=args.output_order)
 
