@@ -1519,6 +1519,17 @@ def build_equations_markdown(output_order: str = 'execution') -> str:
         rhs = _formula_to_latex_expr(formula)
         lines.append(_equation_block(lhs, rhs))
         lines.append('')
+    lines.append('## DataFormatToBytes')
+    lines.append('')
+    lines.append('Reference mapping used for workload data-format to bytes-per-element conversion.')
+    lines.append('')
+    lines.append('```python')
+    lines.append('DataFormatToBytes = {')
+    for fmt_name in sorted(DATA_FORMAT_TO_BYTES):
+        lines.append(f"    '{fmt_name}': {DATA_FORMAT_TO_BYTES[fmt_name]!r},")
+    lines.append('}')
+    lines.append('```')
+    lines.append('')
 
     return '\n'.join(lines).rstrip() + '\n'
 
@@ -1537,6 +1548,12 @@ CATEGORY_MAP['MIXED_PRECISION_DPAS_THROUGHPUT_DELTA'] = 'machine workload derive
 CATEGORY_MAP['MMA_MAC_THROUGHPUT_PER_CHANNEL_STAGE'] = 'machine workload derived'
 CATEGORY_MAP['MMA_MAC_THROUGHPUT_PER_EU'] = 'machine workload derived'
 CATEGORY_MAP['WORKLOAD_MAC_PER_XECORE'] = 'machine stats'
+CATEGORY_MAP['INPUT_A_DATA_FORMAT'] = 'workload derived'
+CATEGORY_MAP['INPUT_B_DATA_FORMAT'] = 'workload derived'
+CATEGORY_MAP['OUTPUT_D_DATA_FORMAT'] = 'workload derived'
+CATEGORY_MAP['INPUT_A_BYTES_PER_ELEMENT'] = 'workload derived'
+CATEGORY_MAP['INPUT_B_BYTES_PER_ELEMENT'] = 'workload derived'
+CATEGORY_MAP['OUTPUT_BYTES_PER_ELEMENT_AFTER_DOWN_CONVERSION'] = 'workload derived'
 
 PARAM_DESCRIPTIONS = {
     # ---- Machine pre-defined ----
@@ -1728,19 +1745,8 @@ def export_to_csv(values_by_column: dict, csv_path: str, output_order: str = 'ex
     item_order = COMPUTE_ORDER if internal_order == 'compute' else ROW_ORDER
     column_names = list(values_by_column.keys())
 
-    def _format_csv_value(name: str, value):
-        if isinstance(value, bool):
-            value = int(value)
-        if name.endswith('PCT') and isinstance(value, (int, float)):
-            return format(value, '.2%')
-        if isinstance(value, (int, float)):
-            if float(value).is_integer():
-                return format(value, ',.0f')
-            return format(value, ',.2f')
-        return value
-
     with open(csv_path, 'w', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)  # noqa: using module-level _format_csv_value below
+        writer = csv.writer(f)
         writer.writerow(['Name', 'Category', 'RowID', 'Description'] + column_names)
         # Use the first column's values dict to determine which names are present.
         first_values = next(iter(values_by_column.values()))
@@ -1761,26 +1767,38 @@ def export_to_csv(values_by_column: dict, csv_path: str, output_order: str = 'ex
 def _format_csv_value(name: str, value):
     """Format a single output value for CSV/XLSX export.
 
-    - *PCT fields: percentage string '00.00%'
-    - Integral numeric: grouped integer '0,0'
-    - Non-integral numeric: grouped two-decimal '0,0.00'
-    - All other values (strings, empty): returned as-is
+    CSV keeps one raw, precision-preserving representation.
+    XLSX uses a dedicated formatter for readable display formats.
     """
     if isinstance(value, bool):
         value = int(value)
+    return value
+
+
+def _format_xlsx_cell(name: str, value):
+    """Return (cell_value, number_format) for XLSX export.
+
+    Keep numbers as numeric types so Excel can sort/filter/calculate, while
+    applying display formats consistent with CSV output.
+    """
+    if isinstance(value, bool):
+        value = int(value)
+
     if name.endswith('PCT') and isinstance(value, (int, float)):
-        return format(value, '.2%')
+        return float(value), '0.00%'
+
     if isinstance(value, (int, float)):
         if float(value).is_integer():
-            return format(value, ',.0f')
-        return format(value, ',.2f')
-    return value
+            return int(value), '#,##0'
+        return float(value), '#,##0.00'
+
+    return value, None
 
 
 def export_to_xlsx(values_by_column: dict, xlsx_path: str, output_order: str = 'execution') -> None:
     """Export model values to Excel workbook with frozen header row and autofilter.
 
-    Uses the same row order and value formatting as export_to_csv.
+    Uses the same row order as export_to_csv.
     The header row is bold, light-grey-filled, frozen, and has autofilter applied.
     """
     internal_order = _resolve_output_order(output_order)
@@ -1813,9 +1831,15 @@ def export_to_xlsx(values_by_column: dict, xlsx_path: str, output_order: str = '
             ACTIVE_ROW_INDEX.get(name, ''),
             PARAM_DESCRIPTIONS.get(name, ''),
         ]
-        for col in column_names:
-            row.append(_format_csv_value(name, values_by_column[col].get(name, '')))
         ws.append(row)
+
+        excel_row = ws.max_row
+        for col_idx, col_name in enumerate(column_names, start=5):
+            raw_value = values_by_column[col_name].get(name, '')
+            cell_value, number_format = _format_xlsx_cell(name, raw_value)
+            cell = ws.cell(row=excel_row, column=col_idx, value=cell_value)
+            if number_format:
+                cell.number_format = number_format
 
     ws.freeze_panes = 'A2'
     ws.auto_filter.ref = f'A1:{get_column_letter(len(header))}1'

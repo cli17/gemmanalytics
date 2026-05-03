@@ -474,3 +474,26 @@ $$ \mathrm{\eta}_{GTIRdBW} = \frac{\mathrm{MemRdBW}_{BpClk}}{\mathrm{GtiRdBW}_{B
 ### row 128 - GTI WRITE BW PCT
 
 $$ \mathrm{\eta}_{GTIWrBW} = \frac{\mathrm{MemWrBW}_{BpClk}}{\mathrm{GtiWrBW}_{BpClk}^{max}} $$
+
+## DataFormatToBytes
+
+Reference mapping used for workload data-format to bytes-per-element conversion.
+
+```python
+DataFormatToBytes = {
+    'fp16': 2,
+    'fp4': 0.5,
+    'fp6': 0.75,
+    'fp8': 1,
+    'i2': 0.25,
+    'i4': 0.5,
+    'i8': 1,
+    'mxfp4': 0.53125,
+    'mxfp6': 0.78125,
+    'mxfp8': 1.03125,
+    'mxi8': 1.03125,
+    'nvfp4_4x': 0.5625,
+    'nvfp4_6x': 0.5625,
+    'tf32': 4,
+}
+```
