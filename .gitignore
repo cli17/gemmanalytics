@@ -11,6 +11,5 @@ venv/
 # Local helper tooling (not versioned)
 .githooks/
 backup_current_outputs.bat
-run_gemmanalytics.bat
 run_regression_gemmanalytics.bat
 setup_gemmanalytics_tools.bat
