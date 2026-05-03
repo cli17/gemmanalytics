@@ -12,4 +12,3 @@ venv/
 .githooks/
 backup_current_outputs.bat
 run_regression_gemmanalytics.bat
-setup_gemmanalytics_tools.bat
