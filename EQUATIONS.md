@@ -45,6 +45,9 @@ $GtiWrBW_{BpClk}^{max}$ : [row 98] GTI write max BW (B/clk)
 $MemBW_{GBps}^{max}$ : [row 124] max possible HBM BW (GB/s)
 
 
+$DPAS_{MixFmt}$ : [row 1000] native DPAS mixed-precision support
+
+
 
 ## Workload Parameters (Pre-Defined)
 
@@ -121,17 +124,25 @@ $$ \mathrm{Bytes}_{perElement}^{(matD\downarrow)} = \mathrm{DataFormatToBytes}[\
 
 $$ \mathrm{|EU|} = \mathrm{|XeCore|}_{perXeCU} \times \mathrm{|EU|}_{perXeCore} \times \mathrm{|XeCU|} $$
 
-### row 36a - MMA MAC THROUGHPUT PER EU
+### row 4002 - MIXED PRECISION DPAS THROUGHPUT DELTA
 
-$$ \mathrm{\tau}_{mMACp(Clk{\cdot}EU)}^{(peak)} = \frac{4}{max(\mathrm{Bytes}_{perElement}^{(matA)}, \mathrm{Bytes}_{perElement}^{(matB)})} \times \mathrm{D}_{DPAS} \times 16 $$
+$$ \mathrm{\delta}_{\tau_{DPAS}} = \mathrm{DPAS}_{MixFmt} \land \left(\mathrm{Fmt}^{(matA)} \in \{\mathrm{i8}\} \land \mathrm{Fmt}^{(matB)} \in \{\mathrm{i2}, \mathrm{i4}\} \lor \mathrm{Fmt}^{(matA)} \in \{\mathrm{i2}, \mathrm{i4}\} \land \mathrm{Fmt}^{(matB)} \in \{\mathrm{i8}\}\right) $$
+
+### row 4001 - MMA MAC THROUGHPUT PER CHANNEL STAGE
+
+$$ \mathrm{\tau}_{mMACper(Clk{\cdot}CHANNEL{\cdot}STAGE)}^{(peak)} = \frac{4}{max(\mathrm{Bytes}_{perElement}^{(matA)}, \mathrm{Bytes}_{perElement}^{(matB)})} \times \left(1 + \mathrm{\delta}_{\tau_{DPAS}}\right) $$
+
+### row 4000 - MMA MAC THROUGHPUT PER EU
+
+$$ \mathrm{\tau}_{mMACper(Clk{\cdot}EU)}^{(peak)} = \mathrm{\tau}_{mMACper(Clk{\cdot}CHANNEL{\cdot}STAGE)}^{(peak)} \times \mathrm{D}_{DPAS} \times 16 $$
 
 ### row 36 - MMA MAC THROUGHPUT PER XECORE
 
-$$ \mathrm{\tau}_{mMACp(Clk{\cdot}XeCore)}^{(peak)} = \mathrm{\tau}_{mMACp(Clk{\cdot}EU)}^{(peak)} \times \mathrm{|EU|}_{perXeCore} $$
+$$ \mathrm{\tau}_{mMACper(Clk{\cdot}XeCore)}^{(peak)} = \mathrm{\tau}_{mMACper(Clk{\cdot}EU)}^{(peak)} \times \mathrm{|EU|}_{perXeCore} $$
 
 ### row 42 - CLKS PER DPAS
 
-$$ \mathrm{CLKS}_{DPAS} = \frac{\mathrm{M}_{perThread} \times \mathrm{K}_{perThread} \times \mathrm{N}_{perThread}}{\frac{\mathrm{\tau}_{mMACp(Clk{\cdot}XeCore)}^{(peak)}}{\mathrm{|EU|}_{perXeCore}}} $$
+$$ \mathrm{CLKS}_{DPAS} = \frac{\mathrm{M}_{perThread} \times \mathrm{K}_{perThread} \times \mathrm{N}_{perThread}}{\frac{\mathrm{\tau}_{mMACper(Clk{\cdot}XeCore)}^{(peak)}}{\mathrm{|EU|}_{perXeCore}}} $$
 
 ### row 43 - THREAD WIDTH IN UNITS OF ELEMENTS
 
@@ -254,13 +265,13 @@ $$
 
 $$ \mathrm{MemBW}_{BpClk}^{max} = \frac{\mathrm{MemBW}_{GBps}^{max}}{\mathrm{f}_{GHz}^{(GT)}} $$
 
-### row 37a - WORKLOAD MAC PER XECORE
+### row 5000 - WORKLOAD MAC PER XECORE
 
 $$ \mathrm{WL}_{MAC}^{(XeCore)} = \frac{\mathrm{M}_{dim} \times \mathrm{K}_{dim} \times \mathrm{N}_{dim}}{\mathrm{|XeCore|}_{perXeCU} \times \mathrm{|XeCU|}} $$
 
 ### row 37 - CLK SPECIFIED EFFICIENCY
 
-$$ \mathrm{T}_{clk}^{(total)} = \frac{\mathrm{WL}_{MAC}^{(XeCore)}}{\mathrm{\tau}_{mMACp(Clk{\cdot}XeCore)}^{(peak)} \times \mathrm{\eta}_{systolic}} $$
+$$ \mathrm{T}_{clk}^{(total)} = \frac{\mathrm{WL}_{MAC}^{(XeCore)}}{\mathrm{\tau}_{mMACper(Clk{\cdot}XeCore)}^{(peak)} \times \mathrm{\eta}_{systolic}} $$
 
 ### row 69 - TOTAL L2 READ B
 
@@ -371,9 +382,7 @@ $$ \mathrm{L2RdB}_{total} = \mathrm{L2Rd}_{B}^{(total)} $$
 
 $$
 \begin{aligned}
-\mathrm{P}_{L2Hit,\ after\ 1st\ wave}^{(matA)} &= \mathrm{IF}(\mathrm{Size}_{B}^{(matA)} \\
-&\quad + \mathrm{Size}_{B}^{(matB)} \\
-&\quad + \mathrm{Size}_{B}^{(matC,matD)} \le \mathrm{L2Size}_{B}, 1.0, \mathrm{IF}(\mathrm{K}_{dim} > 2 \times \mathrm{|WorkingSet|}_{20K\ clks\ of\ thread\ divergence}^{(K\ in\ L2)}, 0.0, 1 \\
+\mathrm{P}_{L2Hit,\ after\ 1st\ wave}^{(matA)} &= \mathrm{IF}(\left(\mathrm{Size}_{B}^{(matA)} + \mathrm{Size}_{B}^{(matB)} + \mathrm{Size}_{B}^{(matC,matD)}\right) \le \mathrm{L2Size}_{B}, 1.0, \mathrm{IF}(\mathrm{K}_{dim} > 2 \times \mathrm{|WorkingSet|}_{20K\ clks\ of\ thread\ divergence}^{(K\ in\ L2)}, 0.0, 1 \\
 &\quad - \frac{\mathrm{K}_{dim} - \mathrm{|WorkingSet|}_{20K\ clks\ of\ thread\ divergence}^{(K\ in\ L2)}}{\mathrm{|WorkingSet|}_{20K\ clks\ of\ thread\ divergence}^{(K\ in\ L2)}}))
 \end{aligned}
 $$
@@ -381,13 +390,7 @@ $$
 ### row 111 - PROBABILITY OF MATB HIT IN L2 DURING A NON FIRST WAVE
 ### PCT
 
-$$
-\begin{aligned}
-\mathrm{P}_{L2Hit,\ after\ 1st\ wave}^{(matB)} &= \mathrm{IF}(\mathrm{Size}_{B}^{(matA)} \\
-&\quad + \mathrm{Size}_{B}^{(matB)} \\
-&\quad + \mathrm{Size}_{B}^{(matC,matD)} \le \mathrm{L2Size}_{B}, 1.0, 0.0)
-\end{aligned}
-$$
+$$ \mathrm{P}_{L2Hit,\ after\ 1st\ wave}^{(matB)} = \mathrm{IF}(\left(\mathrm{Size}_{B}^{(matA)} + \mathrm{Size}_{B}^{(matB)} + \mathrm{Size}_{B}^{(matC,matD)}\right) \le \mathrm{L2Size}_{B}, 1.0, 0.0) $$
 
 ### row 112 - PROBABILITY OF MATA MISS IN L2 DURING A NON FIRST WAVE
 ### PCT
