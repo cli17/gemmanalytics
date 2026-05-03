@@ -2,6 +2,30 @@
 
 Standalone GEMM analytics model runner.
 
+## Quick Start (Windows)
+
+From a fresh machine:
+
+```bash
+git clone https://github.com/cli17/gemmanalytics.git
+cd gemmanalytics
+bootstrap_gemmanalytics.bat
+```
+
+What `bootstrap_gemmanalytics.bat` does:
+
+- Runs `setup_gemmanalytics_tools.bat` to verify/install required tools and Python packages
+- Runs `run_gemmanalytics.bat` once to validate local setup
+- Opens VS Code and `gemmanalytics.py` (if `code` CLI is available)
+
+Optional:
+
+```bash
+bootstrap_gemmanalytics.bat --no-run
+```
+
+Use `--no-run` to skip the initial generation pass.
+
 ## RowID Policy
 
 The model uses RowIDs both for traceability back to the baseline worksheet and for stable CSV/report output ordering.
