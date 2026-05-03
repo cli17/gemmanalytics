@@ -1,8 +1,4 @@
 RowID,Name,Label,TTL-16Xe,TTL-16Xe-MixFmt
-,__ROW_ID_POLICY_1__,Keep original XLSX rows on their original RowIDs,,
-,__ROW_ID_POLICY_2__,New machine pre-defined input parameters use RowIDs 1000-1999,,
-,__ROW_ID_POLICY_3__,New workload pre-defined input parameters use RowIDs 2000-2999,,
-,__ROW_ID_POLICY_4__,Derived extensions use 4000-4999 and machine stats use 5000-5999,,
 8,GT_FREQ_GHZ,GT Freq (GHz),1.9,1.9
 26,XECU_COUNT,XeCU count,1,1
 27,XECORE_PER_XECU,XeCore per XeCU,16,16
@@ -17,4 +13,4 @@ RowID,Name,Label,TTL-16Xe,TTL-16Xe-MixFmt
 98,GTI_WRITE_MAX_BW_B_CLK,GTI Write max BW(B/clk),256,256
 124,MAX_POSSIBLE_HBM_BW_GB_S,max possible HBM BW (GB/s),307,307
 1000,MIXED_PRECISION_DPAS,native DPAS mixed-precision support,0,1
-,__NEXT_AVAILABLE_ROW_ID__,next available RowID tracker (ignored),1001,1001
+1001,__NEXT_AVAILABLE_ROW_ID__,New machine pre-defined input parameters use RowIDs 1000-1999,,

@@ -49,9 +49,8 @@ TTL-16Xe-MixFmt,i8_i4
 - `workload cfg = *` means all workload columns from the workload CSV.
 - `*,*` is the previous full machine x workload cross-product behavior.
 
-The loader ignores these metadata rows if present:
+The loader ignores this metadata row if present:
 
-- `__ROW_ID_POLICY_1__` through `__ROW_ID_POLICY_4__`
 - `__NEXT_AVAILABLE_ROW_ID__`
 
 ## Usage

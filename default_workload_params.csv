@@ -1,8 +1,4 @@
 RowID,Name,Label,i8_i4,fp8_fp4,fp8,fp4
-,__ROW_ID_POLICY_1__,Keep original XLSX rows on their original RowIDs,,,,
-,__ROW_ID_POLICY_2__,New machine pre-defined input parameters use RowIDs 1000-1999,,,,
-,__ROW_ID_POLICY_3__,New workload pre-defined input parameters use RowIDs 2000-2999,,,,
-,__ROW_ID_POLICY_4__,Derived extensions use 4000-4999 and machine stats use 5000-5999,,,,
 3,INPUT_A_DATA_FORMAT,int8,i8,fp8,fp8,fp4
 4,INPUT_B_DATA_FORMAT,int4,i4,fp4,fp8,fp4
 5,OUTPUT_D_DATA_FORMAT,int8,i8,fp8,fp8,fp4
@@ -21,4 +17,4 @@ RowID,Name,Label,i8_i4,fp8_fp4,fp8,fp4
 54,XECU_TILE_WIDTH_IN_UNITS_OF_TG,XeCU tile width in units of TG,4,4,4,4
 55,XECU_TILE_HEIGHT_IN_UNITS_OF_TG,XeCU tile height in units of TG,4,4,4,4
 58,GPU_TILE_WIDTH_IN_XECU_UNIT,GPU tile width in XeCU unit,1,1,1,1
-,__NEXT_AVAILABLE_ROW_ID__,next available RowID tracker (ignored),,,,
+2000,__NEXT_AVAILABLE_ROW_ID__,New workload pre-defined input parameters use RowIDs 2000-2999,,,,

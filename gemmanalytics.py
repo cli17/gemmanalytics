@@ -52,10 +52,6 @@ DATA_FORMAT_TO_BYTES = {
 
 TRACKER_PARAM_NAMES = {
     '__NEXT_AVAILABLE_ROW_ID__',
-    '__ROW_ID_POLICY_1__',
-    '__ROW_ID_POLICY_2__',
-    '__ROW_ID_POLICY_3__',
-    '__ROW_ID_POLICY_4__',
 }
 
 def _parse_param_value(value_str: str):
@@ -80,8 +76,8 @@ def _load_params_csv(path: str, expected_names: list, file_label: str, all_known
                 Returns (column_names: list[str], all_params: dict[str,dict], row_ids: dict).
         The caller detects the return type via isinstance(result[0], list).
 
-        Metadata rows listed in TRACKER_PARAM_NAMES are ignored so users can keep RowID
-        policy notes and next-available trackers directly in the CSV files.
+        Metadata rows listed in TRACKER_PARAM_NAMES are ignored so users can keep a
+        next-available RowID tracker row directly in the CSV files.
     """
     row_ids: dict = {}
     expected_set = set(expected_names)
