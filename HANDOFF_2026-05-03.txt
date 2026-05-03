@@ -1,0 +1,62 @@
+GEMMAnalytics Handoff - 2026-05-03
+
+Current State
+- Branch: main
+- HEAD: 7a08d5e (also on origin/main)
+- Working tree expected clean after standard cleanup.
+
+What Changed Recently
+- CSV export now preserves raw numeric precision (single CSV flavor).
+- XLSX export writes numeric cells as true numbers with Excel number formats:
+  - Percent fields: 0.00%
+  - Integer fields: #,##0
+  - Decimal fields: #,##0.00
+- Category mapping updates:
+  - INPUT_A_DATA_FORMAT / INPUT_B_DATA_FORMAT / OUTPUT_D_DATA_FORMAT -> workload derived
+  - INPUT_A_BYTES_PER_ELEMENT / INPUT_B_BYTES_PER_ELEMENT / OUTPUT_BYTES_PER_ELEMENT_AFTER_DOWN_CONVERSION -> workload derived
+- Equations markdown includes a trailing DataFormatToBytes reference block.
+- Regression checks updated for CSV precision change and PDF baseline refreshed.
+
+Key Files
+- gemmanalytics.py
+- regression_check_gemmanalytics.py
+- default_machine_params.csv
+- default_workload_params.csv
+- default_experiments.csv
+- run_gemmanalytics.bat
+- run_regression_gemmanalytics.bat
+- backup/EQUATIONS.pdf (bitmap baseline)
+
+Standard Workflow
+1) Edit input CSVs:
+   - default_machine_params.csv
+   - default_workload_params.csv
+   - default_experiments.csv
+2) Run:
+   - run_gemmanalytics.bat
+3) Review outputs:
+   - gemmanalytics_output.txt
+   - gemmanalytics_output.csv
+   - gemmanalytics_output.xlsx
+   - EQUATIONS.md
+   - EQUATIONS.pdf
+
+Regression
+- Full regression command:
+  - run_regression_gemmanalytics.bat
+- Regression script checks:
+  - required artifacts exist
+  - text markers in txt/csv/md
+  - PDF bitmap identity vs backup/EQUATIONS.pdf
+
+Gotchas / Conventions
+- If gemmanalytics_output.xlsx is open in Excel, writes may fail with PermissionError.
+- CSV is now machine-precise; XLSX is the human-readable formatted view.
+- run_gemmanalytics.bat is now tracked in git for shared reference.
+
+Suggested Future-Feature Checklist
+- Implement change in gemmanalytics.py.
+- Regenerate outputs via run_gemmanalytics.bat.
+- Update regression_check_gemmanalytics.py markers if output contract changes.
+- Refresh backup/EQUATIONS.pdf only when equation/PDF output is intentionally changed.
+- Run run_regression_gemmanalytics.bat before commit/push.

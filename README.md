@@ -75,6 +75,58 @@ What it verifies:
 - Checks key txt/csv/md content markers
 - Performs page-by-page bitmap comparison of `EQUATIONS.pdf` vs `backup/EQUATIONS.pdf`
 
+## Improvement And Push Workflow
+
+Use this flow whenever you change model logic, inputs, or output contracts.
+
+1. Sync and branch (or work on `main` if using direct-push workflow).
+
+```bash
+git pull
+```
+
+2. Make code/data updates.
+
+- Typical files: `gemmanalytics.py`, default CSVs, regression markers, and docs.
+
+3. Regenerate outputs locally.
+
+```bash
+run_gemmanalytics.bat
+```
+
+4. Run full regression.
+
+```bash
+run_regression_gemmanalytics.bat
+```
+
+5. If behavior intentionally changed, update baselines.
+
+- Update marker expectations in `regression_check_gemmanalytics.py`.
+- Refresh `backup/EQUATIONS.pdf` only when PDF content changes intentionally.
+
+6. Commit with a focused message.
+
+```bash
+git add <files>
+git commit -m "<clear summary>"
+```
+
+7. Push to GitHub.
+
+```bash
+git push
+```
+
+8. Verify clean local state.
+
+```bash
+git status --short
+```
+
+Note: If `gemmanalytics_output.xlsx` is open in Excel, writes can fail with `PermissionError`. Close the workbook before rerunning generation/regression.
+
 ## Output Order
 
 - `--output-order execution`: 4-section report matching compute execution flow
