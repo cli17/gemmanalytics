@@ -1,4 +1,4 @@
-RowID,Name,Label,int8_int4,fp8_fp4,fp8,fp4
+RowID,Name,Label,i8_i4,fp8_fp4,fp8,fp4
 ,__ROW_ID_POLICY_1__,Keep original XLSX rows on their original RowIDs,,,,
 ,__ROW_ID_POLICY_2__,New machine pre-defined input parameters use RowIDs 1000-1999,,,,
 ,__ROW_ID_POLICY_3__,New workload pre-defined input parameters use RowIDs 2000-2999,,,,

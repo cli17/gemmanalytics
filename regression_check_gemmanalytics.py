@@ -108,9 +108,9 @@ def main() -> int:
         check_text_contains(
             CSV_PATH,
             [
-                "Name,Category,RowID,Description,TTL-16Xe | int8_int4,TTL-16Xe | fp8_fp4,TTL-16Xe | fp8,TTL-16Xe | fp4,TTL-16Xe-MixFmt | int8_int4,TTL-16Xe-MixFmt | fp8_fp4,TTL-16Xe-MixFmt | fp8,TTL-16Xe-MixFmt | fp4",
-                "GT_FREQ_GHZ,machine pre,8,GT Freq (GHz),1.9,1.9,1.9,1.9,1.9,1.9,1.9,1.9",
-                "MIXED_PRECISION_DPAS,machine pre,1000,native DPAS mixed-precision support,0,0,0,0,1,1,1,1",
+                "Name,Category,RowID,Description,TTL-16Xe | i8_i4,TTL-16Xe | fp8_fp4,TTL-16Xe | fp8,TTL-16Xe | fp4,TTL-16Xe-MixFmt | i8_i4",
+                "GT_FREQ_GHZ,machine pre,8,GT Freq (GHz),1.90,1.90,1.90,1.90,1.90",
+                "MIXED_PRECISION_DPAS,machine pre,1000,native DPAS mixed-precision support,0,0,0,0,1",
             ],
         )
         and ok

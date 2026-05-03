@@ -19,6 +19,7 @@ The default CSV files include a `__NEXT_AVAILABLE_ROW_ID__` tracker row. Update 
 - `gemmanalytics.py`: standalone analytical model script
 - `default_workload_params.csv`: default workload parameters
 - `default_machine_params.csv`: default machine parameters
+- `default_experiments.csv`: experiment pair selector (machine/workload combinations)
 
 ## Input CSV Formats
 
@@ -34,6 +35,20 @@ Machine CSV:
 RowID,Name,Label,TTL1,TTL2
 ```
 
+Experiments CSV:
+
+```csv
+machine cfg,workload cfg
+TTL-16Xe,*
+TTL-16Xe-MixFmt,i8_i4
+```
+
+`*` is a wildcard:
+
+- `machine cfg = *` means all machine columns from the machine CSV.
+- `workload cfg = *` means all workload columns from the workload CSV.
+- `*,*` is the previous full machine x workload cross-product behavior.
+
 The loader ignores these metadata rows if present:
 
 - `__ROW_ID_POLICY_1__` through `__ROW_ID_POLICY_4__`
@@ -42,7 +57,7 @@ The loader ignores these metadata rows if present:
 ## Usage
 
 ```bash
-python gemmanalytics.py --workload-params default_workload_params.csv --machine-params default_machine_params.csv
+python gemmanalytics.py --workload-params default_workload_params.csv --machine-params default_machine_params.csv --experiments default_experiments.csv
 ```
 
 ## Standard Regression Test

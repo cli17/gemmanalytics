@@ -170,6 +170,86 @@ def _load_params_csv(path: str, expected_names: list, file_label: str, all_known
             sys.exit(f"Error: Missing required {file_label} parameters in '{path}': {sorted(missing)}")
         return params, row_ids
 
+
+def _load_experiment_pairs_csv(path: str, machine_names: list[str], workload_names: list[str]) -> list[tuple[str, str]]:
+    """Load experiment pairs CSV and expand wildcard entries.
+
+    Required headers:
+    - machine cfg
+    - workload cfg
+
+    Wildcard support:
+    - '*' in machine cfg expands to all machine columns.
+    - '*' in workload cfg expands to all workload columns.
+    """
+    required_headers = {'machine cfg', 'workload cfg'}
+    machine_set = set(machine_names)
+    workload_set = set(workload_names)
+
+    pairs: list[tuple[str, str]] = []
+    pair_first_line: dict[tuple[str, str], int] = {}
+    def _norm_header(header_name: str) -> str:
+        return header_name.lstrip('\ufeff').strip().lower()
+
+    with open(path, newline='', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        header = reader.fieldnames or []
+        header_set = {_norm_header(h) for h in header if h is not None}
+        missing_headers = required_headers - header_set
+        if missing_headers:
+            sys.exit(
+                f"Error: Missing required experiment CSV columns in '{path}': {sorted(missing_headers)}"
+            )
+
+        # Map lowercase header names to the original keys in DictReader rows.
+        key_by_lower: dict[str, str] = {}
+        for h in header:
+            if h is None:
+                continue
+            hl = _norm_header(h)
+            if hl in required_headers and hl not in key_by_lower:
+                key_by_lower[hl] = h
+
+        for csv_line, row in enumerate(reader, start=2):
+            machine_cfg = (row.get(key_by_lower['machine cfg']) or '').strip()
+            workload_cfg = (row.get(key_by_lower['workload cfg']) or '').strip()
+
+            if not machine_cfg or not workload_cfg:
+                sys.exit(
+                    f"Error: Empty machine/workload cfg in '{path}' at CSV line {csv_line}."
+                )
+
+            resolved_machines = machine_names if machine_cfg == '*' else [machine_cfg]
+            resolved_workloads = workload_names if workload_cfg == '*' else [workload_cfg]
+
+            if machine_cfg != '*' and machine_cfg not in machine_set:
+                sys.exit(
+                    f"Error: Unknown machine cfg '{machine_cfg}' in '{path}' at CSV line {csv_line}. "
+                    f"Valid machine cfg values: {machine_names} or '*'."
+                )
+            if workload_cfg != '*' and workload_cfg not in workload_set:
+                sys.exit(
+                    f"Error: Unknown workload cfg '{workload_cfg}' in '{path}' at CSV line {csv_line}. "
+                    f"Valid workload cfg values: {workload_names} or '*'."
+                )
+
+            for machine_name in resolved_machines:
+                for workload_name in resolved_workloads:
+                    pair = (machine_name, workload_name)
+                    if pair in pair_first_line:
+                        first_line = pair_first_line[pair]
+                        sys.exit(
+                            f"Error: Duplicate experiment pair {pair} in '{path}' at CSV line {csv_line}; "
+                            f"already specified at CSV line {first_line}."
+                        )
+                    pair_first_line[pair] = csv_line
+                    pairs.append(pair)
+
+    if not pairs:
+        sys.exit(f"Error: No experiment pairs found in '{path}'.")
+
+    return pairs
+
 def compute_core_values(workload_params: dict, machine_params: dict) -> dict:
     """Compute all model variables and return them as a dict."""
     # Validate format keys are valid DATA_FORMAT_TO_BYTES keys
@@ -1648,6 +1728,18 @@ def export_to_csv(values_by_column: dict, csv_path: str, output_order: str = 'ex
     internal_order = _resolve_output_order(output_order)
     item_order = COMPUTE_ORDER if internal_order == 'compute' else ROW_ORDER
     column_names = list(values_by_column.keys())
+
+    def _format_csv_value(name: str, value):
+        if isinstance(value, bool):
+            value = int(value)
+        if name.endswith('PCT') and isinstance(value, (int, float)):
+            return format(value, '.2%')
+        if isinstance(value, (int, float)):
+            if float(value).is_integer():
+                return format(value, ',.0f')
+            return format(value, ',.2f')
+        return value
+
     with open(csv_path, 'w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
         writer.writerow(['Name', 'Category', 'RowID', 'Description'] + column_names)
@@ -1663,13 +1755,14 @@ def export_to_csv(values_by_column: dict, csv_path: str, output_order: str = 'ex
                 PARAM_DESCRIPTIONS.get(name, ''),
             ]
             for col in column_names:
-                row.append(values_by_column[col].get(name, ''))
+                row.append(_format_csv_value(name, values_by_column[col].get(name, '')))
             writer.writerow(row)
 
 def parse_cli_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Run GEMM model with workload and machine parameters.')
     parser.add_argument('--workload-params', required=True, metavar='CSV', help='Workload parameters CSV (RowID,Name,Label,Value) or (RowID,Name,Label,<workload1>,<workload2>,...) where RowID is required and must be a positive integer')
     parser.add_argument('--machine-params', required=True, metavar='CSV', help='Machine parameters CSV (RowID,Name,Label,Value) or (RowID,Name,Label,<machine1>,<machine2>,...) where RowID is required and must be a positive integer')
+    parser.add_argument('--experiments', required=True, metavar='CSV', help="Experiment pairs CSV with columns 'machine cfg' and 'workload cfg'. Use '*' as wildcard in either column.")
     parser.add_argument('--mode', choices=['normal', 'debug'], default='normal', help='normal: 5-section summary; debug: row-order detail with formulas')
     parser.add_argument('--output-order', choices=['execution', 'row_tracking'], default='execution', help="output order: 'execution' for 4-section compute order (default), 'row_tracking' for original xlsx row order")
     parser.add_argument('--output-txt', default=None, help='(Optional) also write text report to file')
@@ -1704,16 +1797,16 @@ def main() -> None:
     _validate_machine_row_ids(machine_row_ids, args.machine_params)
     _apply_machine_row_ids(machine_row_ids)
 
-    # Compute machine x workload cross-product in deterministic order:
-    # outer loop on machines, inner loop on workloads.
+    experiment_pairs = _load_experiment_pairs_csv(args.experiments, machine_names, workload_names)
+
+    # Compute only the machine/workload pairs selected in the experiments CSV.
     values_by_column: dict[str, dict] = {}
-    for machine_name in machine_names:
-        for workload_name in workload_names:
-            column_title = f'{machine_name} | {workload_name}'
-            values_by_column[column_title] = compute_core_values(
-                all_workload_params[workload_name],
-                all_machine_params[machine_name],
-            )
+    for machine_name, workload_name in experiment_pairs:
+        column_title = f'{machine_name} | {workload_name}'
+        values_by_column[column_title] = compute_core_values(
+            all_workload_params[workload_name],
+            all_machine_params[machine_name],
+        )
 
     # For text report and stdout, use the first (machine, workload) scenario.
     first_column_title = next(iter(values_by_column.keys()))
