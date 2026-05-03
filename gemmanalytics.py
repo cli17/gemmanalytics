@@ -34,6 +34,7 @@ MIN = min
 MAX = max
 
 DATA_FORMAT_TO_BYTES = {
+    'i2': 0.25,
     'fp4': 0.5,
     'i4': 0.5,
     'mxfp4': 0.53125,
@@ -49,30 +50,125 @@ DATA_FORMAT_TO_BYTES = {
     'tf32': 4,
 }
 
-def _load_params_csv(path: str, expected_names: list, file_label: str, all_known_names: set) -> dict:
-    """Load and strictly validate a parameter CSV file (Name,Value[,Label] columns)."""
-    params: dict = {}
+TRACKER_PARAM_NAMES = {
+    '__NEXT_AVAILABLE_ROW_ID__',
+    '__ROW_ID_POLICY_1__',
+    '__ROW_ID_POLICY_2__',
+    '__ROW_ID_POLICY_3__',
+    '__ROW_ID_POLICY_4__',
+}
+
+def _parse_param_value(value_str: str):
+    """Parse a parameter value string to int, float, or str."""
+    try:
+        v = float(value_str)
+        v = int(v) if v == int(v) else v
+    except (ValueError, OverflowError):
+        v = value_str
+    return v
+
+def _load_params_csv(path: str, expected_names: list, file_label: str, all_known_names: set, parse_row_id: bool = False) -> tuple[dict, dict]:
+    """Load and strictly validate a parameter CSV file.
+
+                For single-value CSVs: expects RowID,Name,Label,Value or Name,Value[,Label].
+                Returns (params: dict, row_ids: dict).
+
+                For multi-column CSVs (parse_row_id=True): supports this format:
+            - Legacy single-column: RowID,Name,Value[,Label]
+        Returns (params: dict, row_ids: dict) for backward compatibility.
+            - Multi-column: RowID,Name,Label,<col1>[,<col2>,...]
+                Returns (column_names: list[str], all_params: dict[str,dict], row_ids: dict).
+        The caller detects the return type via isinstance(result[0], list).
+
+        Metadata rows listed in TRACKER_PARAM_NAMES are ignored so users can keep RowID
+        policy notes and next-available trackers directly in the CSV files.
+    """
+    row_ids: dict = {}
     expected_set = set(expected_names)
     with open(path, newline='', encoding='utf-8') as f:
         reader = csv.DictReader(f)
-        for row in reader:
+        fieldnames = reader.fieldnames or []
+        if parse_row_id and 'RowID' not in fieldnames:
+            sys.exit(f"Error: Missing required 'RowID' column in {path}")
+
+        # Detect format: multi-column if no 'Value' column when parse_row_id
+        is_multi_column = parse_row_id and 'Value' not in fieldnames
+        if is_multi_column:
+            # Value columns are everything except fixed metadata columns.
+            fixed_cols = {'RowID', 'Name', 'Label'}
+            column_names = [c for c in fieldnames if c not in fixed_cols]
+            if not column_names:
+                sys.exit(f"Error: No value columns found after 'Label' in {path}")
+            all_params: dict[str, dict] = {col: {} for col in column_names}
+            rows_seen: set = set()
+            for csv_line, row in enumerate(reader, start=2):
+                name = row['Name'].strip()
+                if name in TRACKER_PARAM_NAMES:
+                    continue
+                # Validate RowID
+                row_id_raw = (row.get('RowID') or '').strip()
+                if not row_id_raw:
+                    sys.exit(f"Error: Missing RowID for '{name}' in {path} at CSV line {csv_line}")
+                if not re.fullmatch(r'\d+', row_id_raw):
+                    sys.exit(
+                        f"Error: Invalid RowID '{row_id_raw}' for '{name}' in {path} at CSV line {csv_line}. "
+                        "RowID must be a positive integer."
+                    )
+                row_id_val = int(row_id_raw)
+                if row_id_val <= 0:
+                    sys.exit(
+                        f"Error: Invalid RowID '{row_id_raw}' for '{name}' in {path} at CSV line {csv_line}. "
+                        "RowID must be > 0."
+                    )
+                row_ids[name] = row_id_val
+                if name not in expected_set:
+                    if name in all_known_names:
+                        sys.exit(f"Error: '{name}' is not a {file_label} parameter (wrong file: {path})")
+                    else:
+                        sys.exit(f"Error: Unknown parameter '{name}' in {path}")
+                rows_seen.add(name)
+                for col in column_names:
+                    all_params[col][name] = _parse_param_value((row.get(col) or '').strip())
+            missing = expected_set - rows_seen
+            if missing:
+                sys.exit(f"Error: Missing required {file_label} parameters in '{path}': {sorted(missing)}")
+            return column_names, all_params, row_ids
+
+        # Legacy path: single-machine (Value column present) or workload CSV
+        params: dict = {}
+        for csv_line, row in enumerate(reader, start=2):
             name = row['Name'].strip()
+            if name in TRACKER_PARAM_NAMES:
+                continue
             value_str = row['Value'].strip()
+            if parse_row_id:
+                row_id_raw = (row.get('RowID') or '').strip()
+                if not row_id_raw:
+                    sys.exit(
+                        f"Error: Missing RowID for '{name}' in {path} at CSV line {csv_line}"
+                    )
+                if not re.fullmatch(r'\d+', row_id_raw):
+                    sys.exit(
+                        f"Error: Invalid RowID '{row_id_raw}' for '{name}' in {path} at CSV line {csv_line}. "
+                        "RowID must be a positive integer."
+                    )
+                row_id_val = int(row_id_raw)
+                if row_id_val <= 0:
+                    sys.exit(
+                        f"Error: Invalid RowID '{row_id_raw}' for '{name}' in {path} at CSV line {csv_line}. "
+                        "RowID must be > 0."
+                    )
+                row_ids[name] = row_id_val
             if name not in expected_set:
                 if name in all_known_names:
                     sys.exit(f"Error: '{name}' is not a {file_label} parameter (wrong file: {path})")
                 else:
                     sys.exit(f"Error: Unknown parameter '{name}' in {path}")
-            try:
-                v = float(value_str)
-                v = int(v) if v == int(v) else v
-            except (ValueError, OverflowError):
-                v = value_str
-            params[name] = v
-    missing = expected_set - set(params)
-    if missing:
-        sys.exit(f"Error: Missing required {file_label} parameters in '{path}': {sorted(missing)}")
-    return params
+            params[name] = _parse_param_value(value_str)
+        missing = expected_set - set(params)
+        if missing:
+            sys.exit(f"Error: Missing required {file_label} parameters in '{path}': {sorted(missing)}")
+        return params, row_ids
 
 def compute_core_values(workload_params: dict, machine_params: dict) -> dict:
     """Compute all model variables and return them as a dict."""
@@ -122,6 +218,9 @@ def compute_core_values(workload_params: dict, machine_params: dict) -> dict:
 
     # row 124 | max possible HBM BW (GB/s)
     MAX_POSSIBLE_HBM_BW_GB_S = machine_params['MAX_POSSIBLE_HBM_BW_GB_S']
+
+    # row 1000 | native DPAS mixed-precision support
+    MIXED_PRECISION_DPAS = machine_params['MIXED_PRECISION_DPAS']
 
     # === Section 2: Workload Pre-Defined Parameters ===
 
@@ -193,8 +292,17 @@ def compute_core_values(workload_params: dict, machine_params: dict) -> dict:
     # row 33 | EU count
     EU_COUNT = EU_PER_XECORE * XECORE_PER_XECU * XECU_COUNT
 
-    # row 36a | MMA MAC throughput per EU
-    MMA_MAC_THROUGHPUT_PER_EU = (4 / max(INPUT_A_BYTES_PER_ELEMENT, INPUT_B_BYTES_PER_ELEMENT)) * DPAS_DEPTH * 16
+    # row 4002 | mixed-precision DPAS throughput upside (boolean; used to scale row 4001)
+    MIXED_PRECISION_DPAS_THROUGHPUT_DELTA = int(bool(MIXED_PRECISION_DPAS) and (
+        (INPUT_A_DATA_FORMAT in {'i8'} and INPUT_B_DATA_FORMAT in {'i2', 'i4'})
+        or (INPUT_A_DATA_FORMAT in {'i2', 'i4'} and INPUT_B_DATA_FORMAT in {'i8'})
+    ))
+
+    # row 4001 | MMA MAC throughput per channel stage (used to compute row 4000)
+    MMA_MAC_THROUGHPUT_PER_CHANNEL_STAGE = (4 / max(INPUT_A_BYTES_PER_ELEMENT, INPUT_B_BYTES_PER_ELEMENT)) * (1 + MIXED_PRECISION_DPAS_THROUGHPUT_DELTA)
+
+    # row 4000 | MMA MAC throughput per EU (used to compute row 36)
+    MMA_MAC_THROUGHPUT_PER_EU = MMA_MAC_THROUGHPUT_PER_CHANNEL_STAGE * DPAS_DEPTH * 16
 
     # row 36 | MMA MAC throughput per Xecore
     MMA_MAC_THROUGHPUT_PER_XECORE = MMA_MAC_THROUGHPUT_PER_EU * EU_PER_XECORE
@@ -303,7 +411,7 @@ def compute_core_values(workload_params: dict, machine_params: dict) -> dict:
 
     # === Section 4: Machine Stats ===
 
-    # row 37a | workload MAC per XeCore
+    # row 5000 | workload MAC per XeCore (machine-stats extension range)
     WORKLOAD_MAC_PER_XECORE = M * K * N / (XECORE_PER_XECU * XECU_COUNT)
 
     # row 37 | clk  @  specified efficiency
@@ -477,10 +585,13 @@ def compute_core_values(workload_params: dict, machine_params: dict) -> dict:
         'GTI_READ_MAX_BW_B_CLK': GTI_READ_MAX_BW_B_CLK,
         'GTI_WRITE_MAX_BW_B_CLK': GTI_WRITE_MAX_BW_B_CLK,
         'MAX_POSSIBLE_HBM_BW_GB_S': MAX_POSSIBLE_HBM_BW_GB_S,
+        'MIXED_PRECISION_DPAS': MIXED_PRECISION_DPAS,
         'INPUT_A_BYTES_PER_ELEMENT': INPUT_A_BYTES_PER_ELEMENT,
         'INPUT_B_BYTES_PER_ELEMENT': INPUT_B_BYTES_PER_ELEMENT,
         'OUTPUT_BYTES_PER_ELEMENT_AFTER_DOWN_CONVERSION': OUTPUT_BYTES_PER_ELEMENT_AFTER_DOWN_CONVERSION,
         'EU_COUNT': EU_COUNT,
+        'MIXED_PRECISION_DPAS_THROUGHPUT_DELTA': MIXED_PRECISION_DPAS_THROUGHPUT_DELTA,
+        'MMA_MAC_THROUGHPUT_PER_CHANNEL_STAGE': MMA_MAC_THROUGHPUT_PER_CHANNEL_STAGE,
         'MMA_MAC_THROUGHPUT_PER_EU': MMA_MAC_THROUGHPUT_PER_EU,
         'MMA_MAC_THROUGHPUT_PER_XECORE': MMA_MAC_THROUGHPUT_PER_XECORE,
         'WORKLOAD_MAC_PER_XECORE': WORKLOAD_MAC_PER_XECORE,
@@ -557,12 +668,12 @@ def compute_core_values(workload_params: dict, machine_params: dict) -> dict:
 
 FORMAT_KEY_NAMES = ['INPUT_A_DATA_FORMAT', 'INPUT_B_DATA_FORMAT', 'OUTPUT_D_DATA_FORMAT']
 WORKLOAD_PRE_NAMES = ['M', 'K', 'N', 'OUTPUT_BYTES_PER_ELEMENT_FP32', 'MACHINE_OCCUPANCY_PCT', 'M_PER_THREAD', 'K_PER_THREAD', 'N_PER_THREAD', 'TG_WIDTH_IN_UNITS_OF_THREAD', 'TG_HEIGHT_IN_UNITS_OF_THREAD', 'XECORE_CLUSTER_WIDTH_IN_UNITS_OF_TG_KEEP_THE_CLUSTER_SIZE_AS_4', 'XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_TG_KEEP_THE_CLUSTER_SIZE_AS_4', 'XECU_TILE_WIDTH_IN_UNITS_OF_TG', 'XECU_TILE_HEIGHT_IN_UNITS_OF_TG', 'GPU_TILE_WIDTH_IN_XECU_UNIT']
-MACHINE_PRE_NAMES = ['GT_FREQ_GHZ', 'XECU_COUNT', 'XECORE_PER_XECU', 'EU_PER_XECORE', 'L2_BANKS_PER_XECU', 'BANK_CAPACITY_MB', 'DPAS_DEPTH', 'COMPUTE_EFFICIENCY_PCT', 'L1_READ_MAX_B_EU_CLK', 'L1_WRITE_MAX_B_EU_CLK', 'GTI_READ_MAX_BW_B_CLK', 'GTI_WRITE_MAX_BW_B_CLK', 'MAX_POSSIBLE_HBM_BW_GB_S']
+MACHINE_PRE_NAMES = ['GT_FREQ_GHZ', 'XECU_COUNT', 'XECORE_PER_XECU', 'EU_PER_XECORE', 'L2_BANKS_PER_XECU', 'BANK_CAPACITY_MB', 'DPAS_DEPTH', 'COMPUTE_EFFICIENCY_PCT', 'L1_READ_MAX_B_EU_CLK', 'L1_WRITE_MAX_B_EU_CLK', 'GTI_READ_MAX_BW_B_CLK', 'GTI_WRITE_MAX_BW_B_CLK', 'MAX_POSSIBLE_HBM_BW_GB_S', 'MIXED_PRECISION_DPAS']
 WORKLOAD_FMT_VAL_NAMES = ['INPUT_A_BYTES_PER_ELEMENT', 'INPUT_B_BYTES_PER_ELEMENT', 'OUTPUT_BYTES_PER_ELEMENT_AFTER_DOWN_CONVERSION']
 WORKLOAD_DERIVED_NAMES = ['WAVES', 'TG_TILES_IN_N', 'TG_TILES_IN_M', 'TG_CLUSTER_TILES_IN_N', 'TG_CLUSTER_TILES_IN_M', 'XECU_TILES_IN_N', 'XECU_TILES_IN_M', 'GPU_TILES_IN_N', 'GPU_TILES_IN_M', 'THREAD_WIDTH_IN_UNITS_OF_ELEMENTS', 'THREAD_HEIGHT_IN_UNITS_OF_ELEMENTS', 'TG_WIDTH_IN_UNITS_OF_ELEMENT_REALIZED_BY_MULTIPLE_MMA_ITERATIONS', 'TG_HEIGHT_IN_UNITS_OF_ELEMENT', 'XECORE_CLUSTER_WIDTH_IN_UNITS_OF_ELEMENT', 'XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_ELEMENT', 'XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT', 'XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT', 'GPU_TILE_HEIGHT_IN_XECU_UINT', 'GPU_TILE_WIDTH_IN_UNITS_OF_ELEMETNS', 'GPU_TILE_HEIGHT_IN_UNITS_OF_ELEMETNS', 'MAT_A_INPUT_SIZE_B', 'MAT_B_INPUT_SIZE_B', 'MAT_C_INPUT_D_OUTPUT_SIZE_B', 'MAT_D_INTERMEDIATE_SIZE_B', 'WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE', 'TOTAL_REQUIRED_L2_SIZE_FOR_IDEAL_HIT_RATE_B_FOR_A_SINGLE_INSTANCE_AND_SINGLE_WAVE']
 MACHINE_DERIVED_NAMES = ['EU_COUNT', 'TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE', 'MAX_POSSIBLE_HBM_BW_FREQ_B_CLK']
-MACHINE_WL_DERIVED_NAMES = ['MMA_MAC_THROUGHPUT_PER_EU', 'MMA_MAC_THROUGHPUT_PER_XECORE', 'CLKS_PER_DPAS', 'WORKLOAD_MAC_PER_XECORE']
-MACHINE_STATS_NAMES = ['CLK_SPECIFIED_EFFICIENCY', 'TOTAL_L2_READ_B', 'TOTAL_L2_WRITE_B', 'TOTAL_L1_READ_B', 'TOTAL_L1_WRITE_B', 'L2_READ_B_XECORE_CLK', 'L2_WRITE_B_XECORE_CLK', 'L2_READ_WRITE_B_XECORE_CLK', 'L1_READ_B_XECORE_CLK', 'L1_WRITE_B_XECORECLK', 'L1_READ_B_EU_CLK', 'L1_WRITE_B_EU_CLK', 'L2_READ_MAX_B_XECORE_CLK', 'L2_WRITE_MAX_B_XECORE_CLK', 'L2_READ_WRITE_MAX_B_XECORE_CLK', 'L2_READ_B_XECORE_CLK_PCT', 'L2_WRITE_B_XECORE_CLK_PCT', 'L2_READ_WRITE_B_XECORE_CLK_PCT', 'L1_READ_B_EU_CLK_PCT', 'L1_WRITE_B_EU_CLK_PCT', 'L2_HIT_RATE_ASSUMED_RANDOM_ACCESS_WITHIN_THE_WORKING_DATA_SET_PCT', 'L2_MISS_RATE_PCT', 'TOTAL_L2_READ_TRAFFIC_B', 'PROBABILITY_OF_MATA_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT', 'PROBABILITY_OF_MATB_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT', 'PROBABILITY_OF_MATA_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT', 'PROBABILITY_OF_MATB_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT', 'TOTAL_HBM_READ_B_AFTER_A_COMPLETION_OF_A_WAVE_CONSIDER_COLD_CACHE', 'TOTAL_HBM_WRITE_B', 'TOTAL_HBM_B', 'HBM_READ_B_CLK', 'HBM_WRITE_B_CLK', 'HBM_TOTAL_B_CLK', 'HBM_BW_PCT', 'GTI_READ_BW_PCT', 'GTI_WRITE_BW_PCT']
+MACHINE_WL_DERIVED_NAMES = ['MIXED_PRECISION_DPAS_THROUGHPUT_DELTA', 'MMA_MAC_THROUGHPUT_PER_CHANNEL_STAGE', 'MMA_MAC_THROUGHPUT_PER_EU', 'MMA_MAC_THROUGHPUT_PER_XECORE', 'CLKS_PER_DPAS']
+MACHINE_STATS_NAMES = ['WORKLOAD_MAC_PER_XECORE', 'CLK_SPECIFIED_EFFICIENCY', 'TOTAL_L2_READ_B', 'TOTAL_L2_WRITE_B', 'TOTAL_L1_READ_B', 'TOTAL_L1_WRITE_B', 'L2_READ_B_XECORE_CLK', 'L2_WRITE_B_XECORE_CLK', 'L2_READ_WRITE_B_XECORE_CLK', 'L1_READ_B_XECORE_CLK', 'L1_WRITE_B_XECORECLK', 'L1_READ_B_EU_CLK', 'L1_WRITE_B_EU_CLK', 'L2_READ_MAX_B_XECORE_CLK', 'L2_WRITE_MAX_B_XECORE_CLK', 'L2_READ_WRITE_MAX_B_XECORE_CLK', 'L2_READ_B_XECORE_CLK_PCT', 'L2_WRITE_B_XECORE_CLK_PCT', 'L2_READ_WRITE_B_XECORE_CLK_PCT', 'L1_READ_B_EU_CLK_PCT', 'L1_WRITE_B_EU_CLK_PCT', 'L2_HIT_RATE_ASSUMED_RANDOM_ACCESS_WITHIN_THE_WORKING_DATA_SET_PCT', 'L2_MISS_RATE_PCT', 'TOTAL_L2_READ_TRAFFIC_B', 'PROBABILITY_OF_MATA_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT', 'PROBABILITY_OF_MATB_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT', 'PROBABILITY_OF_MATA_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT', 'PROBABILITY_OF_MATB_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT', 'TOTAL_HBM_READ_B_AFTER_A_COMPLETION_OF_A_WAVE_CONSIDER_COLD_CACHE', 'TOTAL_HBM_WRITE_B', 'TOTAL_HBM_B', 'HBM_READ_B_CLK', 'HBM_WRITE_B_CLK', 'HBM_TOTAL_B_CLK', 'HBM_BW_PCT', 'GTI_READ_BW_PCT', 'GTI_WRITE_BW_PCT']
 ALL_WORKLOAD_PRE_NAMES = FORMAT_KEY_NAMES + WORKLOAD_PRE_NAMES
 ALL_PRE_NAMES_SET = set(ALL_WORKLOAD_PRE_NAMES + MACHINE_PRE_NAMES)
 PERCENT_NAMES = ['MACHINE_OCCUPANCY_PCT', 'COMPUTE_EFFICIENCY_PCT', 'L2_READ_B_XECORE_CLK_PCT', 'L2_WRITE_B_XECORE_CLK_PCT', 'L2_READ_WRITE_B_XECORE_CLK_PCT', 'L1_READ_B_EU_CLK_PCT', 'L1_WRITE_B_EU_CLK_PCT', 'L2_HIT_RATE_ASSUMED_RANDOM_ACCESS_WITHIN_THE_WORKING_DATA_SET_PCT', 'L2_MISS_RATE_PCT', 'PROBABILITY_OF_MATA_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT', 'PROBABILITY_OF_MATB_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT', 'PROBABILITY_OF_MATA_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT', 'PROBABILITY_OF_MATB_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT', 'HBM_BW_PCT', 'GTI_READ_BW_PCT', 'GTI_WRITE_BW_PCT']
@@ -585,7 +696,7 @@ COMPUTE_ORDER = (
      'GPU_TILE_WIDTH_IN_XECU_UNIT'] +
     # Section 3: Derived Parameters (statement execution order)
     ['INPUT_A_BYTES_PER_ELEMENT', 'INPUT_B_BYTES_PER_ELEMENT', 'OUTPUT_BYTES_PER_ELEMENT_AFTER_DOWN_CONVERSION',
-     'EU_COUNT', 'MMA_MAC_THROUGHPUT_PER_EU', 'MMA_MAC_THROUGHPUT_PER_XECORE', 'CLKS_PER_DPAS',
+     'EU_COUNT', 'MIXED_PRECISION_DPAS_THROUGHPUT_DELTA', 'MMA_MAC_THROUGHPUT_PER_CHANNEL_STAGE', 'MMA_MAC_THROUGHPUT_PER_EU', 'MMA_MAC_THROUGHPUT_PER_XECORE', 'CLKS_PER_DPAS',
      'THREAD_WIDTH_IN_UNITS_OF_ELEMENTS', 'THREAD_HEIGHT_IN_UNITS_OF_ELEMENTS',
      'TG_WIDTH_IN_UNITS_OF_ELEMENT_REALIZED_BY_MULTIPLE_MMA_ITERATIONS', 'TG_TILES_IN_N',
      'TG_HEIGHT_IN_UNITS_OF_ELEMENT', 'TG_TILES_IN_M',
@@ -619,8 +730,132 @@ COMPUTE_ORDER = (
      'HBM_BW_PCT', 'GTI_READ_BW_PCT', 'GTI_WRITE_BW_PCT']
 )
 
-ROW_INDEX = {'INPUT_A_DATA_FORMAT': 3, 'INPUT_B_DATA_FORMAT': 4, 'OUTPUT_D_DATA_FORMAT': 5, 'GT_FREQ_GHZ': 8, 'M': 9, 'K': 10, 'N': 11, 'WAVES': 13, 'TG_TILES_IN_N': 14, 'TG_TILES_IN_M': 15, 'TG_CLUSTER_TILES_IN_N': 16, 'TG_CLUSTER_TILES_IN_M': 17, 'XECU_TILES_IN_N': 18, 'XECU_TILES_IN_M': 19, 'GPU_TILES_IN_N': 20, 'GPU_TILES_IN_M': 21, 'INPUT_A_BYTES_PER_ELEMENT': 22, 'INPUT_B_BYTES_PER_ELEMENT': 23, 'OUTPUT_BYTES_PER_ELEMENT_FP32': 24, 'OUTPUT_BYTES_PER_ELEMENT_AFTER_DOWN_CONVERSION': 25, 'XECU_COUNT': 26, 'XECORE_PER_XECU': 27, 'EU_PER_XECORE': 28, 'L2_BANKS_PER_XECU': 29, 'BANK_CAPACITY_MB': 30, 'DPAS_DEPTH': 32, 'EU_COUNT': 33, 'MACHINE_OCCUPANCY_PCT': 34, 'COMPUTE_EFFICIENCY_PCT': 35, 'MMA_MAC_THROUGHPUT_PER_EU': '36a', 'MMA_MAC_THROUGHPUT_PER_XECORE': 36, 'WORKLOAD_MAC_PER_XECORE': '37a', 'CLK_SPECIFIED_EFFICIENCY': 37, 'M_PER_THREAD': 39, 'K_PER_THREAD': 40, 'N_PER_THREAD': 41, 'CLKS_PER_DPAS': 42, 'THREAD_WIDTH_IN_UNITS_OF_ELEMENTS': 43, 'THREAD_HEIGHT_IN_UNITS_OF_ELEMENTS': 44, 'TG_WIDTH_IN_UNITS_OF_THREAD': 45, 'TG_HEIGHT_IN_UNITS_OF_THREAD': 46, 'TG_WIDTH_IN_UNITS_OF_ELEMENT_REALIZED_BY_MULTIPLE_MMA_ITERATIONS': 47, 'TG_HEIGHT_IN_UNITS_OF_ELEMENT': 48, 'XECORE_CLUSTER_WIDTH_IN_UNITS_OF_TG_KEEP_THE_CLUSTER_SIZE_AS_4': 50, 'XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_TG_KEEP_THE_CLUSTER_SIZE_AS_4': 51, 'XECORE_CLUSTER_WIDTH_IN_UNITS_OF_ELEMENT': 52, 'XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_ELEMENT': 53, 'XECU_TILE_WIDTH_IN_UNITS_OF_TG': 54, 'XECU_TILE_HEIGHT_IN_UNITS_OF_TG': 55, 'XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT': 56, 'XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT': 57, 'GPU_TILE_WIDTH_IN_XECU_UNIT': 58, 'GPU_TILE_HEIGHT_IN_XECU_UINT': 59, 'GPU_TILE_WIDTH_IN_UNITS_OF_ELEMETNS': 60, 'GPU_TILE_HEIGHT_IN_UNITS_OF_ELEMETNS': 61, 'MAT_A_INPUT_SIZE_B': 63, 'MAT_B_INPUT_SIZE_B': 64, 'MAT_C_INPUT_D_OUTPUT_SIZE_B': 65, 'MAT_D_INTERMEDIATE_SIZE_B': 66, 'TOTAL_L2_READ_B': 69, 'TOTAL_L2_WRITE_B': 70, 'TOTAL_L1_READ_B': 71, 'TOTAL_L1_WRITE_B': 72, 'L2_READ_B_XECORE_CLK': 74, 'L2_WRITE_B_XECORE_CLK': 75, 'L2_READ_WRITE_B_XECORE_CLK': 76, 'L1_READ_B_XECORE_CLK': 77, 'L1_WRITE_B_XECORECLK': 78, 'L1_READ_B_EU_CLK': 79, 'L1_WRITE_B_EU_CLK': 80, 'L2_READ_MAX_B_XECORE_CLK': 83, 'L2_WRITE_MAX_B_XECORE_CLK': 84, 'L2_READ_WRITE_MAX_B_XECORE_CLK': 85, 'L1_READ_MAX_B_EU_CLK': 86, 'L1_WRITE_MAX_B_EU_CLK': 87, 'L2_READ_B_XECORE_CLK_PCT': 90, 'L2_WRITE_B_XECORE_CLK_PCT': 91, 'L2_READ_WRITE_B_XECORE_CLK_PCT': 92, 'L1_READ_B_EU_CLK_PCT': 93, 'L1_WRITE_B_EU_CLK_PCT': 94, 'GTI_READ_MAX_BW_B_CLK': 97, 'GTI_WRITE_MAX_BW_B_CLK': 98, 'TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE': 102, 'WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE': 103, 'TOTAL_REQUIRED_L2_SIZE_FOR_IDEAL_HIT_RATE_B_FOR_A_SINGLE_INSTANCE_AND_SINGLE_WAVE': 104, 'L2_HIT_RATE_ASSUMED_RANDOM_ACCESS_WITHIN_THE_WORKING_DATA_SET_PCT': 106, 'L2_MISS_RATE_PCT': 107, 'TOTAL_L2_READ_TRAFFIC_B': 108, 'PROBABILITY_OF_MATA_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT': 110, 'PROBABILITY_OF_MATB_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT': 111, 'PROBABILITY_OF_MATA_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT': 112, 'PROBABILITY_OF_MATB_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT': 113, 'TOTAL_HBM_READ_B_AFTER_A_COMPLETION_OF_A_WAVE_CONSIDER_COLD_CACHE': 116, 'TOTAL_HBM_WRITE_B': 117, 'TOTAL_HBM_B': 118, 'HBM_READ_B_CLK': 121, 'HBM_WRITE_B_CLK': 122, 'HBM_TOTAL_B_CLK': 123, 'MAX_POSSIBLE_HBM_BW_GB_S': 124, 'MAX_POSSIBLE_HBM_BW_FREQ_B_CLK': 125, 'HBM_BW_PCT': 126, 'GTI_READ_BW_PCT': 127, 'GTI_WRITE_BW_PCT': 128}
+if 'MIXED_PRECISION_DPAS' not in COMPUTE_ORDER:
+    _machine_insert_at = COMPUTE_ORDER.index('MAX_POSSIBLE_HBM_BW_GB_S') + 1
+    COMPUTE_ORDER.insert(_machine_insert_at, 'MIXED_PRECISION_DPAS')
+
+ROW_INDEX = {'INPUT_A_DATA_FORMAT': 3, 'INPUT_B_DATA_FORMAT': 4, 'OUTPUT_D_DATA_FORMAT': 5, 'GT_FREQ_GHZ': 8, 'M': 9, 'K': 10, 'N': 11, 'WAVES': 13, 'TG_TILES_IN_N': 14, 'TG_TILES_IN_M': 15, 'TG_CLUSTER_TILES_IN_N': 16, 'TG_CLUSTER_TILES_IN_M': 17, 'XECU_TILES_IN_N': 18, 'XECU_TILES_IN_M': 19, 'GPU_TILES_IN_N': 20, 'GPU_TILES_IN_M': 21, 'INPUT_A_BYTES_PER_ELEMENT': 22, 'INPUT_B_BYTES_PER_ELEMENT': 23, 'OUTPUT_BYTES_PER_ELEMENT_FP32': 24, 'OUTPUT_BYTES_PER_ELEMENT_AFTER_DOWN_CONVERSION': 25, 'XECU_COUNT': 26, 'XECORE_PER_XECU': 27, 'EU_PER_XECORE': 28, 'L2_BANKS_PER_XECU': 29, 'BANK_CAPACITY_MB': 30, 'DPAS_DEPTH': 32, 'EU_COUNT': 33, 'MACHINE_OCCUPANCY_PCT': 34, 'COMPUTE_EFFICIENCY_PCT': 35, 'MIXED_PRECISION_DPAS_THROUGHPUT_DELTA': 4002, 'MMA_MAC_THROUGHPUT_PER_CHANNEL_STAGE': 4001, 'MMA_MAC_THROUGHPUT_PER_EU': 4000, 'MMA_MAC_THROUGHPUT_PER_XECORE': 36, 'WORKLOAD_MAC_PER_XECORE': 5000, 'CLK_SPECIFIED_EFFICIENCY': 37, 'M_PER_THREAD': 39, 'K_PER_THREAD': 40, 'N_PER_THREAD': 41, 'CLKS_PER_DPAS': 42, 'THREAD_WIDTH_IN_UNITS_OF_ELEMENTS': 43, 'THREAD_HEIGHT_IN_UNITS_OF_ELEMENTS': 44, 'TG_WIDTH_IN_UNITS_OF_THREAD': 45, 'TG_HEIGHT_IN_UNITS_OF_THREAD': 46, 'TG_WIDTH_IN_UNITS_OF_ELEMENT_REALIZED_BY_MULTIPLE_MMA_ITERATIONS': 47, 'TG_HEIGHT_IN_UNITS_OF_ELEMENT': 48, 'XECORE_CLUSTER_WIDTH_IN_UNITS_OF_TG_KEEP_THE_CLUSTER_SIZE_AS_4': 50, 'XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_TG_KEEP_THE_CLUSTER_SIZE_AS_4': 51, 'XECORE_CLUSTER_WIDTH_IN_UNITS_OF_ELEMENT': 52, 'XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_ELEMENT': 53, 'XECU_TILE_WIDTH_IN_UNITS_OF_TG': 54, 'XECU_TILE_HEIGHT_IN_UNITS_OF_TG': 55, 'XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT': 56, 'XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT': 57, 'GPU_TILE_WIDTH_IN_XECU_UNIT': 58, 'GPU_TILE_HEIGHT_IN_XECU_UINT': 59, 'GPU_TILE_WIDTH_IN_UNITS_OF_ELEMETNS': 60, 'GPU_TILE_HEIGHT_IN_UNITS_OF_ELEMETNS': 61, 'MAT_A_INPUT_SIZE_B': 63, 'MAT_B_INPUT_SIZE_B': 64, 'MAT_C_INPUT_D_OUTPUT_SIZE_B': 65, 'MAT_D_INTERMEDIATE_SIZE_B': 66, 'TOTAL_L2_READ_B': 69, 'TOTAL_L2_WRITE_B': 70, 'TOTAL_L1_READ_B': 71, 'TOTAL_L1_WRITE_B': 72, 'L2_READ_B_XECORE_CLK': 74, 'L2_WRITE_B_XECORE_CLK': 75, 'L2_READ_WRITE_B_XECORE_CLK': 76, 'L1_READ_B_XECORE_CLK': 77, 'L1_WRITE_B_XECORECLK': 78, 'L1_READ_B_EU_CLK': 79, 'L1_WRITE_B_EU_CLK': 80, 'L2_READ_MAX_B_XECORE_CLK': 83, 'L2_WRITE_MAX_B_XECORE_CLK': 84, 'L2_READ_WRITE_MAX_B_XECORE_CLK': 85, 'L1_READ_MAX_B_EU_CLK': 86, 'L1_WRITE_MAX_B_EU_CLK': 87, 'L2_READ_B_XECORE_CLK_PCT': 90, 'L2_WRITE_B_XECORE_CLK_PCT': 91, 'L2_READ_WRITE_B_XECORE_CLK_PCT': 92, 'L1_READ_B_EU_CLK_PCT': 93, 'L1_WRITE_B_EU_CLK_PCT': 94, 'GTI_READ_MAX_BW_B_CLK': 97, 'GTI_WRITE_MAX_BW_B_CLK': 98, 'TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE': 102, 'WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE': 103, 'TOTAL_REQUIRED_L2_SIZE_FOR_IDEAL_HIT_RATE_B_FOR_A_SINGLE_INSTANCE_AND_SINGLE_WAVE': 104, 'L2_HIT_RATE_ASSUMED_RANDOM_ACCESS_WITHIN_THE_WORKING_DATA_SET_PCT': 106, 'L2_MISS_RATE_PCT': 107, 'TOTAL_L2_READ_TRAFFIC_B': 108, 'PROBABILITY_OF_MATA_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT': 110, 'PROBABILITY_OF_MATB_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT': 111, 'PROBABILITY_OF_MATA_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT': 112, 'PROBABILITY_OF_MATB_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT': 113, 'TOTAL_HBM_READ_B_AFTER_A_COMPLETION_OF_A_WAVE_CONSIDER_COLD_CACHE': 116, 'TOTAL_HBM_WRITE_B': 117, 'TOTAL_HBM_B': 118, 'HBM_READ_B_CLK': 121, 'HBM_WRITE_B_CLK': 122, 'HBM_TOTAL_B_CLK': 123, 'MAX_POSSIBLE_HBM_BW_GB_S': 124, 'MAX_POSSIBLE_HBM_BW_FREQ_B_CLK': 125, 'HBM_BW_PCT': 126, 'GTI_READ_BW_PCT': 127, 'GTI_WRITE_BW_PCT': 128}
+ROW_INDEX['MIXED_PRECISION_DPAS'] = 1000
+
+# RowID policy for user-editable CSV inputs and new model parameters:
+# - Keep original XLSX-aligned parameters on their existing row IDs.
+# - 1000-1999: new machine pre-defined input parameters.
+# - 2000-2999: new workload pre-defined input parameters.
+# - 4000-4999: new machine/workload-derived extension parameters.
+# - 5000-5999: new machine-stats extension parameters.
+# When adding a new input parameter, update ROW_INDEX, the relevant *_NAMES list,
+# PARAM_DESCRIPTIONS, CATEGORY_MAP, the default CSV, and the __NEXT_AVAILABLE_ROW_ID__ tracker.
+MACHINE_WL_EXTENSION_ROW_RANGE = (4000, 4999)
+MACHINE_STATS_EXTENSION_ROW_RANGE = (5000, 5999)
+MACHINE_STATS_EXTENSION_NAMES = {'WORKLOAD_MAC_PER_XECORE'}
+
+
+def _validate_extension_row_ids() -> None:
+    """Fail fast on invalid extension row-id assignments."""
+    lo, hi = MACHINE_STATS_EXTENSION_ROW_RANGE
+    for name in MACHINE_STATS_EXTENSION_NAMES:
+        row_id = ROW_INDEX.get(name)
+        if not isinstance(row_id, int):
+            sys.exit(
+                f"Error: '{name}' must use an integer RowID in machine-stats extension range {lo}-{hi}; got {row_id!r}."
+            )
+        if row_id < lo or row_id > hi:
+            sys.exit(
+                f"Error: '{name}' RowID {row_id} is outside machine-stats extension range {lo}-{hi}."
+            )
+
+
+_validate_extension_row_ids()
+ACTIVE_ROW_INDEX = dict(ROW_INDEX)
+
+
+def _validate_param_row_ids(param_row_ids: dict, required_names: list[str], params_path: str, label: str) -> None:
+    """Fail fast on invalid RowID mappings and collisions for an input parameter file."""
+    missing = [name for name in required_names if name not in param_row_ids]
+    if missing:
+        sys.exit(
+            f"Error: Missing RowID for required {label} parameters in '{params_path}': {sorted(missing)}"
+        )
+
+    id_to_names: dict[int, list[str]] = {}
+    for name in required_names:
+        row_id = param_row_ids[name]
+        id_to_names.setdefault(row_id, []).append(name)
+
+    duplicate_rows = {row_id: names for row_id, names in id_to_names.items() if len(names) > 1}
+    if duplicate_rows:
+        details = '; '.join(
+            f"RowID {row_id} used by {sorted(names)}"
+            for row_id, names in sorted(duplicate_rows.items(), key=lambda item: item[0])
+        )
+        sys.exit(
+            f"Error: RowID collision(s) in {label} parameters file '{params_path}': {details}"
+        )
+
+    reserved_rows: dict[int, str] = {}
+    for name, row_id in ROW_INDEX.items():
+        if name in required_names:
+            continue
+        if isinstance(row_id, int):
+            reserved_rows[row_id] = name
+
+    cross_collisions = []
+    for name in required_names:
+        row_id = param_row_ids[name]
+        if row_id in reserved_rows:
+            cross_collisions.append((name, row_id, reserved_rows[row_id]))
+    if cross_collisions:
+        details = '; '.join(
+            f"{name} uses RowID {row_id} already used by {reserved_name}"
+            for name, row_id, reserved_name in cross_collisions
+        )
+        sys.exit(
+            f"Error: {label.capitalize()} RowID collides with existing non-{label} row tracking entries: "
+            f"{details}. Use non-conflicting custom RowIDs."
+        )
+
+
+def _validate_machine_row_ids(machine_row_ids: dict, machine_params_path: str) -> None:
+    """Fail fast on invalid machine RowID mappings and collisions."""
+    _validate_param_row_ids(machine_row_ids, MACHINE_PRE_NAMES, machine_params_path, 'machine')
+
+
+def _validate_workload_row_ids(workload_row_ids: dict, workload_params_path: str) -> None:
+    """Fail fast on invalid workload RowID mappings and collisions."""
+    _validate_param_row_ids(workload_row_ids, ALL_WORKLOAD_PRE_NAMES, workload_params_path, 'workload')
+
+
+def _apply_param_row_ids(param_row_ids: dict, allowed_names: set[str]) -> None:
+    """Override active row tracking from input CSV RowID values."""
+    for name, row_id in param_row_ids.items():
+        if name in allowed_names:
+            ACTIVE_ROW_INDEX[name] = row_id
+
+
+def _apply_machine_row_ids(machine_row_ids: dict) -> None:
+    """Override machine row tracking from machine CSV RowID values when provided."""
+    _apply_param_row_ids(machine_row_ids, set(MACHINE_PRE_NAMES))
+
+
+def _apply_workload_row_ids(workload_row_ids: dict) -> None:
+    """Override workload row tracking from workload CSV RowID values when provided."""
+    _apply_param_row_ids(workload_row_ids, set(ALL_WORKLOAD_PRE_NAMES))
 ROW_ORDER = ['INPUT_A_DATA_FORMAT', 'INPUT_B_DATA_FORMAT', 'OUTPUT_D_DATA_FORMAT', 'GT_FREQ_GHZ', 'M', 'K', 'N', 'WAVES', 'TG_TILES_IN_N', 'TG_TILES_IN_M', 'TG_CLUSTER_TILES_IN_N', 'TG_CLUSTER_TILES_IN_M', 'XECU_TILES_IN_N', 'XECU_TILES_IN_M', 'GPU_TILES_IN_N', 'GPU_TILES_IN_M', 'INPUT_A_BYTES_PER_ELEMENT', 'INPUT_B_BYTES_PER_ELEMENT', 'OUTPUT_BYTES_PER_ELEMENT_FP32', 'OUTPUT_BYTES_PER_ELEMENT_AFTER_DOWN_CONVERSION', 'XECU_COUNT', 'XECORE_PER_XECU', 'EU_PER_XECORE', 'L2_BANKS_PER_XECU', 'BANK_CAPACITY_MB', 'DPAS_DEPTH', 'EU_COUNT', 'MACHINE_OCCUPANCY_PCT', 'COMPUTE_EFFICIENCY_PCT', 'MMA_MAC_THROUGHPUT_PER_XECORE', 'WORKLOAD_MAC_PER_XECORE', 'CLK_SPECIFIED_EFFICIENCY', 'M_PER_THREAD', 'K_PER_THREAD', 'N_PER_THREAD', 'CLKS_PER_DPAS', 'THREAD_WIDTH_IN_UNITS_OF_ELEMENTS', 'THREAD_HEIGHT_IN_UNITS_OF_ELEMENTS', 'TG_WIDTH_IN_UNITS_OF_THREAD', 'TG_HEIGHT_IN_UNITS_OF_THREAD', 'TG_WIDTH_IN_UNITS_OF_ELEMENT_REALIZED_BY_MULTIPLE_MMA_ITERATIONS', 'TG_HEIGHT_IN_UNITS_OF_ELEMENT', 'XECORE_CLUSTER_WIDTH_IN_UNITS_OF_TG_KEEP_THE_CLUSTER_SIZE_AS_4', 'XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_TG_KEEP_THE_CLUSTER_SIZE_AS_4', 'XECORE_CLUSTER_WIDTH_IN_UNITS_OF_ELEMENT', 'XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_ELEMENT', 'XECU_TILE_WIDTH_IN_UNITS_OF_TG', 'XECU_TILE_HEIGHT_IN_UNITS_OF_TG', 'XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT', 'XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT', 'GPU_TILE_WIDTH_IN_XECU_UNIT', 'GPU_TILE_HEIGHT_IN_XECU_UINT', 'GPU_TILE_WIDTH_IN_UNITS_OF_ELEMETNS', 'GPU_TILE_HEIGHT_IN_UNITS_OF_ELEMETNS', 'MAT_A_INPUT_SIZE_B', 'MAT_B_INPUT_SIZE_B', 'MAT_C_INPUT_D_OUTPUT_SIZE_B', 'MAT_D_INTERMEDIATE_SIZE_B', 'TOTAL_L2_READ_B', 'TOTAL_L2_WRITE_B', 'TOTAL_L1_READ_B', 'TOTAL_L1_WRITE_B', 'L2_READ_B_XECORE_CLK', 'L2_WRITE_B_XECORE_CLK', 'L2_READ_WRITE_B_XECORE_CLK', 'L1_READ_B_XECORE_CLK', 'L1_WRITE_B_XECORECLK', 'L1_READ_B_EU_CLK', 'L1_WRITE_B_EU_CLK', 'L2_READ_MAX_B_XECORE_CLK', 'L2_WRITE_MAX_B_XECORE_CLK', 'L2_READ_WRITE_MAX_B_XECORE_CLK', 'L1_READ_MAX_B_EU_CLK', 'L1_WRITE_MAX_B_EU_CLK', 'L2_READ_B_XECORE_CLK_PCT', 'L2_WRITE_B_XECORE_CLK_PCT', 'L2_READ_WRITE_B_XECORE_CLK_PCT', 'L1_READ_B_EU_CLK_PCT', 'L1_WRITE_B_EU_CLK_PCT', 'GTI_READ_MAX_BW_B_CLK', 'GTI_WRITE_MAX_BW_B_CLK', 'TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE', 'WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE', 'TOTAL_REQUIRED_L2_SIZE_FOR_IDEAL_HIT_RATE_B_FOR_A_SINGLE_INSTANCE_AND_SINGLE_WAVE', 'L2_HIT_RATE_ASSUMED_RANDOM_ACCESS_WITHIN_THE_WORKING_DATA_SET_PCT', 'L2_MISS_RATE_PCT', 'TOTAL_L2_READ_TRAFFIC_B', 'PROBABILITY_OF_MATA_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT', 'PROBABILITY_OF_MATB_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT', 'PROBABILITY_OF_MATA_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT', 'PROBABILITY_OF_MATB_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT', 'TOTAL_HBM_READ_B_AFTER_A_COMPLETION_OF_A_WAVE_CONSIDER_COLD_CACHE', 'TOTAL_HBM_WRITE_B', 'TOTAL_HBM_B', 'HBM_READ_B_CLK', 'HBM_WRITE_B_CLK', 'HBM_TOTAL_B_CLK', 'MAX_POSSIBLE_HBM_BW_GB_S', 'MAX_POSSIBLE_HBM_BW_FREQ_B_CLK', 'HBM_BW_PCT', 'GTI_READ_BW_PCT', 'GTI_WRITE_BW_PCT']
+if 'MIXED_PRECISION_DPAS' not in ROW_ORDER:
+    _machine_row_insert_at = ROW_ORDER.index('MAX_POSSIBLE_HBM_BW_GB_S') + 1
+    ROW_ORDER.insert(_machine_row_insert_at, 'MIXED_PRECISION_DPAS')
+
+if 'MMA_MAC_THROUGHPUT_PER_EU' not in ROW_ORDER:
+    _mma_eu_insert_at = ROW_ORDER.index('MMA_MAC_THROUGHPUT_PER_XECORE')
+    ROW_ORDER.insert(_mma_eu_insert_at, 'MMA_MAC_THROUGHPUT_PER_EU')
+
+if 'MMA_MAC_THROUGHPUT_PER_CHANNEL_STAGE' not in ROW_ORDER:
+    _mma_ch_insert_at = ROW_ORDER.index('MMA_MAC_THROUGHPUT_PER_EU')
+    ROW_ORDER.insert(_mma_ch_insert_at, 'MMA_MAC_THROUGHPUT_PER_CHANNEL_STAGE')
+
+if 'MIXED_PRECISION_DPAS_THROUGHPUT_DELTA' not in ROW_ORDER:
+    _upside_insert_at = ROW_ORDER.index('MMA_MAC_THROUGHPUT_PER_CHANNEL_STAGE')
+    ROW_ORDER.insert(_upside_insert_at, 'MIXED_PRECISION_DPAS_THROUGHPUT_DELTA')
 
 # ===========================
 # LaTeX symbol scaffold (user editable)
@@ -645,6 +880,7 @@ LATEX_SYMBOL_OVERRIDES = {
     'GTI_READ_MAX_BW_B_CLK': r'\mathrm{GtiRdBW_{BpClk}^{max}}',
     'GTI_WRITE_MAX_BW_B_CLK': r'\mathrm{GtiWrBW_{BpClk}^{max}}',
     'MAX_POSSIBLE_HBM_BW_GB_S': r'\mathrm{MemBW_{GBps}^{max}}',
+    'MIXED_PRECISION_DPAS': r'\mathrm{DPAS_{MixFmt}}',
 
     # ---- Workload format keys + pre-defined ----
     'INPUT_A_DATA_FORMAT': r'\mathrm{Fmt^{(matA)}}',
@@ -701,8 +937,10 @@ LATEX_SYMBOL_OVERRIDES = {
     'EU_COUNT': r'\mathrm{|EU|}',
     'TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE': r'\mathrm{L2Size_{B}}',
     'MAX_POSSIBLE_HBM_BW_FREQ_B_CLK': r'\mathrm{MemBW_{BpClk}^{max}}',
-    'MMA_MAC_THROUGHPUT_PER_EU': r'\mathrm{\tau_{mMACp(Clk{\cdot}EU)}^{(peak)}}',
-    'MMA_MAC_THROUGHPUT_PER_XECORE': r'\mathrm{\tau_{mMACp(Clk{\cdot}XeCore)}^{(peak)}}',
+    'MIXED_PRECISION_DPAS_THROUGHPUT_DELTA': r'\mathrm{\delta_{\tau_{DPAS}}}',
+    'MMA_MAC_THROUGHPUT_PER_CHANNEL_STAGE': r'\mathrm{\tau_{mMACper(Clk{\cdot}CHANNEL{\cdot}STAGE)}^{(peak)}}',
+    'MMA_MAC_THROUGHPUT_PER_EU': r'\mathrm{\tau_{mMACper(Clk{\cdot}EU)}^{(peak)}}',
+    'MMA_MAC_THROUGHPUT_PER_XECORE': r'\mathrm{\tau_{mMACper(Clk{\cdot}XeCore)}^{(peak)}}',
     'WORKLOAD_MAC_PER_XECORE': r'\mathrm{WL_{MAC}^{(XeCore)}}',
     'CLKS_PER_DPAS': r'\mathrm{CLKS_{DPAS}}',
 
@@ -810,6 +1048,8 @@ def _formula_to_latex_expr(expr: str) -> str:
         ast.GtE: r'\ge',
         ast.Eq: '=',
         ast.NotEq: r'\ne',
+        ast.In: r'\in',
+        ast.NotIn: r'\notin',
     }
 
     bool_ops = {
@@ -829,7 +1069,7 @@ def _formula_to_latex_expr(expr: str) -> str:
         return r'\left(' + text + r'\right)'
 
     def _render(node: ast.AST, parent_prec: int = 0) -> str:
-        # Precedence: compare/bool=1, add/sub=2, mul/div=3, pow=4, atom/call=5
+        # Precedence: or=1, and=2, compare=3, add/sub=4, mul/div=5, pow=6, atom/call=7
         if isinstance(node, ast.Name):
             return latex_symbol_for(node.id)
 
@@ -888,15 +1128,23 @@ def _formula_to_latex_expr(expr: str) -> str:
                 out = rf'{base}^{{{exp}}}'
                 return _wrap(out) if prec < parent_prec else out
 
+        if isinstance(node, ast.Set):
+            elems = ', '.join(_render(e, 0) for e in node.elts)
+            return r'\{' + elems + r'\}'
+
         if isinstance(node, ast.Compare) and len(node.ops) == 1 and len(node.comparators) == 1:
             op = cmp_ops.get(type(node.ops[0]), '?')
-            left = _render(node.left, 1)
-            right = _render(node.comparators[0], 1)
-            return f'{left} {op} {right}'
+            prec = 3
+            left = _render(node.left, prec)
+            right = _render(node.comparators[0], prec)
+            out = f'{left} {op} {right}'
+            return _wrap(out) if prec < parent_prec else out
 
         if isinstance(node, ast.BoolOp):
+            prec = 2 if isinstance(node.op, ast.And) else 1
             op = bool_ops.get(type(node.op), '?')
-            return f' {op} '.join(_render(v, 1) for v in node.values)
+            out = f' {op} '.join(_render(v, prec) for v in node.values)
+            return _wrap(out) if prec < parent_prec else out
 
         return _wrap(ast.unparse(node))
 
@@ -1159,7 +1407,7 @@ def build_equations_markdown(output_order: str = 'execution') -> str:
     lines.append('')
     for name in MACHINE_PRE_NAMES:
         sym = _inline_compat_symbol(latex_symbol_for(name))
-        row = ROW_INDEX.get(name, '?')
+        row = ACTIVE_ROW_INDEX.get(name, '?')
         base_desc = PARAM_DESCRIPTIONS.get(name, name)
         lines.append(f'${sym}$ : [row {row}] {base_desc}')
         lines.append('')
@@ -1171,7 +1419,7 @@ def build_equations_markdown(output_order: str = 'execution') -> str:
     lines.append('')
     for name in FORMAT_KEY_NAMES + WORKLOAD_PRE_NAMES:
         sym = _inline_compat_symbol(latex_symbol_for(name))
-        row = ROW_INDEX.get(name, '?')
+        row = ACTIVE_ROW_INDEX.get(name, '?')
         base_desc = PARAM_DESCRIPTIONS.get(name, name)
         lines.append(f'${sym}$ : [row {row}] {base_desc}')
         lines.append('')
@@ -1185,7 +1433,7 @@ def build_equations_markdown(output_order: str = 'execution') -> str:
         if name in ALL_PRE_NAMES_SET:
             continue
         formula = PYTHON_FORMULAS.get(name, '')
-        row = ROW_INDEX.get(name, '?')
+        row = ACTIVE_ROW_INDEX.get(name, '?')
         lines.extend(_format_equation_header(row, name))
         lines.append('')
         lhs = latex_symbol_for(name)
@@ -1202,8 +1450,14 @@ def export_equations_markdown(md_path: str, output_order: str = 'execution') -> 
     with open(md_path, 'w', encoding='utf-8') as f:
         f.write(content)
 EXCEL_FORMULAS = {'INPUT_A_BYTES_PER_ELEMENT': '', 'INPUT_B_BYTES_PER_ELEMENT': '', 'OUTPUT_BYTES_PER_ELEMENT_AFTER_DOWN_CONVERSION': '', 'EU_COUNT': '=C27*C28*C26', 'MMA_MAC_THROUGHPUT_PER_XECORE': '=MIN(4/(FLOOR(C22*2,1)/2),4/(FLOOR(C23*2,1)/2))*C32*16*C28', 'WORKLOAD_MAC_PER_XECORE': '=C9*C10*C11/(C27*C26)', 'CLK_SPECIFIED_EFFICIENCY': '=WORKLOAD_MAC_PER_XECORE/(C36*C35)', 'CLKS_PER_DPAS': '=C39*C40*C41/(C36/C28)', 'THREAD_WIDTH_IN_UNITS_OF_ELEMENTS': '=C41', 'THREAD_HEIGHT_IN_UNITS_OF_ELEMENTS': '=C39', 'TG_WIDTH_IN_UNITS_OF_ELEMENT_REALIZED_BY_MULTIPLE_MMA_ITERATIONS': '=C45*C43', 'TG_TILES_IN_N': '=C11/C47', 'TG_HEIGHT_IN_UNITS_OF_ELEMENT': '=C46*C44', 'TG_TILES_IN_M': '=C9/C48', 'XECORE_CLUSTER_WIDTH_IN_UNITS_OF_ELEMENT': '=C50*C47', 'TG_CLUSTER_TILES_IN_N': '=C11/C52', 'XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_ELEMENT': '=C51*C48', 'TG_CLUSTER_TILES_IN_M': '=C9/C53', 'XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT': '=C54*C47', 'XECU_TILES_IN_N': '=C11/C56', 'GPU_TILES_IN_N': '=C11/C56/C58', 'XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT': '=C55*C48', 'XECU_TILES_IN_M': '=C9/C57', 'GPU_TILE_HEIGHT_IN_XECU_UINT': '=C26/C58', 'GPU_TILES_IN_M': '=C9/C57/C59', 'WAVES': '=CEILING(C20,1)*CEILING(C21,1)', 'GPU_TILE_WIDTH_IN_UNITS_OF_ELEMETNS': '=C58*C56', 'GPU_TILE_HEIGHT_IN_UNITS_OF_ELEMETNS': '=C59*C57', 'MAT_A_INPUT_SIZE_B': '=C9*C10*C22', 'MAT_B_INPUT_SIZE_B': '=C10*C11*C23', 'MAT_C_INPUT_D_OUTPUT_SIZE_B': '=C9*C11*C25', 'MAT_D_INTERMEDIATE_SIZE_B': '=C9*C11*C24', 'TOTAL_L2_READ_B': '=(C63*CEILING(C11/C47,1)+C64*CEILING(C9/C48,1))', 'TOTAL_L2_WRITE_B': '=C65', 'TOTAL_L1_READ_B': '=(C63*CEILING(C11/C43,1)+C64*CEILING(C9/C44,1))', 'TOTAL_L1_WRITE_B': '=C65', 'L2_READ_B_XECORE_CLK': '=C69/(C26*C27)/C37', 'L2_WRITE_B_XECORE_CLK': '=C70/(C26*C27)/C37', 'L2_READ_WRITE_B_XECORE_CLK': '=C74+C75', 'L1_READ_B_EU_CLK': '=C71/(C33)/C37', 'L1_READ_B_XECORE_CLK': '=C79*C28', 'L1_WRITE_B_EU_CLK': '=C72/(C33)/C37', 'L1_WRITE_B_XECORECLK': '=C80*C28', 'L2_READ_MAX_B_XECORE_CLK': '=C27*64/C27', 'L2_WRITE_MAX_B_XECORE_CLK': '=C83', 'L2_READ_WRITE_MAX_B_XECORE_CLK': '=C84', 'L2_READ_B_XECORE_CLK_PCT': '=C74/C83', 'L2_WRITE_B_XECORE_CLK_PCT': '=C75/C84', 'L2_READ_WRITE_B_XECORE_CLK_PCT': '=C76/C85', 'L1_READ_B_EU_CLK_PCT': '=C79/C86', 'L1_WRITE_B_EU_CLK_PCT': '=C80/C87', 'TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE': '=C30*C29*1024*1024', 'WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE': '=MIN(20000*(C40/C42),C10)', 'TOTAL_REQUIRED_L2_SIZE_FOR_IDEAL_HIT_RATE_B_FOR_A_SINGLE_INSTANCE_AND_SINGLE_WAVE': '=(C57*C22*C103)+(C56*C23*C103)+(C56*C57*C25)', 'L2_HIT_RATE_ASSUMED_RANDOM_ACCESS_WITHIN_THE_WORKING_DATA_SET_PCT': '=MIN(C102/C104,1)', 'L2_MISS_RATE_PCT': '=1-C106', 'TOTAL_L2_READ_TRAFFIC_B': '=C69', 'PROBABILITY_OF_MATA_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT': '=IF(C63+C64+C65 <= C102,100%, IF(C10>2*C103,0%,1-(C10-C103)/C103))', 'PROBABILITY_OF_MATB_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT': '=IF(C63+C64+C65 <= C102,100%, 0%)', 'PROBABILITY_OF_MATA_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT': '=1-C110', 'PROBABILITY_OF_MATB_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT': '=1-C111', 'TOTAL_HBM_READ_B_AFTER_A_COMPLETION_OF_A_WAVE_CONSIDER_COLD_CACHE': '=(C63+C63*(CEILING(C11/C56,1)-1)*C112+C64+C64*(CEILING(C9/C57,1)-1)*C113+(C108-(C63+C63*(CEILING(C11/C56,1)-1)*C112+C64+C64*(CEILING(C9/C57,1)-1)*C113))*C107)/2', 'TOTAL_HBM_WRITE_B': '=C65', 'TOTAL_HBM_B': '=C117+C116', 'HBM_READ_B_CLK': '=C116/C$37', 'HBM_WRITE_B_CLK': '=C117/C$37', 'HBM_TOTAL_B_CLK': '=C118/C$37', 'MAX_POSSIBLE_HBM_BW_FREQ_B_CLK': '=C124/C8', 'HBM_BW_PCT': '=C123/C125', 'GTI_READ_BW_PCT': '=C121/C97', 'GTI_WRITE_BW_PCT': '=C122/C98'}
-PYTHON_FORMULAS = {'INPUT_A_BYTES_PER_ELEMENT': 'DATA_FORMAT_TO_BYTES[INPUT_A_DATA_FORMAT]', 'INPUT_B_BYTES_PER_ELEMENT': 'DATA_FORMAT_TO_BYTES[INPUT_B_DATA_FORMAT]', 'OUTPUT_BYTES_PER_ELEMENT_AFTER_DOWN_CONVERSION': 'DATA_FORMAT_TO_BYTES[OUTPUT_D_DATA_FORMAT]', 'EU_COUNT': 'XECORE_PER_XECU*EU_PER_XECORE*XECU_COUNT', 'MMA_MAC_THROUGHPUT_PER_EU': '(4/max(INPUT_A_BYTES_PER_ELEMENT,INPUT_B_BYTES_PER_ELEMENT))*DPAS_DEPTH*16', 'MMA_MAC_THROUGHPUT_PER_XECORE': 'MMA_MAC_THROUGHPUT_PER_EU*EU_PER_XECORE', 'WORKLOAD_MAC_PER_XECORE': 'M*K*N/(XECORE_PER_XECU*XECU_COUNT)', 'CLK_SPECIFIED_EFFICIENCY': 'WORKLOAD_MAC_PER_XECORE/(MMA_MAC_THROUGHPUT_PER_XECORE*COMPUTE_EFFICIENCY_PCT)', 'CLKS_PER_DPAS': 'M_PER_THREAD*K_PER_THREAD*N_PER_THREAD/(MMA_MAC_THROUGHPUT_PER_XECORE/EU_PER_XECORE)', 'THREAD_WIDTH_IN_UNITS_OF_ELEMENTS': 'N_PER_THREAD', 'THREAD_HEIGHT_IN_UNITS_OF_ELEMENTS': 'M_PER_THREAD', 'TG_WIDTH_IN_UNITS_OF_ELEMENT_REALIZED_BY_MULTIPLE_MMA_ITERATIONS': 'TG_WIDTH_IN_UNITS_OF_THREAD*THREAD_WIDTH_IN_UNITS_OF_ELEMENTS', 'TG_TILES_IN_N': 'N/TG_WIDTH_IN_UNITS_OF_ELEMENT_REALIZED_BY_MULTIPLE_MMA_ITERATIONS', 'TG_HEIGHT_IN_UNITS_OF_ELEMENT': 'TG_HEIGHT_IN_UNITS_OF_THREAD*THREAD_HEIGHT_IN_UNITS_OF_ELEMENTS', 'TG_TILES_IN_M': 'M/TG_HEIGHT_IN_UNITS_OF_ELEMENT', 'XECORE_CLUSTER_WIDTH_IN_UNITS_OF_ELEMENT': 'XECORE_CLUSTER_WIDTH_IN_UNITS_OF_TG_KEEP_THE_CLUSTER_SIZE_AS_4*TG_WIDTH_IN_UNITS_OF_ELEMENT_REALIZED_BY_MULTIPLE_MMA_ITERATIONS', 'TG_CLUSTER_TILES_IN_N': 'N/XECORE_CLUSTER_WIDTH_IN_UNITS_OF_ELEMENT', 'XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_ELEMENT': 'XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_TG_KEEP_THE_CLUSTER_SIZE_AS_4*TG_HEIGHT_IN_UNITS_OF_ELEMENT', 'TG_CLUSTER_TILES_IN_M': 'M/XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_ELEMENT', 'XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT': 'XECU_TILE_WIDTH_IN_UNITS_OF_TG*TG_WIDTH_IN_UNITS_OF_ELEMENT_REALIZED_BY_MULTIPLE_MMA_ITERATIONS', 'XECU_TILES_IN_N': 'N/XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT', 'GPU_TILES_IN_N': 'N/XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT/GPU_TILE_WIDTH_IN_XECU_UNIT', 'XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT': 'XECU_TILE_HEIGHT_IN_UNITS_OF_TG*TG_HEIGHT_IN_UNITS_OF_ELEMENT', 'XECU_TILES_IN_M': 'M/XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT', 'GPU_TILE_HEIGHT_IN_XECU_UINT': 'XECU_COUNT/GPU_TILE_WIDTH_IN_XECU_UNIT', 'GPU_TILES_IN_M': 'M/XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT/GPU_TILE_HEIGHT_IN_XECU_UINT', 'WAVES': 'CEILING(GPU_TILES_IN_N,1)*CEILING(GPU_TILES_IN_M,1)', 'GPU_TILE_WIDTH_IN_UNITS_OF_ELEMETNS': 'GPU_TILE_WIDTH_IN_XECU_UNIT*XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT', 'GPU_TILE_HEIGHT_IN_UNITS_OF_ELEMETNS': 'GPU_TILE_HEIGHT_IN_XECU_UINT*XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT', 'MAT_A_INPUT_SIZE_B': 'M*K*INPUT_A_BYTES_PER_ELEMENT', 'MAT_B_INPUT_SIZE_B': 'K*N*INPUT_B_BYTES_PER_ELEMENT', 'MAT_C_INPUT_D_OUTPUT_SIZE_B': 'M*N*OUTPUT_BYTES_PER_ELEMENT_AFTER_DOWN_CONVERSION', 'MAT_D_INTERMEDIATE_SIZE_B': 'M*N*OUTPUT_BYTES_PER_ELEMENT_FP32', 'TOTAL_L2_READ_B': '(MAT_A_INPUT_SIZE_B*CEILING(N/TG_WIDTH_IN_UNITS_OF_ELEMENT_REALIZED_BY_MULTIPLE_MMA_ITERATIONS,1)+MAT_B_INPUT_SIZE_B*CEILING(M/TG_HEIGHT_IN_UNITS_OF_ELEMENT,1))', 'TOTAL_L2_WRITE_B': 'MAT_C_INPUT_D_OUTPUT_SIZE_B', 'TOTAL_L1_READ_B': '(MAT_A_INPUT_SIZE_B*CEILING(N/THREAD_WIDTH_IN_UNITS_OF_ELEMENTS,1)+MAT_B_INPUT_SIZE_B*CEILING(M/THREAD_HEIGHT_IN_UNITS_OF_ELEMENTS,1))', 'TOTAL_L1_WRITE_B': 'MAT_C_INPUT_D_OUTPUT_SIZE_B', 'L2_READ_B_XECORE_CLK': 'TOTAL_L2_READ_B/(XECU_COUNT*XECORE_PER_XECU)/CLK_SPECIFIED_EFFICIENCY', 'L2_WRITE_B_XECORE_CLK': 'TOTAL_L2_WRITE_B/(XECU_COUNT*XECORE_PER_XECU)/CLK_SPECIFIED_EFFICIENCY', 'L2_READ_WRITE_B_XECORE_CLK': 'L2_READ_B_XECORE_CLK+L2_WRITE_B_XECORE_CLK', 'L1_READ_B_EU_CLK': 'TOTAL_L1_READ_B/(EU_COUNT)/CLK_SPECIFIED_EFFICIENCY', 'L1_READ_B_XECORE_CLK': 'L1_READ_B_EU_CLK*EU_PER_XECORE', 'L1_WRITE_B_EU_CLK': 'TOTAL_L1_WRITE_B/(EU_COUNT)/CLK_SPECIFIED_EFFICIENCY', 'L1_WRITE_B_XECORECLK': 'L1_WRITE_B_EU_CLK*EU_PER_XECORE', 'L2_READ_MAX_B_XECORE_CLK': 'XECORE_PER_XECU*64/XECORE_PER_XECU', 'L2_WRITE_MAX_B_XECORE_CLK': 'L2_READ_MAX_B_XECORE_CLK', 'L2_READ_WRITE_MAX_B_XECORE_CLK': 'L2_WRITE_MAX_B_XECORE_CLK', 'L2_READ_B_XECORE_CLK_PCT': 'L2_READ_B_XECORE_CLK/L2_READ_MAX_B_XECORE_CLK', 'L2_WRITE_B_XECORE_CLK_PCT': 'L2_WRITE_B_XECORE_CLK/L2_WRITE_MAX_B_XECORE_CLK', 'L2_READ_WRITE_B_XECORE_CLK_PCT': 'L2_READ_WRITE_B_XECORE_CLK/L2_READ_WRITE_MAX_B_XECORE_CLK', 'L1_READ_B_EU_CLK_PCT': 'L1_READ_B_EU_CLK/L1_READ_MAX_B_EU_CLK', 'L1_WRITE_B_EU_CLK_PCT': 'L1_WRITE_B_EU_CLK/L1_WRITE_MAX_B_EU_CLK', 'TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE': 'BANK_CAPACITY_MB*L2_BANKS_PER_XECU*1024*1024', 'WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE': 'MIN(20000*(K_PER_THREAD/CLKS_PER_DPAS),K)', 'TOTAL_REQUIRED_L2_SIZE_FOR_IDEAL_HIT_RATE_B_FOR_A_SINGLE_INSTANCE_AND_SINGLE_WAVE': '(XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT*INPUT_A_BYTES_PER_ELEMENT*WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE)+(XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT*INPUT_B_BYTES_PER_ELEMENT*WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE)+(XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT*XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT*OUTPUT_BYTES_PER_ELEMENT_AFTER_DOWN_CONVERSION)', 'L2_HIT_RATE_ASSUMED_RANDOM_ACCESS_WITHIN_THE_WORKING_DATA_SET_PCT': 'MIN(TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE/TOTAL_REQUIRED_L2_SIZE_FOR_IDEAL_HIT_RATE_B_FOR_A_SINGLE_INSTANCE_AND_SINGLE_WAVE,1)', 'L2_MISS_RATE_PCT': '1-L2_HIT_RATE_ASSUMED_RANDOM_ACCESS_WITHIN_THE_WORKING_DATA_SET_PCT', 'TOTAL_L2_READ_TRAFFIC_B': 'TOTAL_L2_READ_B', 'PROBABILITY_OF_MATA_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT': 'IF(MAT_A_INPUT_SIZE_B+MAT_B_INPUT_SIZE_B+MAT_C_INPUT_D_OUTPUT_SIZE_B <= TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE,1.0, IF(K>2*WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE,0.0,1-(K-WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE)/WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE))', 'PROBABILITY_OF_MATB_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT': 'IF(MAT_A_INPUT_SIZE_B+MAT_B_INPUT_SIZE_B+MAT_C_INPUT_D_OUTPUT_SIZE_B <= TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE,1.0, 0.0)', 'PROBABILITY_OF_MATA_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT': '1-PROBABILITY_OF_MATA_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT', 'PROBABILITY_OF_MATB_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT': '1-PROBABILITY_OF_MATB_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT', 'TOTAL_HBM_READ_B_AFTER_A_COMPLETION_OF_A_WAVE_CONSIDER_COLD_CACHE': '(MAT_A_INPUT_SIZE_B+MAT_A_INPUT_SIZE_B*(CEILING(N/XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT,1)-1)*PROBABILITY_OF_MATA_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT+MAT_B_INPUT_SIZE_B+MAT_B_INPUT_SIZE_B*(CEILING(M/XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT,1)-1)*PROBABILITY_OF_MATB_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT+(TOTAL_L2_READ_TRAFFIC_B-(MAT_A_INPUT_SIZE_B+MAT_A_INPUT_SIZE_B*(CEILING(N/XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT,1)-1)*PROBABILITY_OF_MATA_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT+MAT_B_INPUT_SIZE_B+MAT_B_INPUT_SIZE_B*(CEILING(M/XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT,1)-1)*PROBABILITY_OF_MATB_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT))*L2_MISS_RATE_PCT)/2', 'TOTAL_HBM_WRITE_B': 'MAT_C_INPUT_D_OUTPUT_SIZE_B', 'TOTAL_HBM_B': 'TOTAL_HBM_WRITE_B+TOTAL_HBM_READ_B_AFTER_A_COMPLETION_OF_A_WAVE_CONSIDER_COLD_CACHE', 'HBM_READ_B_CLK': 'TOTAL_HBM_READ_B_AFTER_A_COMPLETION_OF_A_WAVE_CONSIDER_COLD_CACHE/CLK_SPECIFIED_EFFICIENCY', 'HBM_WRITE_B_CLK': 'TOTAL_HBM_WRITE_B/CLK_SPECIFIED_EFFICIENCY', 'HBM_TOTAL_B_CLK': 'TOTAL_HBM_B/CLK_SPECIFIED_EFFICIENCY', 'MAX_POSSIBLE_HBM_BW_FREQ_B_CLK': 'MAX_POSSIBLE_HBM_BW_GB_S/GT_FREQ_GHZ', 'HBM_BW_PCT': 'HBM_TOTAL_B_CLK/MAX_POSSIBLE_HBM_BW_FREQ_B_CLK', 'GTI_READ_BW_PCT': 'HBM_READ_B_CLK/GTI_READ_MAX_BW_B_CLK', 'GTI_WRITE_BW_PCT': 'HBM_WRITE_B_CLK/GTI_WRITE_MAX_BW_B_CLK'}
+PYTHON_FORMULAS = {'INPUT_A_BYTES_PER_ELEMENT': 'DATA_FORMAT_TO_BYTES[INPUT_A_DATA_FORMAT]', 'INPUT_B_BYTES_PER_ELEMENT': 'DATA_FORMAT_TO_BYTES[INPUT_B_DATA_FORMAT]', 'OUTPUT_BYTES_PER_ELEMENT_AFTER_DOWN_CONVERSION': 'DATA_FORMAT_TO_BYTES[OUTPUT_D_DATA_FORMAT]', 'EU_COUNT': 'XECORE_PER_XECU*EU_PER_XECORE*XECU_COUNT', 'MIXED_PRECISION_DPAS_THROUGHPUT_DELTA': 'MIXED_PRECISION_DPAS and (INPUT_A_DATA_FORMAT in {i8} and INPUT_B_DATA_FORMAT in {i2,i4} or INPUT_A_DATA_FORMAT in {i2,i4} and INPUT_B_DATA_FORMAT in {i8})', 'MMA_MAC_THROUGHPUT_PER_CHANNEL_STAGE': '(4/max(INPUT_A_BYTES_PER_ELEMENT,INPUT_B_BYTES_PER_ELEMENT))*(1+MIXED_PRECISION_DPAS_THROUGHPUT_DELTA)', 'MMA_MAC_THROUGHPUT_PER_EU': 'MMA_MAC_THROUGHPUT_PER_CHANNEL_STAGE*DPAS_DEPTH*16', 'MMA_MAC_THROUGHPUT_PER_XECORE': 'MMA_MAC_THROUGHPUT_PER_EU*EU_PER_XECORE', 'WORKLOAD_MAC_PER_XECORE': 'M*K*N/(XECORE_PER_XECU*XECU_COUNT)', 'CLK_SPECIFIED_EFFICIENCY': 'WORKLOAD_MAC_PER_XECORE/(MMA_MAC_THROUGHPUT_PER_XECORE*COMPUTE_EFFICIENCY_PCT)', 'CLKS_PER_DPAS': 'M_PER_THREAD*K_PER_THREAD*N_PER_THREAD/(MMA_MAC_THROUGHPUT_PER_XECORE/EU_PER_XECORE)', 'THREAD_WIDTH_IN_UNITS_OF_ELEMENTS': 'N_PER_THREAD', 'THREAD_HEIGHT_IN_UNITS_OF_ELEMENTS': 'M_PER_THREAD', 'TG_WIDTH_IN_UNITS_OF_ELEMENT_REALIZED_BY_MULTIPLE_MMA_ITERATIONS': 'TG_WIDTH_IN_UNITS_OF_THREAD*THREAD_WIDTH_IN_UNITS_OF_ELEMENTS', 'TG_TILES_IN_N': 'N/TG_WIDTH_IN_UNITS_OF_ELEMENT_REALIZED_BY_MULTIPLE_MMA_ITERATIONS', 'TG_HEIGHT_IN_UNITS_OF_ELEMENT': 'TG_HEIGHT_IN_UNITS_OF_THREAD*THREAD_HEIGHT_IN_UNITS_OF_ELEMENTS', 'TG_TILES_IN_M': 'M/TG_HEIGHT_IN_UNITS_OF_ELEMENT', 'XECORE_CLUSTER_WIDTH_IN_UNITS_OF_ELEMENT': 'XECORE_CLUSTER_WIDTH_IN_UNITS_OF_TG_KEEP_THE_CLUSTER_SIZE_AS_4*TG_WIDTH_IN_UNITS_OF_ELEMENT_REALIZED_BY_MULTIPLE_MMA_ITERATIONS', 'TG_CLUSTER_TILES_IN_N': 'N/XECORE_CLUSTER_WIDTH_IN_UNITS_OF_ELEMENT', 'XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_ELEMENT': 'XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_TG_KEEP_THE_CLUSTER_SIZE_AS_4*TG_HEIGHT_IN_UNITS_OF_ELEMENT', 'TG_CLUSTER_TILES_IN_M': 'M/XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_ELEMENT', 'XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT': 'XECU_TILE_WIDTH_IN_UNITS_OF_TG*TG_WIDTH_IN_UNITS_OF_ELEMENT_REALIZED_BY_MULTIPLE_MMA_ITERATIONS', 'XECU_TILES_IN_N': 'N/XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT', 'GPU_TILES_IN_N': 'N/XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT/GPU_TILE_WIDTH_IN_XECU_UNIT', 'XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT': 'XECU_TILE_HEIGHT_IN_UNITS_OF_TG*TG_HEIGHT_IN_UNITS_OF_ELEMENT', 'XECU_TILES_IN_M': 'M/XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT', 'GPU_TILE_HEIGHT_IN_XECU_UINT': 'XECU_COUNT/GPU_TILE_WIDTH_IN_XECU_UNIT', 'GPU_TILES_IN_M': 'M/XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT/GPU_TILE_HEIGHT_IN_XECU_UINT', 'WAVES': 'CEILING(GPU_TILES_IN_N,1)*CEILING(GPU_TILES_IN_M,1)', 'GPU_TILE_WIDTH_IN_UNITS_OF_ELEMETNS': 'GPU_TILE_WIDTH_IN_XECU_UNIT*XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT', 'GPU_TILE_HEIGHT_IN_UNITS_OF_ELEMETNS': 'GPU_TILE_HEIGHT_IN_XECU_UINT*XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT', 'MAT_A_INPUT_SIZE_B': 'M*K*INPUT_A_BYTES_PER_ELEMENT', 'MAT_B_INPUT_SIZE_B': 'K*N*INPUT_B_BYTES_PER_ELEMENT', 'MAT_C_INPUT_D_OUTPUT_SIZE_B': 'M*N*OUTPUT_BYTES_PER_ELEMENT_AFTER_DOWN_CONVERSION', 'MAT_D_INTERMEDIATE_SIZE_B': 'M*N*OUTPUT_BYTES_PER_ELEMENT_FP32', 'TOTAL_L2_READ_B': '(MAT_A_INPUT_SIZE_B*CEILING(N/TG_WIDTH_IN_UNITS_OF_ELEMENT_REALIZED_BY_MULTIPLE_MMA_ITERATIONS,1)+MAT_B_INPUT_SIZE_B*CEILING(M/TG_HEIGHT_IN_UNITS_OF_ELEMENT,1))', 'TOTAL_L2_WRITE_B': 'MAT_C_INPUT_D_OUTPUT_SIZE_B', 'TOTAL_L1_READ_B': '(MAT_A_INPUT_SIZE_B*CEILING(N/THREAD_WIDTH_IN_UNITS_OF_ELEMENTS,1)+MAT_B_INPUT_SIZE_B*CEILING(M/THREAD_HEIGHT_IN_UNITS_OF_ELEMENTS,1))', 'TOTAL_L1_WRITE_B': 'MAT_C_INPUT_D_OUTPUT_SIZE_B', 'L2_READ_B_XECORE_CLK': 'TOTAL_L2_READ_B/(XECU_COUNT*XECORE_PER_XECU)/CLK_SPECIFIED_EFFICIENCY', 'L2_WRITE_B_XECORE_CLK': 'TOTAL_L2_WRITE_B/(XECU_COUNT*XECORE_PER_XECU)/CLK_SPECIFIED_EFFICIENCY', 'L2_READ_WRITE_B_XECORE_CLK': 'L2_READ_B_XECORE_CLK+L2_WRITE_B_XECORE_CLK', 'L1_READ_B_EU_CLK': 'TOTAL_L1_READ_B/(EU_COUNT)/CLK_SPECIFIED_EFFICIENCY', 'L1_READ_B_XECORE_CLK': 'L1_READ_B_EU_CLK*EU_PER_XECORE', 'L1_WRITE_B_EU_CLK': 'TOTAL_L1_WRITE_B/(EU_COUNT)/CLK_SPECIFIED_EFFICIENCY', 'L1_WRITE_B_XECORECLK': 'L1_WRITE_B_EU_CLK*EU_PER_XECORE', 'L2_READ_MAX_B_XECORE_CLK': 'XECORE_PER_XECU*64/XECORE_PER_XECU', 'L2_WRITE_MAX_B_XECORE_CLK': 'L2_READ_MAX_B_XECORE_CLK', 'L2_READ_WRITE_MAX_B_XECORE_CLK': 'L2_WRITE_MAX_B_XECORE_CLK', 'L2_READ_B_XECORE_CLK_PCT': 'L2_READ_B_XECORE_CLK/L2_READ_MAX_B_XECORE_CLK', 'L2_WRITE_B_XECORE_CLK_PCT': 'L2_WRITE_B_XECORE_CLK/L2_WRITE_MAX_B_XECORE_CLK', 'L2_READ_WRITE_B_XECORE_CLK_PCT': 'L2_READ_WRITE_B_XECORE_CLK/L2_READ_WRITE_MAX_B_XECORE_CLK', 'L1_READ_B_EU_CLK_PCT': 'L1_READ_B_EU_CLK/L1_READ_MAX_B_EU_CLK', 'L1_WRITE_B_EU_CLK_PCT': 'L1_WRITE_B_EU_CLK/L1_WRITE_MAX_B_EU_CLK', 'TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE': 'BANK_CAPACITY_MB*L2_BANKS_PER_XECU*1024*1024', 'WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE': 'MIN(20000*(K_PER_THREAD/CLKS_PER_DPAS),K)', 'TOTAL_REQUIRED_L2_SIZE_FOR_IDEAL_HIT_RATE_B_FOR_A_SINGLE_INSTANCE_AND_SINGLE_WAVE': '(XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT*INPUT_A_BYTES_PER_ELEMENT*WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE)+(XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT*INPUT_B_BYTES_PER_ELEMENT*WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE)+(XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT*XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT*OUTPUT_BYTES_PER_ELEMENT_AFTER_DOWN_CONVERSION)', 'L2_HIT_RATE_ASSUMED_RANDOM_ACCESS_WITHIN_THE_WORKING_DATA_SET_PCT': 'MIN(TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE/TOTAL_REQUIRED_L2_SIZE_FOR_IDEAL_HIT_RATE_B_FOR_A_SINGLE_INSTANCE_AND_SINGLE_WAVE,1)', 'L2_MISS_RATE_PCT': '1-L2_HIT_RATE_ASSUMED_RANDOM_ACCESS_WITHIN_THE_WORKING_DATA_SET_PCT', 'TOTAL_L2_READ_TRAFFIC_B': 'TOTAL_L2_READ_B', 'PROBABILITY_OF_MATA_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT': 'IF(MAT_A_INPUT_SIZE_B+MAT_B_INPUT_SIZE_B+MAT_C_INPUT_D_OUTPUT_SIZE_B <= TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE,1.0, IF(K>2*WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE,0.0,1-(K-WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE)/WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE))', 'PROBABILITY_OF_MATB_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT': 'IF(MAT_A_INPUT_SIZE_B+MAT_B_INPUT_SIZE_B+MAT_C_INPUT_D_OUTPUT_SIZE_B <= TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE,1.0, 0.0)', 'PROBABILITY_OF_MATA_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT': '1-PROBABILITY_OF_MATA_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT', 'PROBABILITY_OF_MATB_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT': '1-PROBABILITY_OF_MATB_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT', 'TOTAL_HBM_READ_B_AFTER_A_COMPLETION_OF_A_WAVE_CONSIDER_COLD_CACHE': '(MAT_A_INPUT_SIZE_B+MAT_A_INPUT_SIZE_B*(CEILING(N/XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT,1)-1)*PROBABILITY_OF_MATA_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT+MAT_B_INPUT_SIZE_B+MAT_B_INPUT_SIZE_B*(CEILING(M/XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT,1)-1)*PROBABILITY_OF_MATB_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT+(TOTAL_L2_READ_TRAFFIC_B-(MAT_A_INPUT_SIZE_B+MAT_A_INPUT_SIZE_B*(CEILING(N/XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT,1)-1)*PROBABILITY_OF_MATA_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT+MAT_B_INPUT_SIZE_B+MAT_B_INPUT_SIZE_B*(CEILING(M/XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT,1)-1)*PROBABILITY_OF_MATB_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT))*L2_MISS_RATE_PCT)/2', 'TOTAL_HBM_WRITE_B': 'MAT_C_INPUT_D_OUTPUT_SIZE_B', 'TOTAL_HBM_B': 'TOTAL_HBM_WRITE_B+TOTAL_HBM_READ_B_AFTER_A_COMPLETION_OF_A_WAVE_CONSIDER_COLD_CACHE', 'HBM_READ_B_CLK': 'TOTAL_HBM_READ_B_AFTER_A_COMPLETION_OF_A_WAVE_CONSIDER_COLD_CACHE/CLK_SPECIFIED_EFFICIENCY', 'HBM_WRITE_B_CLK': 'TOTAL_HBM_WRITE_B/CLK_SPECIFIED_EFFICIENCY', 'HBM_TOTAL_B_CLK': 'TOTAL_HBM_B/CLK_SPECIFIED_EFFICIENCY', 'MAX_POSSIBLE_HBM_BW_FREQ_B_CLK': 'MAX_POSSIBLE_HBM_BW_GB_S/GT_FREQ_GHZ', 'HBM_BW_PCT': 'HBM_TOTAL_B_CLK/MAX_POSSIBLE_HBM_BW_FREQ_B_CLK', 'GTI_READ_BW_PCT': 'HBM_READ_B_CLK/GTI_READ_MAX_BW_B_CLK', 'GTI_WRITE_BW_PCT': 'HBM_WRITE_B_CLK/GTI_WRITE_MAX_BW_B_CLK'}
+PYTHON_FORMULAS['MAX_POSSIBLE_HBM_BW_FREQ_B_CLK'] = 'MAX_POSSIBLE_HBM_BW_GB_S/GT_FREQ_GHZ'
 CATEGORY_MAP = {'INPUT_A_DATA_FORMAT': 'workload format key pre', 'INPUT_B_DATA_FORMAT': 'workload format key pre', 'OUTPUT_D_DATA_FORMAT': 'workload format key pre', 'GT_FREQ_GHZ': 'machine pre', 'M': 'workload pre', 'K': 'workload pre', 'N': 'workload pre', 'WAVES': 'workload derived', 'TG_TILES_IN_N': 'workload derived', 'TG_TILES_IN_M': 'workload derived', 'TG_CLUSTER_TILES_IN_N': 'workload derived', 'TG_CLUSTER_TILES_IN_M': 'workload derived', 'XECU_TILES_IN_N': 'workload derived', 'XECU_TILES_IN_M': 'workload derived', 'GPU_TILES_IN_N': 'workload derived', 'GPU_TILES_IN_M': 'workload derived', 'INPUT_A_BYTES_PER_ELEMENT': 'workload format value derived by data_format_to_bytes[c3]', 'INPUT_B_BYTES_PER_ELEMENT': 'workload format value derived by data_format_to_bytes[c4]', 'OUTPUT_BYTES_PER_ELEMENT_FP32': 'workload pre', 'OUTPUT_BYTES_PER_ELEMENT_AFTER_DOWN_CONVERSION': 'workload format value derived by data_format_to_bytes[c5]', 'XECU_COUNT': 'machine pre', 'XECORE_PER_XECU': 'machine pre', 'EU_PER_XECORE': 'machine pre', 'L2_BANKS_PER_XECU': 'machine pre', 'BANK_CAPACITY_MB': 'machine pre', 'DPAS_DEPTH': 'machine pre', 'EU_COUNT': 'machine derived', 'MACHINE_OCCUPANCY_PCT': 'workload pre', 'COMPUTE_EFFICIENCY_PCT': 'machine pre', 'MMA_MAC_THROUGHPUT_PER_XECORE': 'machine workload derived', 'CLK_SPECIFIED_EFFICIENCY': 'machine stats', 'M_PER_THREAD': 'workload pre', 'K_PER_THREAD': 'workload pre', 'N_PER_THREAD': 'workload pre', 'CLKS_PER_DPAS': 'machine workload derived', 'THREAD_WIDTH_IN_UNITS_OF_ELEMENTS': 'workload derived', 'THREAD_HEIGHT_IN_UNITS_OF_ELEMENTS': 'workload derived', 'TG_WIDTH_IN_UNITS_OF_THREAD': 'workload pre', 'TG_HEIGHT_IN_UNITS_OF_THREAD': 'workload pre', 'TG_WIDTH_IN_UNITS_OF_ELEMENT_REALIZED_BY_MULTIPLE_MMA_ITERATIONS': 'workload derived', 'TG_HEIGHT_IN_UNITS_OF_ELEMENT': 'workload derived', 'XECORE_CLUSTER_WIDTH_IN_UNITS_OF_TG_KEEP_THE_CLUSTER_SIZE_AS_4': 'workload pre', 'XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_TG_KEEP_THE_CLUSTER_SIZE_AS_4': 'workload pre', 'XECORE_CLUSTER_WIDTH_IN_UNITS_OF_ELEMENT': 'workload derived', 'XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_ELEMENT': 'workload derived', 'XECU_TILE_WIDTH_IN_UNITS_OF_TG': 'workload pre', 'XECU_TILE_HEIGHT_IN_UNITS_OF_TG': 'workload pre', 'XECU_TILE_WIDTH_IN_UNITS_OF_ELEMENT': 'workload derived', 'XECU_TILE_HEIGHT_IN_UNITS_OF_ELEMENT': 'workload derived', 'GPU_TILE_WIDTH_IN_XECU_UNIT': 'workload pre', 'GPU_TILE_HEIGHT_IN_XECU_UINT': 'workload derived', 'GPU_TILE_WIDTH_IN_UNITS_OF_ELEMETNS': 'workload derived', 'GPU_TILE_HEIGHT_IN_UNITS_OF_ELEMETNS': 'workload derived', 'MAT_A_INPUT_SIZE_B': 'workload derived', 'MAT_B_INPUT_SIZE_B': 'workload derived', 'MAT_C_INPUT_D_OUTPUT_SIZE_B': 'workload derived', 'MAT_D_INTERMEDIATE_SIZE_B': 'workload derived', 'TOTAL_L2_READ_B': 'machine stats', 'TOTAL_L2_WRITE_B': 'machine stats', 'TOTAL_L1_READ_B': 'machine stats', 'TOTAL_L1_WRITE_B': 'machine stats', 'L2_READ_B_XECORE_CLK': 'machine stats', 'L2_WRITE_B_XECORE_CLK': 'machine stats', 'L2_READ_WRITE_B_XECORE_CLK': 'machine stats', 'L1_READ_B_XECORE_CLK': 'machine stats', 'L1_WRITE_B_XECORECLK': 'machine stats', 'L1_READ_B_EU_CLK': 'machine stats', 'L1_WRITE_B_EU_CLK': 'machine stats', 'L2_READ_MAX_B_XECORE_CLK': 'machine stats', 'L2_WRITE_MAX_B_XECORE_CLK': 'machine stats', 'L2_READ_WRITE_MAX_B_XECORE_CLK': 'machine stats', 'L1_READ_MAX_B_EU_CLK': 'machine pre', 'L1_WRITE_MAX_B_EU_CLK': 'machine pre', 'L2_READ_B_XECORE_CLK_PCT': 'machine stats', 'L2_WRITE_B_XECORE_CLK_PCT': 'machine stats', 'L2_READ_WRITE_B_XECORE_CLK_PCT': 'machine stats', 'L1_READ_B_EU_CLK_PCT': 'machine stats', 'L1_WRITE_B_EU_CLK_PCT': 'machine stats', 'GTI_READ_MAX_BW_B_CLK': 'machine pre', 'GTI_WRITE_MAX_BW_B_CLK': 'machine pre', 'TOTAL_L2_SIZE_B_FOR_A_SINGLE_INSTANCE': 'machine derived', 'WORKING_DATA_SET_SIZE_OF_K_IN_L2_CORRESP_20K_CLOCKS_OF_THREAD_DIVERGENCE': 'workload derived', 'TOTAL_REQUIRED_L2_SIZE_FOR_IDEAL_HIT_RATE_B_FOR_A_SINGLE_INSTANCE_AND_SINGLE_WAVE': 'workload derived', 'L2_HIT_RATE_ASSUMED_RANDOM_ACCESS_WITHIN_THE_WORKING_DATA_SET_PCT': 'machine stats', 'L2_MISS_RATE_PCT': 'machine stats', 'TOTAL_L2_READ_TRAFFIC_B': 'machine stats', 'PROBABILITY_OF_MATA_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT': 'machine stats', 'PROBABILITY_OF_MATB_HIT_IN_L2_DURING_A_NON_FIRST_WAVE_PCT': 'machine stats', 'PROBABILITY_OF_MATA_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT': 'machine stats', 'PROBABILITY_OF_MATB_MISS_IN_L2_DURING_A_NON_FIRST_WAVE_PCT': 'machine stats', 'TOTAL_HBM_READ_B_AFTER_A_COMPLETION_OF_A_WAVE_CONSIDER_COLD_CACHE': 'machine stats', 'TOTAL_HBM_WRITE_B': 'machine stats', 'TOTAL_HBM_B': 'machine stats', 'HBM_READ_B_CLK': 'machine stats', 'HBM_WRITE_B_CLK': 'machine stats', 'HBM_TOTAL_B_CLK': 'machine stats', 'MAX_POSSIBLE_HBM_BW_GB_S': 'machine pre', 'MAX_POSSIBLE_HBM_BW_FREQ_B_CLK': 'machine derived', 'HBM_BW_PCT': 'machine stats', 'GTI_READ_BW_PCT': 'machine stats', 'GTI_WRITE_BW_PCT': 'machine stats'}
+CATEGORY_MAP['MIXED_PRECISION_DPAS'] = 'machine pre'
+CATEGORY_MAP['MIXED_PRECISION_DPAS_THROUGHPUT_DELTA'] = 'machine workload derived'
+CATEGORY_MAP['MMA_MAC_THROUGHPUT_PER_CHANNEL_STAGE'] = 'machine workload derived'
+CATEGORY_MAP['MMA_MAC_THROUGHPUT_PER_EU'] = 'machine workload derived'
+CATEGORY_MAP['WORKLOAD_MAC_PER_XECORE'] = 'machine stats'
 
 PARAM_DESCRIPTIONS = {
     # ---- Machine pre-defined ----
@@ -1220,6 +1474,7 @@ PARAM_DESCRIPTIONS = {
     'GTI_READ_MAX_BW_B_CLK': 'GTI read max BW (B/clk)',
     'GTI_WRITE_MAX_BW_B_CLK': 'GTI write max BW (B/clk)',
     'MAX_POSSIBLE_HBM_BW_GB_S': 'max possible HBM BW (GB/s)',
+    'MIXED_PRECISION_DPAS': 'native DPAS mixed-precision support',
     # ---- Workload format keys ----
     'INPUT_A_DATA_FORMAT': 'input A data format (e.g. fp8)',
     'INPUT_B_DATA_FORMAT': 'input B data format (e.g. fp4)',
@@ -1240,6 +1495,15 @@ PARAM_DESCRIPTIONS = {
     'XECU_TILE_WIDTH_IN_UNITS_OF_TG': 'XeCU tile width in units of TG',
     'XECU_TILE_HEIGHT_IN_UNITS_OF_TG': 'XeCU tile height in units of TG',
     'GPU_TILE_WIDTH_IN_XECU_UNIT': 'GPU tile width in XeCU unit',
+    # ---- Machine / machine+workload derived ----
+    'EU_COUNT': 'EU count',
+    'MIXED_PRECISION_DPAS_THROUGHPUT_DELTA': 'mixed-precision DPAS throughput delta (0: default, 1: enables 2x channel throughput)',
+    'MMA_MAC_THROUGHPUT_PER_CHANNEL_STAGE': 'MMA MAC throughput per channel stage (MACs/clk/EU)',
+    'MMA_MAC_THROUGHPUT_PER_EU': 'MMA MAC throughput per EU (MACs/clk/EU)',
+    'MMA_MAC_THROUGHPUT_PER_XECORE': 'MMA MAC throughput per XeCore (MACs/clk/XeCore)',
+    'WORKLOAD_MAC_PER_XECORE': 'workload MACs per XeCore',
+    'CLK_SPECIFIED_EFFICIENCY': 'total clocks (specified efficiency)',
+    'CLKS_PER_DPAS': 'clocks per DPAS',
 }
 
 
@@ -1355,7 +1619,7 @@ def build_debug_report(values: dict) -> str:
     for name in ROW_ORDER:
         if name not in values:
             continue
-        row = ROW_INDEX.get(name, '?')
+        row = ACTIVE_ROW_INDEX.get(name, '?')
         cat = CATEGORY_MAP.get(name, '')
         display_name = f'{name}_C{row}'
         val = format_value_for_report(name, values[name])
@@ -1369,28 +1633,43 @@ def build_debug_report(values: dict) -> str:
     out.append('')
     return '\n'.join(out)
 
-def export_to_csv(values: dict, csv_path: str, output_order: str = 'execution') -> None:
-    """Export model values to CSV with metadata (Name, Value, Category, Row, Label).
-    
+def export_to_csv(values_by_column: dict, csv_path: str, output_order: str = 'execution') -> None:
+    """Export model values to CSV with metadata.
+
+    Column order: Name, Category, RowID, Description, <column1>[, <column2>, ...]
+
     Args:
-        values: dict of computed values
+        values_by_column: dict mapping output column name -> computed values dict.
+                          For machine/workload cross-product, each column name is
+                          formatted as '<machine> | <workload>'.
         csv_path: output CSV file path
         output_order: 'execution' for compute order (default), 'row_tracking' for xlsx row order
     """
     internal_order = _resolve_output_order(output_order)
     item_order = COMPUTE_ORDER if internal_order == 'compute' else ROW_ORDER
+    column_names = list(values_by_column.keys())
     with open(csv_path, 'w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
-        writer.writerow(['Name', 'Value', 'Category', 'Row', 'Label'])
+        writer.writerow(['Name', 'Category', 'RowID', 'Description'] + column_names)
+        # Use the first column's values dict to determine which names are present.
+        first_values = next(iter(values_by_column.values()))
         for name in item_order:
-            if name not in values:
+            if name not in first_values:
                 continue
-            writer.writerow([name, values[name], CATEGORY_MAP.get(name, ''), ROW_INDEX.get(name, ''), ''])
+            row = [
+                name,
+                CATEGORY_MAP.get(name, ''),
+                ACTIVE_ROW_INDEX.get(name, ''),
+                PARAM_DESCRIPTIONS.get(name, ''),
+            ]
+            for col in column_names:
+                row.append(values_by_column[col].get(name, ''))
+            writer.writerow(row)
 
 def parse_cli_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Run GEMM model with workload and machine parameters.')
-    parser.add_argument('--workload-params', required=True, metavar='CSV', help='Workload parameters CSV (Name,Value[,Label])')
-    parser.add_argument('--machine-params', required=True, metavar='CSV', help='Machine parameters CSV (Name,Value[,Label])')
+    parser.add_argument('--workload-params', required=True, metavar='CSV', help='Workload parameters CSV (RowID,Name,Label,Value) or (RowID,Name,Label,<workload1>,<workload2>,...) where RowID is required and must be a positive integer')
+    parser.add_argument('--machine-params', required=True, metavar='CSV', help='Machine parameters CSV (RowID,Name,Label,Value) or (RowID,Name,Label,<machine1>,<machine2>,...) where RowID is required and must be a positive integer')
     parser.add_argument('--mode', choices=['normal', 'debug'], default='normal', help='normal: 5-section summary; debug: row-order detail with formulas')
     parser.add_argument('--output-order', choices=['execution', 'row_tracking'], default='execution', help="output order: 'execution' for 4-section compute order (default), 'row_tracking' for original xlsx row order")
     parser.add_argument('--output-txt', default=None, help='(Optional) also write text report to file')
@@ -1401,17 +1680,53 @@ def parse_cli_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_cli_args()
-    workload_params = _load_params_csv(args.workload_params, ALL_WORKLOAD_PRE_NAMES, 'workload', ALL_PRE_NAMES_SET)
-    machine_params  = _load_params_csv(args.machine_params,  MACHINE_PRE_NAMES,       'machine',  ALL_PRE_NAMES_SET)
-    values = compute_core_values(workload_params, machine_params)
-    report = build_debug_report(values) if args.mode == 'debug' else build_normal_report(values, output_order=args.output_order)
+    workload_result = _load_params_csv(args.workload_params, ALL_WORKLOAD_PRE_NAMES, 'workload', ALL_PRE_NAMES_SET, parse_row_id=True)
+    if isinstance(workload_result[0], list):
+        # Multi-workload format: (workload_names, all_params, row_ids)
+        workload_names, all_workload_params, workload_row_ids = workload_result
+    else:
+        # Legacy single-workload format: (params, row_ids)
+        workload_params, workload_row_ids = workload_result
+        workload_names = ['Value']
+        all_workload_params = {'Value': workload_params}
+    _validate_workload_row_ids(workload_row_ids, args.workload_params)
+    _apply_workload_row_ids(workload_row_ids)
+
+    machine_result = _load_params_csv(args.machine_params, MACHINE_PRE_NAMES, 'machine', ALL_PRE_NAMES_SET, parse_row_id=True)
+    if isinstance(machine_result[0], list):
+        # Multi-machine format: (machine_names, all_params, row_ids)
+        machine_names, all_machine_params, machine_row_ids = machine_result
+    else:
+        # Legacy single-machine format: (params, row_ids)
+        machine_params, machine_row_ids = machine_result
+        machine_names = ['Value']
+        all_machine_params = {'Value': machine_params}
+    _validate_machine_row_ids(machine_row_ids, args.machine_params)
+    _apply_machine_row_ids(machine_row_ids)
+
+    # Compute machine x workload cross-product in deterministic order:
+    # outer loop on machines, inner loop on workloads.
+    values_by_column: dict[str, dict] = {}
+    for machine_name in machine_names:
+        for workload_name in workload_names:
+            column_title = f'{machine_name} | {workload_name}'
+            values_by_column[column_title] = compute_core_values(
+                all_workload_params[workload_name],
+                all_machine_params[machine_name],
+            )
+
+    # For text report and stdout, use the first (machine, workload) scenario.
+    first_column_title = next(iter(values_by_column.keys()))
+    first_values = values_by_column[first_column_title]
+    report = build_debug_report(first_values) if args.mode == 'debug' else build_normal_report(first_values, output_order=args.output_order)
+    report = f'Scenario shown in text report: {first_column_title}\n\n{report}'
     if not args.no_stdout:
         print(report)
     if args.output_txt:
         with open(args.output_txt, 'w', encoding='utf-8') as f:
             f.write(report)
     if args.output_csv:
-        export_to_csv(values, args.output_csv, output_order=args.output_order)
+        export_to_csv(values_by_column, args.output_csv, output_order=args.output_order)
     if args.output_equations_md:
         export_equations_markdown(args.output_equations_md, output_order=args.output_order)
 

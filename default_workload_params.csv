@@ -1,19 +1,24 @@
-Name,Value,Label
-INPUT_A_DATA_FORMAT,fp8,fp8
-INPUT_B_DATA_FORMAT,fp4,fp4
-OUTPUT_D_DATA_FORMAT,fp8,fp8
-M,4096,M
-K,4096,K
-N,4096,N
-OUTPUT_BYTES_PER_ELEMENT_FP32,4,"output bytes per element , fp32"
-MACHINE_OCCUPANCY_PCT,1,Machine occupancy %
-M_PER_THREAD,64,M per thread
-K_PER_THREAD,128,K per thread
-N_PER_THREAD,32,N per thread
-TG_WIDTH_IN_UNITS_OF_THREAD,8,TG width in units of thread
-TG_HEIGHT_IN_UNITS_OF_THREAD,4,TG height in units of thread
-XECORE_CLUSTER_WIDTH_IN_UNITS_OF_TG_KEEP_THE_CLUSTER_SIZE_AS_4,1,XeCore cluster width in units of TG. Keep the cluster size as 4.
-XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_TG_KEEP_THE_CLUSTER_SIZE_AS_4,1,XeCore cluster height in units of TG. Keep the cluster size as 4.
-XECU_TILE_WIDTH_IN_UNITS_OF_TG,4,XeCU tile width in units of TG
-XECU_TILE_HEIGHT_IN_UNITS_OF_TG,4,XeCU tile height in units of TG
-GPU_TILE_WIDTH_IN_XECU_UNIT,1,GPU tile width in XeCU unit
+RowID,Name,Label,int8_int4,fp8_fp4,fp8,fp4
+,__ROW_ID_POLICY_1__,Keep original XLSX rows on their original RowIDs,,,,
+,__ROW_ID_POLICY_2__,New machine pre-defined input parameters use RowIDs 1000-1999,,,,
+,__ROW_ID_POLICY_3__,New workload pre-defined input parameters use RowIDs 2000-2999,,,,
+,__ROW_ID_POLICY_4__,Derived extensions use 4000-4999 and machine stats use 5000-5999,,,,
+3,INPUT_A_DATA_FORMAT,int8,i8,fp8,fp8,fp4
+4,INPUT_B_DATA_FORMAT,int4,i4,fp4,fp8,fp4
+5,OUTPUT_D_DATA_FORMAT,int8,i8,fp8,fp8,fp4
+9,M,M,4096,4096,4096,4096
+10,K,K,4096,4096,4096,4096
+11,N,N,4096,4096,4096,4096
+24,OUTPUT_BYTES_PER_ELEMENT_FP32,"output bytes per element , fp32",4,4,4,4
+34,MACHINE_OCCUPANCY_PCT,Machine occupancy %,1,1,1,1
+39,M_PER_THREAD,M per thread,64,64,64,64
+40,K_PER_THREAD,K per thread,128,128,128,128
+41,N_PER_THREAD,N per thread,32,32,32,32
+45,TG_WIDTH_IN_UNITS_OF_THREAD,TG width in units of thread,8,8,8,8
+46,TG_HEIGHT_IN_UNITS_OF_THREAD,TG height in units of thread,4,4,4,4
+50,XECORE_CLUSTER_WIDTH_IN_UNITS_OF_TG_KEEP_THE_CLUSTER_SIZE_AS_4,XeCore cluster width in units of TG. Keep the cluster size as 4.,1,1,1,1
+51,XECORE_CLUSTER_HEIGHT_IN_UNITS_OF_TG_KEEP_THE_CLUSTER_SIZE_AS_4,XeCore cluster height in units of TG. Keep the cluster size as 4.,1,1,1,1
+54,XECU_TILE_WIDTH_IN_UNITS_OF_TG,XeCU tile width in units of TG,4,4,4,4
+55,XECU_TILE_HEIGHT_IN_UNITS_OF_TG,XeCU tile height in units of TG,4,4,4,4
+58,GPU_TILE_WIDTH_IN_XECU_UNIT,GPU tile width in XeCU unit,1,1,1,1
+,__NEXT_AVAILABLE_ROW_ID__,next available RowID tracker (ignored),,,,

@@ -1,0 +1,62 @@
+GEMMANALYTICS HANDOFF - 2026-05-02
+
+Scope completed today
+- Added multi-machine CSV support (already done earlier): one value column per machine.
+- Added multi-workload CSV support mirroring machine CSV shape: one value column per workload.
+- Implemented machine x workload cross-product compute wrapper:
+  - outer loop: machines
+  - inner loop: workloads
+- Updated CSV export to emit one value column per (machine, workload) combination.
+  - Column title format: "<machine> | <workload>"
+- Kept Markdown/PDF equation generation symbolic and unchanged in intent.
+- Kept text output as single-scenario summary (first machine | first workload), with banner line:
+  - "Scenario shown in text report: <machine> | <workload>"
+- Normalized MIXED_PRECISION_DPAS_THROUGHPUT_DELTA numeric output to 0/1 (no False).
+- Added/extended RowID handling and validation for both workload and machine inputs.
+- Documented RowID policy in README + comments + CSV metadata rows.
+
+Key policy documented
+- Existing XLSX-aligned rows keep their original RowIDs.
+- 1000-1999: machine pre-defined extensions.
+- 2000-2999: workload pre-defined extensions.
+- 4000-4999: machine/workload-derived extensions.
+- 5000-5999: machine-stats extensions.
+
+Validation run outcomes
+1) Standard run with current edited inputs succeeded.
+2) Confirmed 2 machines x 4 workloads => 8 value columns in output CSV.
+3) Confirmed example combo headers:
+   - TTL-16Xe | int8_int4
+   - TTL-16Xe | fp8_fp4
+   - TTL-16Xe | fp8
+   - TTL-16Xe | fp4
+   - TTL-16Xe-MixFmt | int8_int4
+   - TTL-16Xe-MixFmt | fp8_fp4
+   - TTL-16Xe-MixFmt | fp8
+   - TTL-16Xe-MixFmt | fp4
+4) Text output banner confirmed:
+   - Scenario shown in text report: TTL-16Xe | int8_int4
+5) Regression markers for txt/csv/md pass.
+6) Existing known regression failure remains:
+   - PDF bitmap differs vs backup baseline (expected unless baseline is refreshed).
+
+Useful commands used
+- Run model:
+  C:/Users/cli17/AppData/Local/Programs/Python/Python312/python.exe gemmanalytics.py --workload-params default_workload_params.csv --machine-params default_machine_params.csv --mode normal --output-order execution --output-txt <txt> --output-csv <csv> --output-equations-md <md> --no-stdout
+
+- Run regression wrapper:
+  .\run_regression_gemmanalytics.bat
+
+Tomorrow validation checklist
+- Check numerical sanity across all 8 combinations for a few anchor rows.
+- Verify row-order stability in CSV for both output orders if needed.
+- Decide whether to refresh backup/EQUATIONS.pdf baseline for regression.
+- Decide whether to keep or delete temporary artifacts (_try_4x2.*, _mxw_*, _sanity_*, _rowid_sanity_*).
+
+Rollback/recovery guidance
+- Yes, committing now lets us recover safely.
+- Typical safe recovery options after commit:
+  - Inspect history: git log --oneline
+  - Restore file(s) to earlier commit: git restore --source <commit> -- <path>
+  - Revert a bad commit without rewriting history: git revert <commit>
+- If not committed, recovery is still possible but less reliable once more edits accumulate.
